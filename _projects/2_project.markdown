@@ -10,7 +10,7 @@ Designed a control system algorithm based on fuzzy logic technology to solve the
 
 
 <div class="row justify-content-sm-center">
-    <p align="center"><iframe src="https://www.youtube.com/embed/Wj7mzOQwfPg" width=420 height="315"></iframe></p>
+    <p align="center"><iframe src="https://www.youtube.com/embed/Wj7mzOQwfPg" width=620 height="315"></iframe></p>
 </div>
 <div class="caption">
     Control system testing. The system starts without 0 PSI of water in the system; the automatic control smootly reaches the desired state (80 PSIs) in a short time despite and adjust itself to external noise.

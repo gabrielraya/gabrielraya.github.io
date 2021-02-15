@@ -8,7 +8,7 @@ importance: 3
 
 
 <div class="row justify-content-sm-center">
-    <p align="center"><iframe src="https://www.youtube.com/embed/I_YWnGjf9kI" width=420 height="315"></iframe></p>
+    <p align="center"><iframe src="https://www.youtube.com/embed/I_YWnGjf9kI" width=620 height="315"></iframe></p>
 </div>
 <div class="caption">
     Agent in action!

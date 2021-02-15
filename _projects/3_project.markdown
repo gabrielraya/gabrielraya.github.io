@@ -2,7 +2,7 @@
 layout: page
 title: CNNs
 description: An Evaluation of rotation-equivariant convolutional neural networks
-img: /assets/img/pathology.png
+img: /assets/img/pathology.PNG
 redirect: https://github.com/gabrielraya/Data-Mining/tree/master/Project
 importance: 1
 ---

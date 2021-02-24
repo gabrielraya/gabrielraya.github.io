@@ -6,7 +6,7 @@ title: blank # the website title (if blank, full name will be used instead)
 first_name: Gabriel
 middle_name:
 last_name: Raya
-email: graya@tilburguniversity.com
+email: g.raya@tilburguniversity.com
 description: > # the ">" symbol means to ignore newlines until "footer_text:"
   Gabriel Raya - Ph.D. Candidate - Machine Learning
 # footer_text: >
@@ -43,7 +43,7 @@ og_image: # The site-wide (default for all links) Open Graph preview image
 github_username: gabrielraya# your GitHub user name
 twitter_username: # your Twitter handle
 linkedin_username: rayagabriel # your LinkedIn user name
-scholar_userid: # your Google Scholar ID
+scholar_userid: 6bTCWLcAAAAJ# your Google Scholar ID
 orcid_id: # your ORCID ID
 medium_username: # your Medium username
 quora_username: # your Quora username

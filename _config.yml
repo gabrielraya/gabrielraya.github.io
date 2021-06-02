@@ -6,7 +6,7 @@ title: blank # the website title (if blank, full name will be used instead)
 first_name: Gabriel
 middle_name:
 last_name: Raya
-email: g.raya@tilburguniversity.com
+email: g.raya@tilburguniversity.edu
 description: > # the ">" symbol means to ignore newlines until "footer_text:"
   Gabriel Raya - Ph.D. Candidate - Machine Learning
 # footer_text: >

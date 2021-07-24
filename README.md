@@ -143,7 +143,7 @@ Simply edit `_bibliography/papers.bib`.
 You can also add new `*.bib` files and customize the look of your publications however you like by editing `_pages/publications.md`.
 
 #### Author Annotation
-In publications, the author entry for your self is identified by string `scholar:last_name` and string array `scholar:first_name` in `_config.yml`. If the entry matches the last name and one form of the first names, it will be underlined. 
+In publications, the author entry for your self is identified by string `scholar:last_name` and string array `scholar:first_name` in `_config.yml`. If the entry matches the last name and one form of the first names, it will be underlined.
 ```
 scholar:
   last_name: Einstein
@@ -164,14 +164,14 @@ The coauthor data format in `_data/coauthors.yml` is as follows,
   - firstname: ["Nathan", "N."]
     url: https://en.wikipedia.org/wiki/Nathan_Rosen
 
-"Bach": 
+"Bach":
   - firstname: ["Johann Sebastian", "J. S."]
     url: https://en.wikipedia.org/wiki/Johann_Sebastian_Bach
 
   - firstname: ["Carl Philipp Emanuel", "C. P. E."]
     url: https://en.wikipedia.org/wiki/Carl_Philipp_Emanuel_Bach
 ```
-If the entry matches one of the combinations of the last names and the first names, it will be highlighted and linked to the url provided. 
+If the entry matches one of the combinations of the last names and the first names, it will be highlighted and linked to the url provided.
 
 <p align="center"><img src="assets/img/publications-screenshot.png" width=800></p>
 
@@ -263,6 +263,9 @@ If you have a different question, please ask on [gitter](https://gitter.im/alshe
    How do I fix this? <br>
    **A:** For personal webpages, please run `bin/deploy --user`.
    (See also relevant past issues: [#5](https://github.com/alshedivat/al-folio/issues/5), [#49](https://github.com/alshedivat/al-folio/issues/49), [#86](https://github.com/alshedivat/al-folio/issues/86).)
+
+## Jupyter notebooks
+- Follow this https://github.com/red-data-tools/jekyll-jupyter-notebook
 
 
 ## License

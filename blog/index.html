@@ -12,15 +12,15 @@ pagination:
     after: 3  # The number of links after the current page
 ---
 
-<div class="post">
+<!-- <div class="post">
 
   <div class="header-bar">
     <h1>{{ site.blog_name }}</h1>
     <h2>{{ site.blog_description }}</h2>
-  </div>
+  </div> -->
 
 
-  <!-- <ul class="post-list">
+  <ul class="post-list">
     {% for post in paginator.posts %}
       <li>
         <h3><a class="post-title" href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a></h3>
@@ -28,7 +28,7 @@ pagination:
         <p>{{ post.description }}</p>
       </li>
     {% endfor %}
-  </ul> -->
+  </ul>
 
   {% include pagination.html %}
 

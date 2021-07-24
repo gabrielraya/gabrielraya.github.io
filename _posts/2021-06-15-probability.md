@@ -1,21 +1,35 @@
 ---
-layout: post
-title:  How can machines acquire causal knowledge?
+layout: distill
+title:  Propos
 date:   2021-01-15 16:40:16
 description: march & april, looking forward to summer
+
+
+bibliography: 2018-12-22-distill.bib
 ---
 
 
-No doubt many people will argue that the process of decision making is highly complex and sometimes maybe even impossible to model. But let's be optimistic and see what we as humans would like to do the most, that is the process of *thinking*. When thinking about a decision we in some way imagine unexisted scenaria that only happen in our brains. We can see this process as a mechanism of generating future trajectories.
-
-Predicting trajectories has been a long end goal, specially because we know that the future is largely unpredictable and we would like to take actions based on the expected outcome. But let's not go very philosophical this time.
-
-One framework we use to thinking about this uncertainty is probability theory. We think of probability spaces!.
+Generative modeling is about understanding the mechanisms that generated the data. The levels of modeling can be statistical, causal, physical <d-cite key="scholkopf2019causality"></d-cite>  and probably even beyond these. In this post, I will focus only on explicit generative models.
 
 
+The main idea of a probabilistic deep generative model is to learn the underlying distribution that generated the data given a set of examples from $$p(X)$$. This process is what in statistics is called density estimation or parameter estimation. We all know that statistics is sometimes know as the inverse probability.
+
+This is a key property I want to emphasize here. The concept of probability theory or a probability space is defined from *any experiment involving **randomness***. The key word here is **experiment**!. In contrast, once we have data we don't know anything else about that **experiment** anymore, therefore loosing any possible information that might have influence the generative process of the data!.
 
 
 
+Most of the current state of the art deep generative models
+
+In this post, I will just emphasize on the importance of thinking about the mathematical properties when we speak about probabilities.
+
+
+When building a generative model we want to estimate the join .
+
+One framework we use to thinking about this uncertainty is probability theory. We think of probability spaces!
+
+- $$ \Omega $$ The set of possible outcomes
+- $$\mathcal{F}$$
+- $$P$$
 $$M^2$$
 
 Jean shorts raw denim Vice normcore, art party High Life PBR skateboard stumptown vinyl kitsch. Four loko meh 8-bit, tousled banh mi tilde forage Schlitz dreamcatcher twee 3 wolf moon. Chambray asymmetrical paleo salvia, sartorial umami four loko master cleanse drinking vinegar brunch. <a href="https://www.pinterest.com" target="blank">Pinterest</a> DIY authentic Schlitz, hoodie Intelligentsia butcher trust fund brunch shabby chic Kickstarter forage flexitarian. Direct trade <a href="https://en.wikipedia.org/wiki/Cold-pressed_juice" target="blank">cold-pressed</a> meggings stumptown plaid, pop-up taxidermy. Hoodie XOXO fingerstache scenester Echo Park. Plaid ugh Wes Anderson, freegan pug selvage fanny pack leggings pickled food truck DIY irony Banksy.

@@ -56,15 +56,15 @@ wikidata_id: # your wikidata id
 
 contact_note: >
   Send me an email for collaborations.
-google_analytics: UA-XXXXXXXXX # out your google-analytics code
+google_analytics: G-M62TSH5LZC # out your google-analytics code
 panelbear_analytics: XXXXXXXXX # panelbear analytics site ID
 
 # -----------------------------------------------------------------------------
 # Blog
 # -----------------------------------------------------------------------------
 
-blog_name: The Bayesian Brain  # your blog must have a name for it to show up in the nav bar
-blog_description: A generative perspective of the brain.
+blog_name: Out-of-distribution generalization  # your blog must have a name for it to show up in the nav bar
+blog_description: Beyond the in-distribution.
 permalink: /blog/:year/:title/
 
 # Pagination
@@ -154,7 +154,7 @@ scholar:
 # Optional Features
 # -----------------------------------------------------------------------------
 
-enable_google_analytics:    false
+enable_google_analytics:    true
 enable_panelbear_analytics: false
 enable_mansory:             true
 enable_math:                true

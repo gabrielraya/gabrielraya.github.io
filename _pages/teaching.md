@@ -3,10 +3,12 @@ layout: page
 title: teaching
 permalink: /teaching/
 description: Materials for courses I taught to myself during my Ph.D. journey.
-nav: true
+nav: false
 ---
 
-<div class="projects grid">
+
+
+<!-- <div class="projects grid">
 
   {% assign sorted_projects = site.courses| sort: "importance" %}
   {% for project in sorted_projects %}
@@ -44,4 +46,4 @@ nav: true
   </div>
 {% endfor %}
 
-</div>
+</div> -->

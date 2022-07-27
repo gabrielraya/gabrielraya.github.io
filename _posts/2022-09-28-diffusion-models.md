@@ -81,7 +81,7 @@ Lets assume that our dataset consists of $N$ i.i.d inputs $$\{\mathbf{x}_0^n\}_{
 
 
 <div style="align: left; text-align:center;">
-        <img class="img-fluid  " src="{{ site.baseurl }}/assets/img/diffusion/generative_markov_chain.PNG" style="width: 700px;">
+        <img class="img-fluid  " src="{{ site.baseurl }}/assets/img/diffusion/generative_markov_chain.png" style="width: 700px;">
         <figcaption class="figure-caption text-center">Figure 2. The directed graphical model for a discrete diffusion model is represented by a Markov Chain. The forward/reverse diffusion process systematically and  slowly adds/removes noise.</figcaption>
 </div><br>
 

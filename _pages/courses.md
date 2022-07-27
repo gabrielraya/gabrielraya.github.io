@@ -3,7 +3,7 @@ layout: page
 title: courses
 permalink: /courses/
 description: Materials for courses I taught to myself during my Ph.D. journey.
-nav: false
+nav: False
 
 ---
 

@@ -14,7 +14,7 @@ authors:
      url: "https://gabrielraya.com/"
 
 bibliography: 2018-12-22-distill.bib
-
+comments: true
 # Below is an example of injecting additional post-specific styles.
 # If you use this post as a template, delete this _styles block.
 
@@ -48,13 +48,15 @@ If you are reading this post, then you may have heard that diffusion models are 
 </div>
 
 <p align="justify">
-However, grasping diffusion models may seem initially daunting, and you may easily get confused by terms such as denoising diffusion models and score-based generative models. Therefore, this blog post aims to provide a big picture of diffusion models, whether you prefer to call them diffusion models, denoising diffusion models, or score-based diffusion models. All of them have the same roots, the diffusion process, so I will refer to them as Diffusion models and make it explicit when a singular idea comes from a particular approach.
+However, grasping diffusion models may seem initially daunting, and you may easily get confused by terms such as denoising diffusion and score-based generative models. Therefore, this blog post aims to provide a big picture of diffusion models, whether you prefer to call them diffusion, denoising diffusion or score-based diffusion models. All of them have the same roots, the diffusion process, so I will refer to them as Diffusion models and make it explicit when a singular idea comes from a particular approach.
 </p>
 
 
 For more in-depth information, I will always suggest reading the original papers:
 
-- [Deep Unsupervised Learning using Nonequilibrium Thermodynamics](https://arxiv.org/abs/1503.03585)
+- [Deep Unsupervised Learning using Nonequilibrium Thermodynamics, 2015](https://arxiv.org/abs/1503.03585).
+- [Denoising Diffusion Probabilistic Models, 2020](https://arxiv.org/abs/2006.11239)
+
 
 I also recommend reading the following blog post, from which some information I have added here to provide a complete picture.  
 
@@ -93,7 +95,7 @@ Lets assume that our dataset consists of $N$ i.i.d inputs $$\{\mathbf{x}_0^n\}_{
 #### Forward trajectory
 
 <p align="justify">
- The forward diffusion process will systematically perturbed the input data $\mathbf{x}_0$ using a perturbation kernel $q(\mathbf{x}_t \vert \mathbf{x}_{t-1})$ over time $t\in[0,T]$, gradually converting $q_0(\mathbf{x}_0)$ into a simple known distribution $q_T$ (e.g. a Gaussian) distribution. For example, the input $\mathbf{x}_0$, in figure 1 (going from right to left)gradually loses its distinguishable features as the step $t$ becomes larger. Eventually when $T \to \infty$, $\mathbf{x}_T$ is equivalent to an isotropic Gaussian distribution. Figure 1 shows with dotted line a forward diffusion step.  This <b>forward trajectory</b> or <b>forward diffusion process</b> is represented by a Markov chain.  The stationary distribution is choose by desing and so the forward process does not have learnable parameters. For example, Sohl-Dickstein et. al. <d-cite key="sohl2015deep"></d-cite> proposed the following perturbation kernel such that the stationary distribution is Isotropic Gaussian.
+ The forward diffusion process will systematically perturbed the input data $\mathbf{x}_0$ using a perturbation kernel $q(\mathbf{x}_t \vert \mathbf{x}_{t-1})$ over time $t\in[0,T]$, gradually converting $q_0(\mathbf{x}_0)$ into a simple known distribution $q_T$ (e.g. a Gaussian) distribution. For example, a input $\mathbf{x}_0$, like the one shown in figure 1 (going from right to left), gradually loses its distinguishable features as the step $t$ becomes larger. Eventually when $T \to \infty$, $\mathbf{x}_T$ is equivalent to an isotropic Gaussian distribution. Figure 1 shows with dotted line a forward diffusion step.  This <b>forward trajectory</b> or <b>forward diffusion process</b> is represented by a Markov chain.  The stationary distribution is choose by desing and so the forward process does not have learnable parameters. For example, Sohl-Dickstein et. al. <d-cite key="sohl2015deep"></d-cite> proposed the following perturbation kernel such that the stationary distribution is Isotropic Gaussian.
 </p>
 
 
@@ -104,9 +106,7 @@ $$
 
 <p align="justify">
 where $\beta_t$ is the variance schedule, a sequence of positive noise scales such that $0 < \beta_1, \beta_2, ..., \beta_T < 1$.
-The data sample $\mathbf{x}_0$
-
-<a id="nice"></a>A nice property of the above process is that we can sample $\mathbf{x}_t$ at any arbitrary time step $t$ in a closed form using <a href="https://lilianweng.github.io/posts/2018-08-12-vae/#reparameterization-trick">reparameterization trick</a>. Let $\alpha_t = 1 - \beta_t$ and $\bar{\alpha}_t = \prod_{i=1}^t \alpha_i$, and now $q(\mathbf{x}_t \vert \mathbf{x}_{t-1}) = \mathcal{N}(\mathbf{x}_t; \sqrt{\alpha_t} \mathbf{x}_{t-1}, 1-\alpha_t\mathbf{I})$
+A nice property of the above process is that we can sample $\mathbf{x}_t$ at any arbitrary time step $t$ in a closed form using <a href="https://lilianweng.github.io/posts/2018-08-12-vae/#reparameterization-trick">reparameterization trick</a>. Let $\alpha_t = 1 - \beta_t$ and $\bar{\alpha}_t = \prod_{i=1}^t \alpha_i$, and now $q(\mathbf{x}_t \vert \mathbf{x}_{t-1}) = \mathcal{N}(\mathbf{x}_t; \sqrt{\alpha_t} \mathbf{x}_{t-1}, 1-\alpha_t\mathbf{I})$
 </p>
 
 <div>
@@ -118,7 +118,7 @@ $$
 &= \sqrt{\alpha_2\alpha_1}\mathbf{x}_{0} + \sqrt{\alpha_2(1 - \alpha_1)}\mathbf{z}_{0} + \sqrt{1 - \alpha_2}\mathbf{z}_{1}\\
 &= \sqrt{\alpha_2\alpha_1}\mathbf{x}_{0} + \sqrt{1 - \alpha_1\alpha_2}\bar{\mathbf{z}}_{1} & \text{ ;where } \bar{\mathbf{z}}_{1} \text{ merges two Gaussians (*).} \\
 &= \dots \\
-&= \sqrt{\bar{\alpha}_t}\mathbf{x}_0 + \sqrt{1 - \bar{\alpha}_t}\mathbf{z} \\
+x_t &= \sqrt{\bar{\alpha}_t}\mathbf{x}_0 + \sqrt{1 - \bar{\alpha}_t}\mathbf{z} \\
 q(\mathbf{x}_t \vert \mathbf{x}_0) &= \mathcal{N}(\mathbf{x}_t; \sqrt{\bar{\alpha}_t} \mathbf{x}_0, (1 - \bar{\alpha}_t)\mathbf{I})
 \end{aligned}
 $$
@@ -130,5 +130,13 @@ $$
  </p>
 
 
+ $$
+ q(\mathbf{x}_t \vert \mathbf{x}_{t-1}) = \mathcal{N}(\mathbf{x}_t; \sqrt{1 - \beta_t} \mathbf{x}_{t-1}, \beta_t\mathbf{I}) \quad
+ q(\mathbf{x}_{1:T} \vert \mathbf{x}_0) = \prod^T_{t=1} q(\mathbf{x}_t \vert \mathbf{x}_{t-1})
+ $$
+
 #### Reverse trajectory
  Then a generative Markov chain converts $q_T$, the simple distribution, into a target (data) distribution using a diffusion process. Figure 1 shows how the generative Markov chain is used to generated samples like the training distribution starting from $ x_T \sim p(x_T)$
+
+
+### Continuous Diffusion Models

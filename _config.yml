@@ -63,8 +63,8 @@ panelbear_analytics: XXXXXXXXX # panelbear analytics site ID
 # Blog
 # -----------------------------------------------------------------------------
 
-blog_name: Out-of-distribution generalization  # your blog must have a name for it to show up in the nav bar
-blog_description: Beyond the in-distribution.
+blog_name: Generative Modelling  # your blog must have a name for it to show up in the nav bar
+blog_description:
 permalink: /blog/:year/:title/
 
 # Pagination

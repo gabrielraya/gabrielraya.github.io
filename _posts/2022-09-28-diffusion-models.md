@@ -3,7 +3,7 @@ layout: distill
 title: Diffusion models
 description: An overview of diffusion models (work in progress).
 
-date: 2022-07-26 0:00:00-0400
+date: 2022-07-28 0:00:00-0400
 keywords:
   - generative models
   - diffusion models
@@ -112,31 +112,39 @@ A nice property of the above process is that we can sample $\mathbf{x}_t$ at any
 <div>
 $$
 \begin{aligned}
-\mathbf{x}_1 &= \sqrt{\alpha_1}\mathbf{x}_{0} + \sqrt{1 - \alpha_1}\mathbf{z}_{0} & \text{ ;where } \mathbf{z}_{0}, \mathbf{z}_{1}, \dots \sim \mathcal{N}(\mathbf{0}, \mathbf{I}) \\
-\mathbf{x}_2 &= \sqrt{\alpha_2}\mathbf{x}_{1} + \sqrt{1 - \alpha_2}\mathbf{z}_{1}\\
-&= \sqrt{\alpha_2}\left(\sqrt{\alpha_1}\mathbf{x}_{0} + \sqrt{1 - \alpha_1}\mathbf{z}_{0}\right) + \sqrt{1 - \alpha_2}\mathbf{z}_{1}\\
-&= \sqrt{\alpha_2\alpha_1}\mathbf{x}_{0} + \sqrt{\alpha_2(1 - \alpha_1)}\mathbf{z}_{0} + \sqrt{1 - \alpha_2}\mathbf{z}_{1}\\
-&= \sqrt{\alpha_2\alpha_1}\mathbf{x}_{0} + \sqrt{1 - \alpha_1\alpha_2}\bar{\mathbf{z}}_{1} & \text{ ;where } \bar{\mathbf{z}}_{1} \text{ merges two Gaussians (*).} \\
+\mathbf{x}_1 &= \sqrt{\alpha_1}\mathbf{x}_{0} + \sqrt{1 - \alpha_1}\mathbf{\epsilon}_{0}  \quad\quad\quad\quad\quad\quad\quad\quad\quad \text{ ;where } \mathbf{\epsilon}_{0}, \mathbf{\epsilon}_{1}, \dots \sim \mathcal{N}(\mathbf{0}, \mathbf{I}) \\
+\mathbf{x}_2 &= \sqrt{\alpha_2}\mathbf{x}_{1} + \sqrt{1 - \alpha_2}\mathbf{\epsilon}_{1}\\
+&= \sqrt{\alpha_2}\left(\sqrt{\alpha_1}\mathbf{x}_{0} + \sqrt{1 - \alpha_1}\mathbf{\epsilon}_{0}\right) + \sqrt{1 - \alpha_2}\mathbf{\epsilon}_{1}\\
+&= \sqrt{\alpha_2\alpha_1}\mathbf{x}_{0} + \underbrace{\sqrt{\alpha_2(1 - \alpha_1)}\mathbf{\epsilon}_{0}}_{\mathbf{\epsilon}_{0}^{*}} + \underbrace{\sqrt{1 - \alpha_2}\mathbf{\epsilon}_{1}}_{\mathbf{\epsilon}_{1}^{*}}\\
+&= \sqrt{\alpha_2\alpha_1}\mathbf{x}_{0} + \sqrt{1 - \alpha_1\alpha_2}\bar{\mathbf{\epsilon}}_{1} \quad\quad\quad\quad\quad\quad\quad  \text{ ;where } \bar{\mathbf{\epsilon}}_{1} \text{ merges two Gaussians (*).} \\
 &= \dots \\
-x_t &= \sqrt{\bar{\alpha}_t}\mathbf{x}_0 + \sqrt{1 - \bar{\alpha}_t}\mathbf{z} \\
-q(\mathbf{x}_t \vert \mathbf{x}_0) &= \mathcal{N}(\mathbf{x}_t; \sqrt{\bar{\alpha}_t} \mathbf{x}_0, (1 - \bar{\alpha}_t)\mathbf{I})
+x_t &= \sqrt{\bar{\alpha}_t}\mathbf{x}_0 + \sqrt{1 - \bar{\alpha}_t}\mathbf{\epsilon}_{t} \\
+q(\mathbf{x}_t \vert \mathbf{x}_0) &= \mathcal{N}(\mathbf{x}_t; \sqrt{\bar{\alpha}_t} \mathbf{x}_0, (1 - \bar{\alpha}_t)\mathbf{I}) \quad\quad\quad\quad\quad\quad\quad  \text{ ; Transition density function.}
 \end{aligned}
 $$
 </div>
 
 <p align="justify">
-(*) Recall that when we merge two Gaussians  with different variance, $\mathcal{N}(\mathbf{0}, \sigma_1^2\mathbf{I})$ and $\mathcal{N}(\mathbf{0}, \sigma_2^2\mathbf{I})$, the new distribution is $\mathcal{N}(\mathbf{0}, (\sigma_1^2 + \sigma_2^2)\mathbf{I})$. Using the property of $Var(aX) = a^2 Var(X)$ we have $Var(\sqrt{\alpha_2(1 - \alpha_1)}\mathbf{z}_{1})= \alpha_2(1 - \alpha_1)\mathbf{I}=$. Therefore, the
- merged standard deviation is $\sqrt{\alpha_2(1 - \alpha_1) + 1 - \alpha_2} = \sqrt{1 - \alpha_1\alpha_2}$.
- </p>
+(*) Recall the properties of the sum of two Gaussian random variables. Let $\mathbf{\epsilon}_{0}^{*} \sim \mathcal{N}(\mathbf{\mu}_0, \sigma^2_0\mathbf{I})$, and $\mathbf{\epsilon}_{1}^{*} \sim \mathcal{N}(\mathbf{\mu}_1, \sigma^2_1\mathbf{I})$. Then, the new random variable  $\mathbf{z}= \mathbf{\epsilon}_{0}^{*}+ \mathbf{\epsilon}_{1}^{*}$ has density $\mathcal{N}(\mathbf{\mu}_0+\mathbf{\mu}_1, (\sigma^2_0+\sigma^2_1)\mathbf{I})$. First we can de-reparametrized $\epsilon_{0}^{*}$ and  $\epsilon_{1}^{*}$ so we get $\mathcal{N}(0,Var(\epsilon_0^{*}))$ and $\mathcal{N}(0,Var(\epsilon_1^{*}))$ correspondingly. We have that the sum of these two Gaussians is
+<div>
+$$
+\begin{aligned}
+\mathbf{z}&= \mathbf{\epsilon}_{0}^{*}+ \mathbf{\epsilon}_{1}^{*}\\
+&=\mathcal{N}(0,Var(\epsilon_0^{*})+ Var(\epsilon_1^{*}))\\
+&=\mathcal{N}(0,(1 - \alpha_1 \alpha_2)\mathbf{I}))\quad\quad\quad  \text{ ;Using the property of the variance (*).}\\
+&=\sqrt{1- \alpha_1 \alpha_2}\bar{\mathbf{\epsilon}}_{1} \quad \text{ ;where } \bar{\mathbf{\epsilon}}_{1}\sim \mathcal{N}(\mathbf{0}, \mathbf{I}) \text{  and used reparameterization}\\
+\end{aligned}
+$$
+</div>
+
+(*) Recall the  recall $Var(aX) = a^2 Var(X)$. Therefore, we have the following $Var(\epsilon_0^{*})=Var(\sqrt{\alpha_2(1 - \alpha_1)}\mathbf{\epsilon}_{0})= \alpha_2(1 - \alpha_1)$. and $Var(\epsilon_1^{*})=Var(\sqrt{1 - \alpha_2}\mathbf{\epsilon}_{1})= 1 - \alpha_2$. Finally, $Var(\epsilon_0^{*})+ Var(\epsilon_1^{*})= \alpha_2(1 - \alpha_1)1 - \alpha_2= 1 - \alpha_1 \alpha_2$.
+</p>
 
 
- $$
- q(\mathbf{x}_t \vert \mathbf{x}_{t-1}) = \mathcal{N}(\mathbf{x}_t; \sqrt{1 - \beta_t} \mathbf{x}_{t-1}, \beta_t\mathbf{I}) \quad
- q(\mathbf{x}_{1:T} \vert \mathbf{x}_0) = \prod^T_{t=1} q(\mathbf{x}_t \vert \mathbf{x}_{t-1})
- $$
+$\bar{\alpha}_t$ is an increasing function such that $\bar{\alpha}_1 > ... > \bar{\alpha}_T$. The power signal of $\mathbf{x}_0$ decreases over time, while the noise intensifies.
 
 #### Reverse trajectory
- Then a generative Markov chain converts $q_T$, the simple distribution, into a target (data) distribution using a diffusion process. Figure 1 shows how the generative Markov chain is used to generated samples like the training distribution starting from $ x_T \sim p(x_T)$
+ Then a generative Markov chain converts $q_T \approx p_{\theta}(\mathbf{x}_T)$, the simple distribution, into a target (data) distribution using a diffusion process. Figure 1 shows how the generative Markov chain is used to generated samples like the training distribution starting from $ x_T \sim p(x_T)$
 
 
 ### Continuous Diffusion Models

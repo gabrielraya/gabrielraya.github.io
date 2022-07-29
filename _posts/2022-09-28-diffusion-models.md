@@ -157,11 +157,11 @@ $\bar{\alpha}_t$ is an increasing function such that $\bar{\alpha}_1 > ... > \ba
       </div>
   <div class="col">
       <div class="col-10">
-          <img class="img-fluid rounded" src="{{ site.baseurl }}/assets/img/diffusion/signal.PNG"
+          <img class="img-fluid rounded" src="{{ site.baseurl }}/assets/img/diffusion/signal.png"
           style="width: 100%;">
       </div>
       <div class="col-10">
-          <img class="img-fluid rounded" src="{{ site.baseurl }}/assets/img/diffusion/noise.PNG"
+          <img class="img-fluid rounded" src="{{ site.baseurl }}/assets/img/diffusion/noise.png"
           style="width: 100%;">
       </div>
   </div>

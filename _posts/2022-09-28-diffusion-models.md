@@ -3,11 +3,12 @@ layout: distill
 title: Diffusion models
 description: An overview of diffusion models (work in progress).
 
-date: 2022-07-28 0:00:00-0400
+date: 2022-07-29 0:00:00-0400
 keywords:
   - generative models
   - diffusion models
   - score-based generative models
+description: An overview of diffusion models (work in progress).
 
 authors:
    - name: Gabriel Raya
@@ -63,7 +64,7 @@ I also recommend reading the following blog post, from which some information I 
 - [What are Diffusion Models?](https://lilianweng.github.io/posts/2021-07-11-diffusion-models/)
 
 <p align="justify">
-Before starting, I would like to recall that modeling high-dimensional distributions in a tractable way where training, sampling, and evaluating probabilities  is not easy. As a result, approximation techniques such as variational inference and sampling methods have been developed over the years. Now, with Diffusion models, we can do that and more!.
+Before starting, I would like to recall that modeling high-dimensional distributions where training, sampling, and evaluating probabilities is tractable is not easy. As a result, approximation techniques such as variational inference and sampling methods have been developed over the years. Now, with Diffusion models, we can do that and more!.
 </p>
 
 
@@ -142,6 +143,13 @@ $$
 
 
 $\bar{\alpha}_t$ is an increasing function such that $\bar{\alpha}_1 > ... > \bar{\alpha}_T$. The power signal of $\mathbf{x}_0$ decreases over time, while the noise intensifies.
+
+
+<div style="align: left; text-align:center;">
+        <img class="img-fluid  " src="{{ site.baseurl }}/assets/img/diffusion/ddpm_animation.gif" style="width: 500px;">
+        <figcaption class="figure-caption text-center">Figure 3. 2D Forward Diffusion process. Any sample is map to a Isotropic Gaussian.</figcaption>
+</div><br>
+
 
 #### Reverse trajectory
  Then a generative Markov chain converts $q_T \approx p_{\theta}(\mathbf{x}_T)$, the simple distribution, into a target (data) distribution using a diffusion process. Figure 1 shows how the generative Markov chain is used to generated samples like the training distribution starting from $ x_T \sim p(x_T)$

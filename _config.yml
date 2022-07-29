@@ -7,8 +7,7 @@ first_name: Gabriel
 middle_name:
 last_name: Raya
 email: g.raya@tilburguniversity.edu
-description: > # the ">" symbol means to ignore newlines until "footer_text:"
-  Gabriel Raya - Ph.D. Candidate - Machine Learning
+description: Gabriel Raya's academic website.
 # footer_text: >
 #   Powered by <a href="http://jekyllrb.com/" target="_blank">Jekyll</a> with <a href="https://github.com/alshedivat/al-folio">al-folio</a> theme.
 

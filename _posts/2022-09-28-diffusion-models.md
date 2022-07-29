@@ -2,24 +2,39 @@
 layout: distill
 title: Diffusion models
 description: An overview of diffusion models (work in progress).
-
 date: 2022-07-29 0:00:00-0400
-keywords:
-  - generative models
-  - diffusion models
-  - score-based generative models
-description: An overview of diffusion models (work in progress).
 
 authors:
    - name: Gabriel Raya
      url: "https://gabrielraya.com/"
 
 bibliography: 2018-12-22-distill.bib
+
+keywords:
+  - generative models
+  - diffusion models
+  - score-based generative models
 comments: true
 # Below is an example of injecting additional post-specific styles.
 # If you use this post as a template, delete this _styles block.
 
-
+# Optionally, you can add a table of contents to your post.
+# NOTES:
+#   - make sure that TOC names match the actual section names
+#     for hyperlinks within the post to work correctly.
+#   - we may want to automate TOC generation in the future using
+#     jekyll-toc plugin (https://github.com/toshimaru/jekyll-toc).
+toc:
+  - name: What are diffusion models
+    # if a section has subsections, you can add them as follows:
+    # subsections:
+    #   - name: Example Child Subsection 1
+    #   - name: Example Child Subsection 2
+  - name: Citations
+  - name: Footnotes
+  - name: Code Blocks
+  - name: Layouts
+  - name: Other Typography?
 
 ---
 

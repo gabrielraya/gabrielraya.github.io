@@ -74,9 +74,9 @@ Before starting, I would like to recall that modeling high-dimensional distribut
 
 
 <p align="justify">
-Diffusion Models (DMs) are probabilistic models that are capable to model high-dimensional distribution using two diffusion process: 1) a   <em>forward diffusion process</em> maps data to a noise distribution, i.e., an isotropic Gaussian, and 2) a <em>reverse diffusion process</em> that moves samples from the noise distribution back to the data distribution. The essential idea, inspired by nonequilibrium statistical physics and introduced by Sohl-Dickstein et. al. <d-cite key="sohl2015deep"></d-cite>, is to <b>systematically</b> and slowly destroy structure in a data distribution through an iterative diffusion process. Then learn a reverse diffusion process that restores structure in data.  In this way, learning in a diffusion Model consists on estimating small perturbations which is more tractable that approximating the partition function.<br><br>
+Diffusion Models  are probabilistic models that are capable to model high-dimensional distributions using two diffusion processes: 1) a   <em>forward diffusion process</em> maps data to a noise distribution, i.e., an isotropic Gaussian, and 2) a <em>reverse diffusion process</em> that moves samples from the noise distribution back to the data distribution. The essential idea in diffusion models, inspired by nonequilibrium statistical physics and introduced by Sohl-Dickstein et. al. <d-cite key="sohl2015deep"></d-cite>, is to <b>systematically</b> and slowly destroy structure in a data distribution through an iterative diffusion process. Then learn a reverse diffusion process that restores structure in data.  In this way, learning in a diffusion model consists on estimating small perturbations which is more tractable that approximating the partition function.<br><br>
 
-Stochastic process can be time-continuous or discrete. Because a diffusion process is a stochastic process, diffusion models can be time-continuous or discrete. I will start explaining time-discrete DMs.
+Stochastic process can be time-continuous or discrete. Because a diffusion process is a stochastic process, diffusion models can be time-continuous or discrete. I will start explaining time-discrete diffusion models.
 
 </p>
 
@@ -85,7 +85,7 @@ Stochastic process can be time-continuous or discrete. Because a diffusion proce
 
 
 ### Discrete Diffusion models
-Lets assume that our dataset consists of $N$ i.i.d inputs $$\{\mathbf{x}_0^n\}_{n=0}^N \sim q_0(\mathbf{x})$$ sampled from an unknown distribution $$q_0(\mathbf{x}_0)$$, where the lower-index is used to denoted the time-dependency in the diffusion process. The goal is to find a parametric model $p_{\theta}(\\mathbf{x}_0) \approx q_0(\\mathbf{x}_0)$ using a diffusion process that evolves over a discrete time variable $t\in[0,T]$
+Lets assume that our dataset consists of $N$ i.i.d inputs $$\{\mathbf{x}_0^n\}_{n=0}^N \sim q_0(\mathbf{x})$$ sampled from an unknown distribution $$q_0(\mathbf{x}_0)$$, where the lower-index is used to denoted the time-dependency in the diffusion process. The goal is to find a parametric model $p_{\theta}(\\mathbf{x}_0) \approx q_0(\\mathbf{x}_0)$ using a reversible diffusion process that evolves over a discrete time variable $t\in[0,T]$
 
 
 <div style="align: left; text-align:center;">
@@ -96,7 +96,7 @@ Lets assume that our dataset consists of $N$ i.i.d inputs $$\{\mathbf{x}_0^n\}_{
 #### Forward trajectory
 
 <p align="justify">
- The forward diffusion process will systematically perturbed the input data $\mathbf{x}_0$ using a perturbation kernel $q(\mathbf{x}_t \vert \mathbf{x}_{t-1})$ over time $t\in[0,T]$, gradually converting $q_0(\mathbf{x}_0)$ into a simple known distribution $q_T$ (e.g. a Gaussian) distribution. For example, a input $\mathbf{x}_0$, like the one shown in figure 1 (going from right to left), gradually loses its distinguishable features as the step $t$ becomes larger. Eventually when $T \to \infty$, $\mathbf{x}_T$ is equivalent to an isotropic Gaussian distribution. Figure 1 shows with dotted line a forward diffusion step.  This <b>forward trajectory</b> or <b>forward diffusion process</b> is represented by a Markov chain.  The stationary distribution is choose by desing and so the forward process does not have learnable parameters. For example, Sohl-Dickstein et. al. <d-cite key="sohl2015deep"></d-cite> proposed the following perturbation kernel such that the stationary distribution is Isotropic Gaussian.
+ The forward diffusion process will systematically perturbed the input data $\mathbf{x}_0$ using a perturbation kernel $q(\mathbf{x}_t \vert \mathbf{x}_{t-1})$ over time $t\in[0,T]$, gradually converting $q_0(\mathbf{x}_0)$ into a simple known distribution $q_T$ (e.g. a Gaussian) distribution. For example, a input $\mathbf{x}_0$, like the one shown in figure 1 (going from right to left), gradually loses its distinguishable features as the step $t$ becomes larger. Eventually when $T \to \infty$, $\mathbf{x}_T$ is equivalent to an isotropic Gaussian distribution. Figure 1 shows with dotted line a forward diffusion step.  This <b>forward trajectory</b> or <b>forward diffusion process</b> is represented by a Markov chain.  The stationary distribution is chose by design and so the forward process does not have learnable parameters. For example, Sohl-Dickstein et. al. <d-cite key="sohl2015deep"></d-cite> proposed the following perturbation kernel such that the stationary distribution is Isotropic Gaussian.
 </p>
 
 
@@ -145,16 +145,32 @@ $$
 </p>
 
 
-$\bar{\alpha}_t$ is an increasing function such that $\bar{\alpha}_1 > ... > \bar{\alpha}_T$. The power signal of $\mathbf{x}_0$ decreases over time, while the noise intensifies.
+$\bar{\alpha}_t$ is an increasing function such that $\bar{\alpha}_1 > ... > \bar{\alpha}_T$. The power signal of $\mathbf{x}_0$ decreases over time, while the noise intensifies. Figure 3 shows an example of this model for 4 different 2-dimensional inputs $\mathbf{x}_0$ moving them to an Isotropic Gaussian distribution as $t\rightarrow T=1000$.
 
 
-<div style="align: left; text-align:center;">
-        <img class="img-fluid  " src="{{ site.baseurl }}/assets/img/diffusion/ddpm_animation.gif" style="width: 400px;">
-        <figcaption class="figure-caption text-center">Figure 3. 2D Forward Diffusion process over 1000 timesteps using equation
-        \ref{eq:transition_kernel}. The forward diffusion process systematically perturbed the input data $\mathbf{x}_0$, gradually converting $q_0(\mathbf{x}_0)$ into an Isotropic Gaussian distribution for different initial states $\mathbf{x}_0$ .</figcaption>
-</div><br>
 
 
+<div class="container" style="align: left; text-align:center;">
+  <div class="row" >
+      <div class="col-6" >
+          <img class="img-fluid rounded " src="{{ site.baseurl }}/assets/img/diffusion/ddpm_animation.gif" style="width: 100%;" class="center">
+      </div>
+  <div class="col">
+      <div class="col-10">
+          <img class="img-fluid rounded" src="{{ site.baseurl }}/assets/img/diffusion/signal.PNG"
+          style="width: 100%;">
+      </div>
+      <div class="col-10">
+          <img class="img-fluid rounded" src="{{ site.baseurl }}/assets/img/diffusion/noise.PNG"
+          style="width: 100%;">
+      </div>
+  </div>
+  </div>
+  <figcaption class="figure-caption text-center">Figure 3. 2D Forward Diffusion process over 1000 timesteps using equation
+  \ref{eq:transition_kernel}. The forward diffusion process systematically perturbed the input data $\mathbf{x}_0$, gradually converting $q_0(\mathbf{x}_0)$ into an Isotropic Gaussian distribution for different initial states $\mathbf{x}_0$. The two plots in the right show the corresponding evolution of the <b>signal</b> and <b>noise</b> factor over time.</figcaption>
+</div>
+
+<b>In summary</b>: the forward diffusion maps any sample to a chosen stationary distribution; under this transition kernel, to an Isotropic Gaussian.
 #### Reverse trajectory
  Then a generative Markov chain converts $q_T \approx p_{\theta}(\mathbf{x}_T)$, the simple distribution, into a target (data) distribution using a diffusion process. Figure 1 shows how the generative Markov chain is used to generated samples like the training distribution starting from $ x_T \sim p(x_T)$
 

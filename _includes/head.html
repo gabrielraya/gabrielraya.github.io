@@ -3,11 +3,12 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
 <title>{% if site.title == blank %}{{ site.title }}{% else %}{{ site.first_name }} {{ site.middle_name }} {{ site.last_name }}{% endif %}{% if page.title and page.url != "/" %} | {{ page.title }}{% endif %}</title>
-<meta name="description" content="{{ page.description }}">
+<meta name="description" content="{{ site.description }}">
 
 <!-- Meta Data -->
 {% if page.keywords %}
 <meta name="keywords" content="{{ page.keywords | join: ', ' | escape }}">
+<meta name="description" content="{{ page.description }}">
 {% endif %}
 
 <!-- Open Graph -->

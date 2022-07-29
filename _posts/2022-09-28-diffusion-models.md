@@ -101,8 +101,11 @@ Lets assume that our dataset consists of $N$ i.i.d inputs $$\{\mathbf{x}_0^n\}_{
 
 
 $$
-q(\mathbf{x}_t \vert \mathbf{x}_{t-1}) = \mathcal{N}(\mathbf{x}_t; \sqrt{1 - \beta_t} \mathbf{x}_{t-1}, \beta_t\mathbf{I}) \quad
-q(\mathbf{x}_{1:T} \vert \mathbf{x}_0) = \prod^T_{t=1} q(\mathbf{x}_t \vert \mathbf{x}_{t-1})
+\begin{equation}
+\label{eq:transition_kernel}
+q(\mathbf{x}_t \vert \mathbf{x}_{t-1}) = \mathcal{N}(\mathbf{x}_t; \sqrt{1 - \beta_t} \mathbf{x}_{t-1}, \beta_t\mathbf{I})
+\end{equation}
+
 $$
 
 <p align="justify">
@@ -146,8 +149,9 @@ $\bar{\alpha}_t$ is an increasing function such that $\bar{\alpha}_1 > ... > \ba
 
 
 <div style="align: left; text-align:center;">
-        <img class="img-fluid  " src="{{ site.baseurl }}/assets/img/diffusion/ddpm_animation.gif" style="width: 500px;">
-        <figcaption class="figure-caption text-center">Figure 3. 2D Forward Diffusion process. Any sample is map to a Isotropic Gaussian.</figcaption>
+        <img class="img-fluid  " src="{{ site.baseurl }}/assets/img/diffusion/ddpm_animation.gif" style="width: 400px;">
+        <figcaption class="figure-caption text-center">Figure 3. 2D Forward Diffusion process over 1000 timesteps using equation
+        \ref{eq:transition_kernel}. The forward diffusion process systematically perturbed the input data $\mathbf{x}_0$, gradually converting $q_0(\mathbf{x}_0)$ into an Isotropic Gaussian distribution for different initial states $\mathbf{x}_0$ .</figcaption>
 </div><br>
 
 

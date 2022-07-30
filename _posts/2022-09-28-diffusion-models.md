@@ -2,7 +2,7 @@
 layout: distill
 title: Diffusion models
 description: An overview of diffusion models (work in progress).
-date: 2022-07-29 0:00:00-0400
+date: 2022-07-30 0:00:00-0400
 
 authors:
    - name: Gabriel Raya
@@ -15,8 +15,6 @@ keywords:
   - diffusion models
   - score-based generative models
 comments: true
-# Below is an example of injecting additional post-specific styles.
-# If you use this post as a template, delete this _styles block.
 
 # Optionally, you can add a table of contents to your post.
 # NOTES:
@@ -25,16 +23,12 @@ comments: true
 #   - we may want to automate TOC generation in the future using
 #     jekyll-toc plugin (https://github.com/toshimaru/jekyll-toc).
 toc:
-  - name: What are diffusion models
+  - name: What are diffusion models?
     # if a section has subsections, you can add them as follows:
-    # subsections:
-    #   - name: Example Child Subsection 1
+    subsections:
+      - name: Discrete Diffusion Models
+      - name: Continuous Diffusion Models
     #   - name: Example Child Subsection 2
-  - name: Citations
-  - name: Footnotes
-  - name: Code Blocks
-  - name: Layouts
-  - name: Other Typography?
 
 ---
 
@@ -85,7 +79,7 @@ Before starting, I would like to recall that modeling high-dimensional distribut
 
 
 
-## What are diffusion models
+## What are diffusion models?
 
 
 <p align="justify">
@@ -120,7 +114,6 @@ $$
 \label{eq:transition_kernel}
 q(\mathbf{x}_t \vert \mathbf{x}_{t-1}) = \mathcal{N}(\mathbf{x}_t; \sqrt{1 - \beta_t} \mathbf{x}_{t-1}, \beta_t\mathbf{I})
 \end{equation}
-
 $$
 
 <p align="justify">
@@ -156,21 +149,30 @@ $$
 $$
 </div>
 
-(*) Recall the  recall $Var(aX) = a^2 Var(X)$. Therefore, we have the following $Var(\epsilon_0^{*})=Var(\sqrt{\alpha_2(1 - \alpha_1)}\mathbf{\epsilon}_{0})= \alpha_2(1 - \alpha_1)$. and $Var(\epsilon_1^{*})=Var(\sqrt{1 - \alpha_2}\mathbf{\epsilon}_{1})= 1 - \alpha_2$. Finally, $Var(\epsilon_0^{*})+ Var(\epsilon_1^{*})= \alpha_2(1 - \alpha_1)1 - \alpha_2= 1 - \alpha_1 \alpha_2$.
+(*) Recall that $Var(aX) = a^2 Var(X)$. Therefore, we have the following $Var(\epsilon_0^{*})=Var(\sqrt{\alpha_2(1 - \alpha_1)}\mathbf{\epsilon}_{0})= \alpha_2(1 - \alpha_1)$. and $Var(\epsilon_1^{*})=Var(\sqrt{1 - \alpha_2}\mathbf{\epsilon}_{1})= 1 - \alpha_2$. Finally, $Var(\epsilon_0^{*})+ Var(\epsilon_1^{*})= \alpha_2(1 - \alpha_1)1 - \alpha_2= 1 - \alpha_1 \alpha_2$.
 </p>
 
+More concretely, we can sample $\mathbf{x}_t$ for any timestep $t$ in closed form given $\mathbf{x}_0$ using
 
-$\bar{\alpha}_t$ is an increasing function such that $\bar{\alpha}_1 > ... > \bar{\alpha}_T$. The power signal of $\mathbf{x}_0$ decreases over time, while the noise intensifies. Figure 3 shows an example of this model for 4 different 2-dimensional inputs $\mathbf{x}_0$ moving them to an Isotropic Gaussian distribution as $t\rightarrow T=1000$.
+$$
+\begin{equation}
+\label{eq:transition_t}
+q(\mathbf{x}_t \vert \mathbf{x}_0) = \mathcal{N}(\mathbf{x}_t; \sqrt{\bar{\alpha}_t} \mathbf{x}_0, (1 - \bar{\alpha}_t)\mathbf{I})
+\end{equation}
+$$
+
+
+where $\bar{\alpha}_t$ is an decreasing function such that $\bar{\alpha}_1 < ... < \bar{\alpha}_T$. The power signal of $\mathbf{x}_0$ decreases over time, while the noise intensifies. Figure 3 shows an example of this model for 4 different 2-dimensional inputs $\mathbf{x}_0$ moving them to an Isotropic Gaussian distribution as $t\rightarrow T=1000$.
 
 
 
 
 <div class="container" style="align: left; text-align:center;">
-  <div class="row" >
-      <div class="col-6" >
+  <div class="row" style="display: flex; flex-wrap: wrap;">
+      <div class="col-md-6" >
           <img class="img-fluid rounded " src="{{ site.baseurl }}/assets/img/diffusion/ddpm_animation.gif" style="width: 100%;" class="center">
       </div>
-  <div class="col">
+  <div class="col-md-6">
       <div class="col-10">
           <img class="img-fluid rounded" src="{{ site.baseurl }}/assets/img/diffusion/signal.png"
           style="width: 100%;">
@@ -181,11 +183,11 @@ $\bar{\alpha}_t$ is an increasing function such that $\bar{\alpha}_1 > ... > \ba
       </div>
   </div>
   </div>
-  <figcaption class="figure-caption text-center">Figure 3. 2D Forward Diffusion process over 1000 timesteps using equation
+  <figcaption class="figure-caption text-center">Figure 3. 2D Animation of the Forward Diffusion process over 1000 timesteps using equation
   \ref{eq:transition_kernel}. The forward diffusion process systematically perturbed the input data $\mathbf{x}_0$, gradually converting $q_0(\mathbf{x}_0)$ into an Isotropic Gaussian distribution for different initial states $\mathbf{x}_0$. The two plots in the right show the corresponding evolution of the <b>signal</b> and <b>noise</b> factor over time.</figcaption>
-</div>
+</div><br>
 
-<b>In summary</b>: the forward diffusion maps any sample to a chosen stationary distribution; under this transition kernel, to an Isotropic Gaussian.
+<b>In summary</b>: the forward diffusion process maps any sample to a chosen stationary distribution. For this particular example, under the transition kernel of equation \ref{eq:transition_t}, to an Isotropic Gaussian.
 #### Reverse trajectory
  Then a generative Markov chain converts $q_T \approx p_{\theta}(\mathbf{x}_T)$, the simple distribution, into a target (data) distribution using a diffusion process. Figure 1 shows how the generative Markov chain is used to generated samples like the training distribution starting from $ x_T \sim p(x_T)$
 

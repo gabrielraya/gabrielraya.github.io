@@ -137,10 +137,10 @@ $$
 
 <p align="justify">
 where $\beta_t$ is the variance schedule, a sequence of positive noise scales such that $0 < \beta_1, \beta_2, ..., \beta_T < 1$.
-A nice property of the above process is that we can sample $\mathbf{x}_t$ at any arbitrary time step $t$ in a closed form using <a href="https://lilianweng.github.io/posts/2018-08-12-vae/#reparameterization-trick">reparameterization trick</a>. Let $\alpha_t = 1 - \beta_t$ and $\bar{\alpha}_t = \prod_{i=1}^t \alpha_i$, and now $q(\mathbf{x}_t \vert \mathbf{x}_{t-1}) = \mathcal{N}(\mathbf{x}_t; \sqrt{\alpha_t} \mathbf{x}_{t-1}, 1-\alpha_t\mathbf{I})$
+A nice property of the above process is that we can sample $\mathbf{x}_t$ at any arbitrary time step $t$ in a closed form using <a href="https://lilianweng.github.io/posts/2018-08-12-vae/#reparameterization-trick">reparameterization trick</a>. Let \(\alpha_t = 1 - \beta_t\) and \(\bar{\alpha}_t = \prod_{i=1}^t \alpha_i\), and now $q(\mathbf{x}_t \vert \mathbf{x}_{t-1}) = \mathcal{N}(\mathbf{x}_t; \sqrt{\alpha_t} \mathbf{x}_{t-1}, 1-\alpha_t\mathbf{I})$
 </p>
 
-
+<p align="justify">
 $$
 \begin{aligned}
 \mathbf{x}_1 &= \sqrt{\alpha_1}\mathbf{x}_{0} + \sqrt{1 - \alpha_1}\mathbf{\epsilon}_{0} \quad\quad\quad\quad\quad\text{ ;where } \mathbf{\epsilon}_{0}, \mathbf{\epsilon}_{1}, \dots \sim \mathcal{N}(\mathbf{0}, \mathbf{I}) \\
@@ -153,7 +153,7 @@ x_t &= \sqrt{\bar{\alpha}_t}\mathbf{x}_0 + \sqrt{1 - \bar{\alpha}_t}\mathbf{\eps
 q(\mathbf{x}_t \vert \mathbf{x}_0) &= \mathcal{N}(\mathbf{x}_t; \sqrt{\bar{\alpha}_t} \mathbf{x}_0, (1 - \bar{\alpha}_t)\mathbf{I}) \quad\quad\quad\text{ ; Transition density function.}
 \end{aligned}
 $$
-
+</p>
 
 <p align="justify">
 (*) Recall the properties of the sum of two Gaussian random variables. Let $\mathbf{\epsilon}_{0}^{*} \sim \mathcal{N}(\mathbf{\mu}_0, \sigma^2_0\mathbf{I})$, and $\mathbf{\epsilon}_{1}^{*} \sim \mathcal{N}(\mathbf{\mu}_1, \sigma^2_1\mathbf{I})$. Then, the new random variable  $\mathbf{z}= \mathbf{\epsilon}_{0}^{*}+ \mathbf{\epsilon}_{1}^{*}$ has density $\mathcal{N}(\mathbf{\mu}_0+\mathbf{\mu}_1, (\sigma^2_0+\sigma^2_1)\mathbf{I})$. First we can de-reparametrized $\epsilon_{0}^{*}$ and  $\epsilon_{1}^{*}$ so we get $\mathcal{N}(0,Var(\epsilon_0^{*}))$ and $\mathcal{N}(0,Var(\epsilon_1^{*}))$ correspondingly. We have that the sum of these two Gaussians is
@@ -210,28 +210,27 @@ where $\bar{\alpha}_t$ is an decreasing function such that $\bar{\alpha}_1 < ...
 
 ### Reverse trajectory
 
-If we know how to reverse the forward process and sample from $q(\mathbf{x}_{t-1}\vert \mathbf{x}_t)$, we will be able to remove the added noise, moving the Gaussian distribution back to the data distribution $q(\mathbf{x}_0)$. For this we learn a parametric model $p\_{\theta}(\mathbf{x}\_{0:T})$ to approximate these conditional probabilities in order to run the reverse process.
+<p align="justify">
+If we know how to reverse the forward process and sample from $q(\mathbf{x}_{t-1}\vert \mathbf{x}_t)$, we will be able to remove the added noise, moving the Gaussian distribution back to the data distribution $q(\mathbf{x}_0)$. For this we learn a parametric model \(p_{\theta}(\mathbf{x}_{0:T})\) to approximate these conditional probabilities in order to run the reverse process.
+</p>
 
 $$
 p_\theta(\mathbf{x}_{0:T}) = p(\mathbf{x}_T) \prod^T_{t=1} p_\theta(\mathbf{x}_{t-1} \vert \mathbf{x}_t) \quad
 p_\theta(\mathbf{x}_{t-1} \vert \mathbf{x}_t) = \mathcal{N}(\mathbf{x}_{t-1}; \mathbf{\mu}_\theta(\mathbf{x}_t, t), \mathbf{\Sigma}_\theta(\mathbf{x}_t, t))
 $$
 
- called the reverse process. This reverse process is similarly define by a Markov chain with learned Gaussian transitions starting at $p(\mathbf{x}_T)= \mathcal{N}(\mathbf{x}_T;\mathbf{0}, \mathbf{I})$. The reversal of the diffusion process has the identical functional form as the forward process as $\beta \rightarrow 0$ <d-cite key="sohl2015deep"></d-cite>.
+<p align="justify">
+This reverse process is similarly define by a Markov chain with learned Gaussian transitions starting at \(p(\mathbf{x}_T)= \mathcal{N}(\mathbf{x}_T;\mathbf{0}, \mathbf{I})\). The reversal of the diffusion process has the identical functional form as the forward process as $\beta \rightarrow 0$ <d-cite key="sohl2015deep"></d-cite>.
 
-
- Then a generative Markov chain converts $q_T \approx p_{\theta}(\mathbf{x}_T)$, the simple distribution, into a target (data) distribution using a diffusion process. Figure 1 shows how the generative Markov chain is used to generated samples like the training distribution starting from $ x_T \sim p(x_T)$. The model probability is defined by
-
+Then a generative Markov chain converts \(q_T \approx p_{\theta}(\mathbf{x}_T)\), the simple distribution, into a target (data) distribution using a diffusion process. Figure 1 shows how the generative Markov chain is used to generated samples like the training distribution starting from \( x_T \sim p(x_T)\). The model probability is defined by
+</p>
  $$
  \begin{equation}
  p_{\theta}(\mathbf{x}_0) = \int  p_{\theta}(\mathbf{x}_{0:T}) dx_{1:T}
  \end{equation}
  $$
-
-<p>
+<p align="justify">
 This integrable is intentractable. However, using <span style="color:blue;">annealed importance sampling</span> and the <a href="https://en.wikipedia.org/wiki/Jarzynski_equality">Jarzynski equality</a> we have:
-</p>
-
 
 $$
 \begin{aligned}
@@ -242,17 +241,20 @@ p_{\theta}(\mathbf{x}_0)
 &= \mathbb{E}_{q(x_{1:T}\vert x_0)}\left[p(x_T) \prod_{t=1}^T \frac{  p(x_{t-1}|x_t)}{q(x_t|x_{t-1})}\right]
 \end{aligned}
 $$
+</p>
 
-
-$q(x_{0:T}) = q(x_{1:T}\|x_0)q(x_0) \rightarrow q(x_{1:T}\|x_0)= \frac{q(x_{0:T})}{q(x_0)}= \frac{q(x_0) \prod_{t=1}^T q(x_t\|x_{t-1})}{q(x_0)} =\prod_{t=1}^T q(x_t\|x_{t-1})$ The model probablity is therefore the relative probability of the forward and reverse trajectories averaged over forward trajectories $q(x_{1:T}\vert x_0)$. This can be efficently evaluated using only a single sample from $q(x_{1:T}\vert x_0)$ when the forward and reverse trajectories are identical (when $\beta$ is infinitesimal small). This corresponds to the case of a quasi-static process in statistical physics.
-
-> For infinitesimal $\beta$ the forward and reverse distribution over trajectories can be made identical
+<p align="justify">
+\(q(x_{0:T}) = q(x_{1:T}\vert x_0)q(x_0) \rightarrow q(x_{1:T}\vert x_0)= \frac{q(x_{0:T})}{q(x_0)}= \frac{q(x_0) \prod_{t=1}^T q(x_t\vert x_{t-1})}{q(x_0)} =\prod_{t=1}^T q(x_t\vert x_{t-1})\) The model probablity is therefore the relative probability of the forward and reverse trajectories averaged over forward trajectories \(q(x_{1:T}\vert x_0)\). This can be efficently evaluated using only a single sample from \(q(x_{1:T}\vert x_0)\) when the forward and reverse trajectories are identical (when \(\beta\) is infinitesimal small). This corresponds to the case of a quasi-static process in statistical physics.
+</p>
+> For infinitesimal $\beta$ the forward and reverse distribution over trajectories can be made identical <d-cite key="sohl2015deep"></d-cite>
 
 
 ### Training
-<p>
+<p align="justify">
 We train by minimizing the negative <a href="https://en.wikipedia.org/wiki/Cross_entropy">cross entropy</a> (NCE) \(H[q(\mathbf{x}_0),p_{\theta}(\mathbf{x}_0)]\) between the true underlaying distribution \(q(\mathbf{x}_0)\) and the model probability \(p_{\theta}(\mathbf{x}_0)]\)
 </p>
+
+<p align="justify">
  $$
  \begin{aligned}
  L_\text{NCE}
@@ -263,16 +265,18 @@ We train by minimizing the negative <a href="https://en.wikipedia.org/wiki/Cross
  &= \mathbb{E}_{q(\mathbf{x}_{0:T})}\Big[\log \frac{q(\mathbf{x}_{1:T} \vert \mathbf{x}_{0})}{p_\theta(\mathbf{x}_{0:T})} \Big]  = L_\text{VLB}
  \end{aligned}
  $$
+</p>
 
- We use Jensen's inequality $\mathbb{E}[f(x)] \ge f(\mathbb{E}[x])$ for convex function. Making use of the fact that $-\log(x)$ is convex we have
+<p align="justify">
+We use Jensen's inequality $\mathbb{E}[f(x)] \ge f(\mathbb{E}[x])$ for convex function. Making use of the fact that $-\log(x)$ is convex we have
  that $\mathbb{E}[-\log(x)] \ge -\log(\mathbb{E}[x])$. We can simplify this as follows
 
 $$
 \begin{aligned}
 \mathbb{E}_{q(\mathbf{x}_{0:T})} \left[-\log \Big(p(\mathbf{x}_T) \prod^T_{t=1} \frac{p_\theta(\mathbf{x}_{t-1} \vert \mathbf{x}_t)}{q(\mathbf{x}_t\vert \mathbf{x}_{t-1})}\Big) \right]
 &= \mathbb{E}_{q(\mathbf{x}_{0:T})} \left[-\log p(\mathbf{x}_T) - \log\prod^T_{t=1} \frac{p_\theta(\mathbf{x}_{t-1} \vert \mathbf{x}_t)}{q(\mathbf{x}_t\vert \mathbf{x}_{t-1})} \right] \\
-&= \mathbb{E}_{q(\mathbf{x}_{0:T})} \left[-\log p(\mathbf{x}_T) - \sum^T_{t=1}\log \frac{p_\theta(\mathbf{x}_{t-1} \vert \mathbf{x}_t)}{q(\mathbf{x}_t\vert \mathbf{x}_{t-1})} \right]
-= L_\text{VLB}
+&= \mathbb{E}_{q(\mathbf{x}_{0:T})} \left[-\log p(\mathbf{x}_T) - \sum^T_{t=1}\log \frac{p_\theta(\mathbf{x}_{t-1} \vert \mathbf{x}_t)}{q(\mathbf{x}_t\vert \mathbf{x}_{t-1})} \right]\\
+&= L_\text{VLB}
 \end{aligned}
 $$
 
@@ -287,23 +291,25 @@ L_\text{VLB}
 &= \mathbb{E}_{q(\mathbf{x}_{0:T})} \left[-\log p(\mathbf{x}_T) - \sum^T_{t=2}\log \frac{p_\theta(\mathbf{x}_{t-1} \vert \mathbf{x}_t)}{q(\mathbf{x}_{t-1} \vert \mathbf{x}_t, \mathbf{x}_0)} - \sum^T_{t=2}\log\frac{q(\mathbf{x}_{t-1} \vert \mathbf{x}_0)}{q(\mathbf{x}_t \vert \mathbf{x}_0)} - \log \frac{p_\theta(\mathbf{x}_0 \vert \mathbf{x}_1)}{q(\mathbf{x}_1\vert \mathbf{x}_0)} \right] \\
 &= \mathbb{E}_{q(\mathbf{x}_{0:T})} \left[-\log p(\mathbf{x}_T) - \sum^T_{t=2}\log \frac{p_\theta(\mathbf{x}_{t-1} \vert \mathbf{x}_t)}{q(\mathbf{x}_{t-1} \vert \mathbf{x}_t, \mathbf{x}_0)} -  \log\frac{\color{blue}q(\mathbf{x}_1 \vert \mathbf{x}_0)}{q(\mathbf{x}_T \vert \mathbf{x}_0)} - \log \frac{p_\theta(\mathbf{x}_0 \vert \mathbf{x}_1)}{\color{blue}q(\mathbf{x}_1\vert \mathbf{x}_0)} \right]  \quad \text{Suming up (**).}\\
 &=  \mathbb{E}_{q(\mathbf{x}_0)}\left[ \mathbb{E}_{q(\mathbf{x}_{1:T} \vert \mathbf{x}_0)} \left[ \log\frac{q(\mathbf{x}_T \vert \mathbf{x}_0)}{p(\mathbf{x}_T)} - \sum^T_{t=2}\log \frac{p_\theta(\mathbf{x}_{t-1} \vert \mathbf{x}_t)}{q(\mathbf{x}_{t-1} \vert \mathbf{x}_t, \mathbf{x}_0)} - \log p_\theta(\mathbf{x}_0 \vert \mathbf{x}_1) \right]\right]\\
-&=  \mathbb{E}_{q(\mathbf{x}_0)}\left[ \text{D}_{KL}(q(\mathbf{x}_T \vert \mathbf{x}_0)||p(\mathbf{x}_T)) + \sum^T_{t=2} \text{D}_{KL} (q(\mathbf{x}_{t-1} \vert \mathbf{x}_t, \mathbf{x}_0)||p_\theta(\mathbf{x}_{t-1} \vert \mathbf{x}_t))  - \log p_\theta(\mathbf{x}_0 \vert \mathbf{x}_1) 
+&=  \mathbb{E}_{q(\mathbf{x}_0)}\left[ \text{D}_{KL}(q(\mathbf{x}_T \vert \mathbf{x}_0)||p(\mathbf{x}_T)) + \sum^T_{t=2} \text{D}_{KL} (q(\mathbf{x}_{t-1} \vert \mathbf{x}_t, \mathbf{x}_0)||p_\theta(\mathbf{x}_{t-1} \vert \mathbf{x}_t))  - \log p_\theta(\mathbf{x}_0 \vert \mathbf{x}_1)
 \right]
 \end{aligned}
 $$
-<p>
+
 (*) Because of the Markov property of the diffuson process \(q(\mathbf{x}_t \vert \mathbf{x}_{t-1})= q(\mathbf{x}_t \vert \mathbf{x}_{t-1}, \mathbf{x}_0)\). Using Bayes' rule
-</p>
+
+
 $$
-\begin{aligned}
+\begin{align}
+\label{eq:forward_posterior}
 q(\mathbf{x}_{t-1} \vert \mathbf{x}_t, \mathbf{x}_0)
 = \frac{q(\mathbf{x}_t \vert \mathbf{x}_{t-1}, \mathbf{x}_0)q(\mathbf{x}_{t-1} \vert \mathbf{x}_0)}{q(\mathbf{x}_t \vert \mathbf{x}_0)}; \quad q(\mathbf{x}_t \vert \mathbf{x}_{t-1},\mathbf{x}_0)= \frac{q(\mathbf{x}_{t-1} \vert \mathbf{x}_t, \mathbf{x}_0)q(\mathbf{x}_t \vert \mathbf{x}_0)}{q(\mathbf{x}_{t-1} \vert \mathbf{x}_0)}
-\end{aligned}
+\end{align}
 $$
 
-<p>
+
 (**) The sum is reduces by applying the log property
-</p>
+
 
 $$
 \begin{aligned}
@@ -314,4 +320,20 @@ $$
 \end{aligned}
 $$
 
+
+Therefore miniizing the \(L_\text{VLB}\) requires estimating the forward poteriors \(q(\mathbf{x}_{t-1} \vert \mathbf{x}_t, \mathbf{x}_0)\) which are tractable to compute (eq. \ref{eq:forward_posterior}). Recall \(\alpha_t = 1 - \beta_t\) and \(\bar{\alpha}_t = \prod_{i=1}^t \alpha_i\)
+
+$$
+\begin{aligned}
+q(\mathbf{x}_{t-1} \vert \mathbf{x}_t, \mathbf{x}_0)
+&= \frac{q(\mathbf{x}_t \vert \mathbf{x}_{t-1}, \mathbf{x}_0)q(\mathbf{x}_{t-1} \vert \mathbf{x}_0)}{q(\mathbf{x}_t \vert \mathbf{x}_0)}\\
+&= \frac{\mathcal{N}(\mathbf{x}_t; \sqrt{1 - \beta_t} \mathbf{x}_{t-1}, \beta_t\mathbf{I})\mathcal{N}(\mathbf{x}_{t-1}; \sqrt{\bar{\alpha}_{t-1}} \mathbf{x}_0, (1 - \bar{\alpha}_{t-1})\mathbf{I})}{\mathcal{N}(\mathbf{x}_t; \sqrt{\bar{\alpha}_t} \mathbf{x}_0, (1 - \bar{\alpha}_t)\mathbf{I})}\\
+&\propto \exp\Big(-\frac{1}{2}\Big(\frac{(\mathbf{x}_t- \sqrt{\alpha_t} \mathbf{x}_{t-1})^2}{\beta_t} + \frac{(\mathbf{x}_{t-1}- \sqrt{\bar{\alpha}_{t-1}}\mathbf{x}_0)^2}{1 - \bar{\alpha}_{t-1}} - \frac{(\mathbf{x}_t-  \sqrt{\bar{\alpha}_t} \mathbf{x}_0)^2}{1 - \bar{\alpha}_t}\Big)\Big)\\
+&= \exp\Big(-\frac{1}{2}\Big(\frac{\mathbf{x}_t^2- \color{red}2\sqrt{\alpha_t} \mathbf{x}_t \mathbf{x}_{t-1}\color{black}+ \color{blue}\alpha_t \mathbf{x}_{t-1}^2}{\beta_t} + \frac{\color{blue}\mathbf{x}_{t-1}^2 \color{black}- \color{red}2\sqrt{\bar{\alpha}_{t-1}}\mathbf{x}_0\mathbf{x}_{t-1} \color{black}+ \bar{\alpha}_{t-1}\mathbf{x}_0^2}{1 - \bar{\alpha}_{t-1}} - \frac{\mathbf{x}_t^2 -  2\sqrt{\bar{\alpha}_t} \mathbf{x}_0\mathbf{x}_t + \bar{\alpha}_t \mathbf{x}_0^2}{1 - \bar{\alpha}_t}\Big)\Big)\\
+&= \exp\Big(-\frac{1}{2}\color{blue}\Big(\frac{\alpha_t}{\beta_t} + \frac{1}{1 - \bar{\alpha}_{t-1}} \Big)\mathbf{x}_{t-1}^2 \color{black}- \color{red}\Big(\frac{ 2\sqrt{\alpha_t}}{\beta_t}\mathbf{x}_t + \frac{2\sqrt{\bar{\alpha}_{t-1}}}{1 - \bar{\alpha}_{t-1}}\mathbf{x}_0\Big)\mathbf{x}_{t-1}\color{black} + C(\mathbf{x}_t, \mathbf{x}_0)\Big)
+\end{aligned}
+$$
+
+Where \(C(\mathbf{x}_t, \mathbf{x}_0)\) is some function not involving \(\mathbf{x}_{t-1}\).
+</p>
 ## Continuous Diffusion Models

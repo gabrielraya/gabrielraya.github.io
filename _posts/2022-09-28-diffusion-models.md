@@ -2,7 +2,7 @@
 layout: distill
 title: Diffusion models
 description: An overview of diffusion models (work in progress).
-date: 2022-07-30 0:00:00-0400
+date: 2022-08-08 0:00:00-0400
 
 authors:
    - name: Gabriel Raya
@@ -15,6 +15,7 @@ keywords:
   - diffusion models
   - score-based generative models
 comments: true
+
 
 # Optionally, you can add a table of contents to your post.
 # NOTES:
@@ -102,19 +103,19 @@ It may be useful to keep in mind this notation when using discrete diffusion mod
 - $q(\mathbf{x}_0, ... , \mathbf{x}_T)$: the forward trajectory (chose by design)
 - $p_{\theta}(\mathbf{x}_0, ..., \mathbf{x}_T)$: the parametric reverse trajectory (learnable)
 
-Lets assume that our dataset consists of $N$ i.i.d inputs $$\{\mathbf{x}_0^n\}_{n=0}^N \sim q_0(\mathbf{x})$$ sampled from an unknown distribution $$q_0(\mathbf{x}_0)$$, where the lower-index is used to denoted the time-dependency in the diffusion process. The goal is to find a parametric model $p_{\theta}(\\mathbf{x}_0) \approx q_0(\\mathbf{x}_0)$ using a reversible diffusion process that evolves over a discrete time variable $t\in[0,T]$
-
+<p align="justify">
+Lets assume that our dataset consists of $N$ i.i.d inputs \(\{\mathbf{x}_0^n\}_{n=0}^N \sim q_0(\mathbf{x})\) sampled from an unknown distribution \(q_0(\mathbf{x}_0)\), where the lower-index is used to denoted the time-dependency in the diffusion process. The goal is to find a parametric model \(p_{\theta}(\mathbf{x}_0) \approx q_0(\mathbf{x}_0)\) using a reversible diffusion process that evolves over a discrete time variable $t\in[0,T]$
+</p>
 
 <div style="align: left; text-align:center;">
         <img class="img-fluid  " src="{{ site.baseurl }}/assets/img/diffusion/generative_markov_chain.png" style="width: 700px;">
         <figcaption class="figure-caption text-center">Figure 2. The directed graphical model for a discrete diffusion model is represented by a Markov Chain. The forward/reverse diffusion process systematically and  slowly adds/removes noise.</figcaption>
-</div><br>
+</div>
 
 ## Forward trajectory
 
 <p align="justify">
- The forward diffusion process, represented by a Markov chain, is a sequence of random variables $(\mathbf{x}_{0}, ..., \mathbf{x}_{T})$ where  $\mathbf{x}_0$ is the input data (initial state) with probability density/distribution $q(\mathbf{x}_0)$ and the final state $\mathbf{x}_T\sim \pi(\mathbf{x}_T)$, where $\pi(\mathbf{x}_T)$ is an easy to sample distribution, i.e., an Isotropic Gaussian.  Each transition in the chain is governed by a perturbation kernel $q(\mathbf{x}_t \vert \mathbf{x}_{t-1})$. The full forward trajectory, starting from $\mathbf{x}_0$ and performing $T$ steps of diffusion, due to the Markov property, is
-
+ The forward diffusion process, represented by a Markov chain, is a sequence of random variables \((\mathbf{x}_{0}, \dots, \mathbf{x}_{T})\) where  \(\mathbf{x}_0\) is the input data (initial state) with probability density/distribution \(q(\mathbf{x}_0)\) and the final state \(\mathbf{x}_T\sim \pi(\mathbf{x}_T)\), where \(\pi(\mathbf{x}_T)\) is an easy to sample distribution, i.e., an Isotropic Gaussian.  Each transition in the chain is governed by a perturbation kernel \(q(\mathbf{x}_t \vert \mathbf{x}_{t-1})\). The full forward trajectory, starting from $\mathbf{x}_0$ and performing $T$ steps of diffusion, due to the Markov property, is
 
  $$
  \begin{equation}
@@ -213,7 +214,7 @@ If we know how to reverse the forward process and sample from $q(\mathbf{x}_{t-1
 
 $$
 p_\theta(\mathbf{x}_{0:T}) = p(\mathbf{x}_T) \prod^T_{t=1} p_\theta(\mathbf{x}_{t-1} \vert \mathbf{x}_t) \quad
-p_\theta(\mathbf{x}_{t-1} \vert \mathbf{x}_t) = \mathcal{N}(\mathbf{x}_{t-1}; \boldsymbol{\mu}_\theta(\mathbf{x}_t, t), \boldsymbol{\Sigma}_\theta(\mathbf{x}_t, t))
+p_\theta(\mathbf{x}_{t-1} \vert \mathbf{x}_t) = \mathcal{N}(\mathbf{x}_{t-1}; \mathbf{\mu}_\theta(\mathbf{x}_t, t), \mathbf{\Sigma}_\theta(\mathbf{x}_t, t))
 $$
 
  called the reverse process. This reverse process is similarly define by a Markov chain with learned Gaussian transitions starting at $p(\mathbf{x}_T)= \mathcal{N}(\mathbf{x}_T;\mathbf{0}, \mathbf{I})$. The reversal of the diffusion process has the identical functional form as the forward process as $\beta \rightarrow 0$ <d-cite key="sohl2015deep"></d-cite>.
@@ -235,7 +236,7 @@ This integrable is intentractable. However, using <span style="color:blue;">anne
 $$
 \begin{aligned}
 p_{\theta}(\mathbf{x}_0)
-&= - \int  p_{\theta}(\mathbf{x}_{0:T})  {\color{blue}\frac{q(\mathbf{x}_{1:T}\vert \mathbf{x}_0)}{q(\mathbf{x}_{1:T}\vert \mathbf{x}_0)} }dx_{1:T}
+&= - \int  p_{\theta}(\mathbf{x}_{0:T}) {\color{blue}\frac{q(\mathbf{x}_{1:T}\vert \mathbf{x}_0)}{q(\mathbf{x}_{1:T}\vert \mathbf{x}_0)}} dx_{1:T}
 \end{aligned}
 $$
 

@@ -276,4 +276,42 @@ $$
 \end{aligned}
 $$
 
+Further improvements comes from variance reduction by rewriting equation as:
+$$
+\begin{aligned}
+L_\text{VLB}
+&= \mathbb{E}_{q(\mathbf{x}_{0:T})}\Big[\log \frac{q(\mathbf{x}_{1:T} \vert \mathbf{x}_{0})}{p_\theta(\mathbf{x}_{0:T})} \Big]\\
+&= \mathbb{E}_{q(\mathbf{x}_{0:T})} \left[-\log p(\mathbf{x}_T) - \sum^T_{t=1}\log \frac{p_\theta(\mathbf{x}_{t-1} \vert \mathbf{x}_t)}{q(\mathbf{x}_t\vert \mathbf{x}_{t-1})} \right]\\
+&= \mathbb{E}_{q(\mathbf{x}_{0:T})} \left[-\log p(\mathbf{x}_T) - \sum^T_{t=2}\log \frac{p_\theta(\mathbf{x}_{t-1} \vert \mathbf{x}_t)}{q(\mathbf{x}_t\vert \mathbf{x}_{t-1})} - \log \frac{p_\theta(\mathbf{x}_0 \vert \mathbf{x}_1)}{q(\mathbf{x}_1\vert \mathbf{x}_0)} \right]\\
+&= \mathbb{E}_{q(\mathbf{x}_{0:T})} \left[-\log p(\mathbf{x}_T) - \sum^T_{t=2}\log \frac{p_\theta(\mathbf{x}_{t-1} \vert \mathbf{x}_t)}{q(\mathbf{x}_{t-1} \vert \mathbf{x}_t, \mathbf{x}_0)}\cdot\frac{q(\mathbf{x}_{t-1} \vert \mathbf{x}_0)}{q(\mathbf{x}_t \vert \mathbf{x}_0)} - \log \frac{p_\theta(\mathbf{x}_0 \vert \mathbf{x}_1)}{q(\mathbf{x}_1\vert \mathbf{x}_0)} \right];\quad \text{Markov property + Bayes' rule (*).}\\
+&= \mathbb{E}_{q(\mathbf{x}_{0:T})} \left[-\log p(\mathbf{x}_T) - \sum^T_{t=2}\log \frac{p_\theta(\mathbf{x}_{t-1} \vert \mathbf{x}_t)}{q(\mathbf{x}_{t-1} \vert \mathbf{x}_t, \mathbf{x}_0)} - \sum^T_{t=2}\log\frac{q(\mathbf{x}_{t-1} \vert \mathbf{x}_0)}{q(\mathbf{x}_t \vert \mathbf{x}_0)} - \log \frac{p_\theta(\mathbf{x}_0 \vert \mathbf{x}_1)}{q(\mathbf{x}_1\vert \mathbf{x}_0)} \right] \\
+&= \mathbb{E}_{q(\mathbf{x}_{0:T})} \left[-\log p(\mathbf{x}_T) - \sum^T_{t=2}\log \frac{p_\theta(\mathbf{x}_{t-1} \vert \mathbf{x}_t)}{q(\mathbf{x}_{t-1} \vert \mathbf{x}_t, \mathbf{x}_0)} -  \log\frac{\color{blue}q(\mathbf{x}_1 \vert \mathbf{x}_0)}{q(\mathbf{x}_T \vert \mathbf{x}_0)} - \log \frac{p_\theta(\mathbf{x}_0 \vert \mathbf{x}_1)}{\color{blue}q(\mathbf{x}_1\vert \mathbf{x}_0)} \right]  \quad \text{Suming up (**).}\\
+&=  \mathbb{E}_{q(\mathbf{x}_0)}\left[ \mathbb{E}_{q(\mathbf{x}_{1:T} \vert \mathbf{x}_0)} \left[ \log\frac{q(\mathbf{x}_T \vert \mathbf{x}_0)}{p(\mathbf{x}_T)} - \sum^T_{t=2}\log \frac{p_\theta(\mathbf{x}_{t-1} \vert \mathbf{x}_t)}{q(\mathbf{x}_{t-1} \vert \mathbf{x}_t, \mathbf{x}_0)} - \log p_\theta(\mathbf{x}_0 \vert \mathbf{x}_1) \right]\right]\\
+&=  \mathbb{E}_{q(\mathbf{x}_0)}\left[ \text{D}_{KL}(q(\mathbf{x}_T \vert \mathbf{x}_0)||p(\mathbf{x}_T)) + \sum^T_{t=2} \text{D}_{KL} (q(\mathbf{x}_{t-1} \vert \mathbf{x}_t, \mathbf{x}_0)||p_\theta(\mathbf{x}_{t-1} \vert \mathbf{x}_t))  - \log p_\theta(\mathbf{x}_0 \vert \mathbf{x}_1) 
+\right]
+\end{aligned}
+$$
+<p>
+(*) Because of the Markov property of the diffuson process \(q(\mathbf{x}_t \vert \mathbf{x}_{t-1})= q(\mathbf{x}_t \vert \mathbf{x}_{t-1}, \mathbf{x}_0)\). Using Bayes' rule
+</p>
+$$
+\begin{aligned}
+q(\mathbf{x}_{t-1} \vert \mathbf{x}_t, \mathbf{x}_0)
+= \frac{q(\mathbf{x}_t \vert \mathbf{x}_{t-1}, \mathbf{x}_0)q(\mathbf{x}_{t-1} \vert \mathbf{x}_0)}{q(\mathbf{x}_t \vert \mathbf{x}_0)}; \quad q(\mathbf{x}_t \vert \mathbf{x}_{t-1},\mathbf{x}_0)= \frac{q(\mathbf{x}_{t-1} \vert \mathbf{x}_t, \mathbf{x}_0)q(\mathbf{x}_t \vert \mathbf{x}_0)}{q(\mathbf{x}_{t-1} \vert \mathbf{x}_0)}
+\end{aligned}
+$$
+
+<p>
+(**) The sum is reduces by applying the log property
+</p>
+
+$$
+\begin{aligned}
+\sum^T_{t=2}\log\frac{q(\mathbf{x}_{t-1} \vert \mathbf{x}_0)}{q(\mathbf{x}_t \vert \mathbf{x}_0)}
+&= (\log q(\mathbf{x}_{1}\vert \mathbf{x}_0) - {\color{blue}\log q(\mathbf{x}_2 \vert \mathbf{x}_0)}) + ({\color{blue}\log q(\mathbf{x}_{2}\vert \mathbf{x}_0)} - {\color{orange}\log q(\mathbf{x}_3 \vert \mathbf{x}_0)}) + \dots + \\
+&\quad({\color{orange}\log q(\mathbf{x}_{T-2}\vert \mathbf{x}_0)} - {\color{red}\log q(\mathbf{x}_{T-1} \vert \mathbf{x}_0)}) + ({\color{red}\log q(\mathbf{x}_{T-1}\vert \mathbf{x}_0)} - \log q(\mathbf{x}_T \vert \mathbf{x}_0))\\
+&= \log q(\mathbf{x}_{1}\vert \mathbf{x}_0)- \log q(\mathbf{x}_T \vert \mathbf{x}_0)
+\end{aligned}
+$$
+
 ## Continuous Diffusion Models

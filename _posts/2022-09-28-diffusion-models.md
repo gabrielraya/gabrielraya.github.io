@@ -22,12 +22,12 @@ comments: true
 #     for hyperlinks within the post to work correctly.
 #   - we may want to automate TOC generation in the future using
 #     jekyll-toc plugin (https://github.com/toshimaru/jekyll-toc).
-toc:
-  - name: What are diffusion models?
+# toc:
+#  - name: What are diffusion models?
     # if a section has subsections, you can add them as follows:
-    subsections:
-      - name: Discrete Diffusion Models
-      - name: Continuous Diffusion Models
+    #subsections:
+#  - name: Discrete Diffusion Models
+#  - name: Continuous Diffusion Models
     #   - name: Example Child Subsection 2
 
 ---
@@ -66,7 +66,7 @@ For more in-depth information, I will always suggest reading the original papers
 
 - [Deep Unsupervised Learning using Nonequilibrium Thermodynamics, 2015](https://arxiv.org/abs/1503.03585).
 - [Denoising Diffusion Probabilistic Models, 2020](https://arxiv.org/abs/2006.11239)
-
+- [Score-Based Generative Modeling through Stochastic Differential Equations](https://openreview.net/forum?id=PxTIG12RRHS)
 
 I also recommend reading the following blog post, from which some information I have added here to provide a complete picture.  
 
@@ -78,14 +78,13 @@ Before starting, I would like to recall that modeling high-dimensional distribut
 
 
 
-
-## What are diffusion models?
+# <b>What are diffusion models?</b>
 
 
 <p align="justify">
 Diffusion Models  are probabilistic models that are capable to model high-dimensional distributions using two diffusion processes: 1) a   <em>forward diffusion process</em> maps data to a noise distribution, i.e., an isotropic Gaussian, and 2) a <em>reverse diffusion process</em> that moves samples from the noise distribution back to the data distribution. The essential idea in diffusion models, inspired by nonequilibrium statistical physics and introduced by Sohl-Dickstein et. al. <d-cite key="sohl2015deep"></d-cite>, is to <b>systematically</b> and slowly destroy structure in a data distribution through an iterative diffusion process. Then learn a reverse diffusion process that restores structure in data.  In this way, learning in a diffusion model consists on estimating small perturbations which is more tractable that approximating the partition function.<br><br>
 
-Stochastic process can be time-continuous or discrete. Because a diffusion process is a stochastic process, diffusion models can be time-continuous or discrete. I will start explaining time-discrete diffusion models.
+Stochastic process are sequence on random variables and they can be either time-continuous or discrete. Because a diffusion process is a stochastic process, diffusion models can be time-continuous or discrete. I will start first explaining time-discrete diffusion models.
 
 </p>
 
@@ -93,7 +92,16 @@ Stochastic process can be time-continuous or discrete. Because a diffusion proce
 
 
 
-### Discrete Diffusion models
+## Discrete Diffusion models
+
+**Notation**<br>
+It may be useful to keep in mind this notation when using discrete diffusion models.
+
+- $q_0(\mathbf{x}_0)$: the unknown data distribution
+- $p_{\theta}(\mathbf{x}_0)$: the model probability
+- $q(\mathbf{x}_0, ... , \mathbf{x}_T)$: the forward trajectory (chose by design)
+- $p_{\theta}(\mathbf{x}_0, ..., \mathbf{x}_T)$: the parametric reverse trajectory (learnable)
+
 Lets assume that our dataset consists of $N$ i.i.d inputs $$\{\mathbf{x}_0^n\}_{n=0}^N \sim q_0(\mathbf{x})$$ sampled from an unknown distribution $$q_0(\mathbf{x}_0)$$, where the lower-index is used to denoted the time-dependency in the diffusion process. The goal is to find a parametric model $p_{\theta}(\\mathbf{x}_0) \approx q_0(\\mathbf{x}_0)$ using a reversible diffusion process that evolves over a discrete time variable $t\in[0,T]$
 
 
@@ -102,12 +110,22 @@ Lets assume that our dataset consists of $N$ i.i.d inputs $$\{\mathbf{x}_0^n\}_{
         <figcaption class="figure-caption text-center">Figure 2. The directed graphical model for a discrete diffusion model is represented by a Markov Chain. The forward/reverse diffusion process systematically and  slowly adds/removes noise.</figcaption>
 </div><br>
 
-#### Forward trajectory
+## Forward trajectory
 
 <p align="justify">
- The forward diffusion process will systematically perturbed the input data $\mathbf{x}_0$ using a perturbation kernel $q(\mathbf{x}_t \vert \mathbf{x}_{t-1})$ over time $t\in[0,T]$, gradually converting $q_0(\mathbf{x}_0)$ into a simple known distribution $q_T$ (e.g. a Gaussian) distribution. For example, a input $\mathbf{x}_0$, like the one shown in figure 1 (going from right to left), gradually loses its distinguishable features as the step $t$ becomes larger. Eventually when $T \to \infty$, $\mathbf{x}_T$ is equivalent to an isotropic Gaussian distribution. Figure 1 shows with dotted line a forward diffusion step.  This <b>forward trajectory</b> or <b>forward diffusion process</b> is represented by a Markov chain.  The stationary distribution is chose by design and so the forward process does not have learnable parameters. For example, Sohl-Dickstein et. al. <d-cite key="sohl2015deep"></d-cite> proposed the following perturbation kernel such that the stationary distribution is Isotropic Gaussian.
-</p>
+ The forward diffusion process, represented by a Markov chain, is a sequence of random variables $(\mathbf{x}_{0}, ..., \mathbf{x}_{T})$ where  $\mathbf{x}_0$ is the input data (initial state) with probability density/distribution $q(\mathbf{x}_0)$ and the final state $\mathbf{x}_T\sim \pi(\mathbf{x}_T)$, where $\pi(\mathbf{x}_T)$ is an easy to sample distribution, i.e., an Isotropic Gaussian.  Each transition in the chain is governed by a perturbation kernel $q(\mathbf{x}_t \vert \mathbf{x}_{t-1})$. The full forward trajectory, starting from $\mathbf{x}_0$ and performing $T$ steps of diffusion, due to the Markov property, is
 
+
+ $$
+ \begin{equation}
+ \label{eq:to_be}
+ q_0(\mathbf{x}_{0:T})= q_0(\mathbf{x}_0) \prod_{t=1}^T q(\mathbf{x}_t \vert \mathbf{x}_{t-1} )
+ \end{equation}
+ $$
+
+
+Figure 2 shows, with dotted lines (from left to right), how the forward diffusion process systematically perturbed the input data $\mathbf{x}_0$  over time $t\in[0,T]$ using  $q(\mathbf{x}_t \vert \mathbf{x}_{t-1})$, gradually converting $\mathbf{x}_0$ into noise, lossing slowly its distinguishable features as $t$, the diffusion step, becomes larger. Eventually when $T \to \infty$, $\mathbf{x}_T$ is equivalent to an isotropic Gaussian distribution. The stationary distribution is chose by design and so the forward process does not have learnable parameters. Sohl-Dickstein et. al. <d-cite key="sohl2015deep"></d-cite> proposed the following perturbation kernel such that the stationary distribution is Isotropic Gaussian. This model in the literature is also known as DDPM <d-cite key="ho2020denoising"></d-cite>, for the time-discrete case, or Variance-Preserving (VP) <d-cite key="song2020score"></d-cite>, for the time-continuous case.
+</p>
 
 $$
 \begin{equation}
@@ -121,20 +139,20 @@ where $\beta_t$ is the variance schedule, a sequence of positive noise scales su
 A nice property of the above process is that we can sample $\mathbf{x}_t$ at any arbitrary time step $t$ in a closed form using <a href="https://lilianweng.github.io/posts/2018-08-12-vae/#reparameterization-trick">reparameterization trick</a>. Let $\alpha_t = 1 - \beta_t$ and $\bar{\alpha}_t = \prod_{i=1}^t \alpha_i$, and now $q(\mathbf{x}_t \vert \mathbf{x}_{t-1}) = \mathcal{N}(\mathbf{x}_t; \sqrt{\alpha_t} \mathbf{x}_{t-1}, 1-\alpha_t\mathbf{I})$
 </p>
 
-<div>
+
 $$
 \begin{aligned}
-\mathbf{x}_1 &= \sqrt{\alpha_1}\mathbf{x}_{0} + \sqrt{1 - \alpha_1}\mathbf{\epsilon}_{0}  \quad\quad\quad\quad\quad\quad\quad\quad\quad \text{ ;where } \mathbf{\epsilon}_{0}, \mathbf{\epsilon}_{1}, \dots \sim \mathcal{N}(\mathbf{0}, \mathbf{I}) \\
+\mathbf{x}_1 &= \sqrt{\alpha_1}\mathbf{x}_{0} + \sqrt{1 - \alpha_1}\mathbf{\epsilon}_{0} \quad\quad\quad\quad\quad\text{ ;where } \mathbf{\epsilon}_{0}, \mathbf{\epsilon}_{1}, \dots \sim \mathcal{N}(\mathbf{0}, \mathbf{I}) \\
 \mathbf{x}_2 &= \sqrt{\alpha_2}\mathbf{x}_{1} + \sqrt{1 - \alpha_2}\mathbf{\epsilon}_{1}\\
 &= \sqrt{\alpha_2}\left(\sqrt{\alpha_1}\mathbf{x}_{0} + \sqrt{1 - \alpha_1}\mathbf{\epsilon}_{0}\right) + \sqrt{1 - \alpha_2}\mathbf{\epsilon}_{1}\\
 &= \sqrt{\alpha_2\alpha_1}\mathbf{x}_{0} + \underbrace{\sqrt{\alpha_2(1 - \alpha_1)}\mathbf{\epsilon}_{0}}_{\mathbf{\epsilon}_{0}^{*}} + \underbrace{\sqrt{1 - \alpha_2}\mathbf{\epsilon}_{1}}_{\mathbf{\epsilon}_{1}^{*}}\\
-&= \sqrt{\alpha_2\alpha_1}\mathbf{x}_{0} + \sqrt{1 - \alpha_1\alpha_2}\bar{\mathbf{\epsilon}}_{1} \quad\quad\quad\quad\quad\quad\quad  \text{ ;where } \bar{\mathbf{\epsilon}}_{1} \text{ merges two Gaussians (*).} \\
+&= \sqrt{\alpha_2\alpha_1}\mathbf{x}_{0} + \sqrt{1 - \alpha_1\alpha_2}\bar{\mathbf{\epsilon}}_{1} \quad\quad\quad\text{ ;where } \bar{\mathbf{\epsilon}}_{1} \text{ merges two Gaussians (*).} \\
 &= \dots \\
 x_t &= \sqrt{\bar{\alpha}_t}\mathbf{x}_0 + \sqrt{1 - \bar{\alpha}_t}\mathbf{\epsilon}_{t} \\
-q(\mathbf{x}_t \vert \mathbf{x}_0) &= \mathcal{N}(\mathbf{x}_t; \sqrt{\bar{\alpha}_t} \mathbf{x}_0, (1 - \bar{\alpha}_t)\mathbf{I}) \quad\quad\quad\quad\quad\quad\quad  \text{ ; Transition density function.}
+q(\mathbf{x}_t \vert \mathbf{x}_0) &= \mathcal{N}(\mathbf{x}_t; \sqrt{\bar{\alpha}_t} \mathbf{x}_0, (1 - \bar{\alpha}_t)\mathbf{I}) \quad\quad\quad\text{ ; Transition density function.}
 \end{aligned}
 $$
-</div>
+
 
 <p align="justify">
 (*) Recall the properties of the sum of two Gaussian random variables. Let $\mathbf{\epsilon}_{0}^{*} \sim \mathcal{N}(\mathbf{\mu}_0, \sigma^2_0\mathbf{I})$, and $\mathbf{\epsilon}_{1}^{*} \sim \mathcal{N}(\mathbf{\mu}_1, \sigma^2_1\mathbf{I})$. Then, the new random variable  $\mathbf{z}= \mathbf{\epsilon}_{0}^{*}+ \mathbf{\epsilon}_{1}^{*}$ has density $\mathcal{N}(\mathbf{\mu}_0+\mathbf{\mu}_1, (\sigma^2_0+\sigma^2_1)\mathbf{I})$. First we can de-reparametrized $\epsilon_{0}^{*}$ and  $\epsilon_{1}^{*}$ so we get $\mathcal{N}(0,Var(\epsilon_0^{*}))$ and $\mathcal{N}(0,Var(\epsilon_1^{*}))$ correspondingly. We have that the sum of these two Gaussians is
@@ -152,8 +170,7 @@ $$
 (*) Recall that $Var(aX) = a^2 Var(X)$. Therefore, we have the following $Var(\epsilon_0^{*})=Var(\sqrt{\alpha_2(1 - \alpha_1)}\mathbf{\epsilon}_{0})= \alpha_2(1 - \alpha_1)$. and $Var(\epsilon_1^{*})=Var(\sqrt{1 - \alpha_2}\mathbf{\epsilon}_{1})= 1 - \alpha_2$. Finally, $Var(\epsilon_0^{*})+ Var(\epsilon_1^{*})= \alpha_2(1 - \alpha_1)1 - \alpha_2= 1 - \alpha_1 \alpha_2$.
 </p>
 
-More concretely, we can sample $\mathbf{x}_t$ for any timestep $t$ in closed form given $\mathbf{x}_0$ using
-
+More concretely, we can sample $\mathbf{x}_t$ for any timestep $t$ in closed form given $\mathbf{x}_0$ using the so called t-step transition probability
 $$
 \begin{equation}
 \label{eq:transition_t}
@@ -161,25 +178,23 @@ q(\mathbf{x}_t \vert \mathbf{x}_0) = \mathcal{N}(\mathbf{x}_t; \sqrt{\bar{\alpha
 \end{equation}
 $$
 
-
-where $\bar{\alpha}_t$ is an decreasing function such that $\bar{\alpha}_1 < ... < \bar{\alpha}_T$. The power signal of $\mathbf{x}_0$ decreases over time, while the noise intensifies. Figure 3 shows an example of this model for 4 different 2-dimensional inputs $\mathbf{x}_0$ moving them to an Isotropic Gaussian distribution as $t\rightarrow T=1000$.
-
+<p align="justify">
+where $\bar{\alpha}_t$ is an decreasing function such that $\bar{\alpha}_1 < ... < \bar{\alpha}_T$. The power signal of $\mathbf{x}_0$ decreases over time, while the noise intensifies. Figure 3 shows a 2D animation of the behavior of the forward diffusio process where each transition is governed by equation \ref{eq:transition_t} for 4 different inputs $\mathbf{x}_0$ located at (10,-10), (-10,-10), (10,10), and (10,-10). Each input trajectory is repeated 3 times to observe the stochastic behavior of the diffusion process. The forward diffusion process will systematically move all $\mathbf{x}_0$'s to an Isotropic Gaussian distribution as $t\rightarrow T=1000$.
+</p>
 
 
 
 <div class="container" style="align: left; text-align:center;">
-  <div class="row" style="display: flex; flex-wrap: wrap;">
-      <div class="col-md-6" >
+  <div class="row">
+      <div class="col-6" >
           <img class="img-fluid rounded " src="{{ site.baseurl }}/assets/img/diffusion/ddpm_animation.gif" style="width: 100%;" class="center">
       </div>
-  <div class="col-md-6">
+  <div class="col-6">
       <div class="col-10">
-          <img class="img-fluid rounded" src="{{ site.baseurl }}/assets/img/diffusion/signal.png"
-          style="width: 100%;">
+          <img class="img-fluid rounded" src="{{ site.baseurl }}/assets/img/diffusion/signal.png" style="width: 110%;" class="center">
       </div>
       <div class="col-10">
-          <img class="img-fluid rounded" src="{{ site.baseurl }}/assets/img/diffusion/noise.png"
-          style="width: 100%;">
+          <img class="img-fluid rounded" src="{{ site.baseurl }}/assets/img/diffusion/noise.png" style="width: 110%;" class="center">
       </div>
   </div>
   </div>
@@ -187,9 +202,53 @@ where $\bar{\alpha}_t$ is an decreasing function such that $\bar{\alpha}_1 < ...
   \ref{eq:transition_kernel}. The forward diffusion process systematically perturbed the input data $\mathbf{x}_0$, gradually converting $q_0(\mathbf{x}_0)$ into an Isotropic Gaussian distribution for different initial states $\mathbf{x}_0$. The two plots in the right show the corresponding evolution of the <b>signal</b> and <b>noise</b> factor over time.</figcaption>
 </div><br>
 
+<p align="justify">
 <b>In summary</b>: the forward diffusion process maps any sample to a chosen stationary distribution. For this particular example, under the transition kernel of equation \ref{eq:transition_t}, to an Isotropic Gaussian.
-#### Reverse trajectory
- Then a generative Markov chain converts $q_T \approx p_{\theta}(\mathbf{x}_T)$, the simple distribution, into a target (data) distribution using a diffusion process. Figure 1 shows how the generative Markov chain is used to generated samples like the training distribution starting from $ x_T \sim p(x_T)$
+</p>
+- The forward process $X$ has structure that allow us to observe meaninful evolution over time and ensures that this is tractable, given the Markov property.
+
+### Reverse trajectory
+
+If we know how to reverse the forward process and sample from $q(\mathbf{x}_{t-1}\vert \mathbf{x}_t)$, we will be able to remove the added noise, moving the Gaussian distribution back to the data distribution $q(\mathbf{x}_0)$. For this we learn a parametric model $p\_{\theta}(\mathbf{x}\_{0:T})$ to approximate these conditional probabilities in order to run the reverse process.
+
+$$
+p_\theta(\mathbf{x}_{0:T}) = p(\mathbf{x}_T) \prod^T_{t=1} p_\theta(\mathbf{x}_{t-1} \vert \mathbf{x}_t) \quad
+p_\theta(\mathbf{x}_{t-1} \vert \mathbf{x}_t) = \mathcal{N}(\mathbf{x}_{t-1}; \boldsymbol{\mu}_\theta(\mathbf{x}_t, t), \boldsymbol{\Sigma}_\theta(\mathbf{x}_t, t))
+$$
+
+ called the reverse process. This reverse process is similarly define by a Markov chain with learned Gaussian transitions starting at $p(\mathbf{x}_T)= \mathcal{N}(\mathbf{x}_T;\mathbf{0}, \mathbf{I})$. The reversal of the diffusion process has the identical functional form as the forward process as $\beta \rightarrow 0$ <d-cite key="sohl2015deep"></d-cite>.
 
 
-### Continuous Diffusion Models
+ Then a generative Markov chain converts $q_T \approx p_{\theta}(\mathbf{x}_T)$, the simple distribution, into a target (data) distribution using a diffusion process. Figure 1 shows how the generative Markov chain is used to generated samples like the training distribution starting from $ x_T \sim p(x_T)$. The model probability is defined by
+
+ $$
+ \begin{equation}
+ p_{\theta}(\mathbf{x}_0) = \int  p_{\theta}(\mathbf{x}_{0:T}) dx_{1:T}
+ \end{equation}
+ $$
+
+<p>
+This integrable is intentractable. However, using <span style="color:blue;">annealed importance sampling</span> and the <a href="https://en.wikipedia.org/wiki/Jarzynski_equality">Jarzynski equality</a> we have:
+</p>
+
+
+$$
+\begin{aligned}
+p_{\theta}(\mathbf{x}_0)
+&= - \int  p_{\theta}(\mathbf{x}_{0:T})  {\color{blue}\frac{q(\mathbf{x}_{1:T}\vert \mathbf{x}_0)}{q(\mathbf{x}_{1:T}\vert \mathbf{x}_0)} }dx_{1:T}
+\end{aligned}
+$$
+
+
+ $$
+ \begin{aligned}
+ L_\text{CE}
+ &= - \mathbb{E}_{q(\mathbf{x}_0)} \log p_\theta(\mathbf{x}_0) \\
+ &= - \mathbb{E}_{q(\mathbf{x}_0)} \log \Big( \int p_\theta(\mathbf{x}_{0:T}) d\mathbf{x}_{1:T} \Big) \\
+ &= - \mathbb{E}_{q(\mathbf{x}_0)} \log \Big( \int q(\mathbf{x}_{1:T} \vert \mathbf{x}_0) \frac{p_\theta(\mathbf{x}_{0:T})}{q(\mathbf{x}_{1:T} \vert \mathbf{x}_{0})} d\mathbf{x}_{1:T} \Big) \\
+ &= - \mathbb{E}_{q(\mathbf{x}_0)} \log \Big( \mathbb{E}_{q(\mathbf{x}_{1:T} \vert \mathbf{x}_0)} \frac{p_\theta(\mathbf{x}_{0:T})}{q(\mathbf{x}_{1:T} \vert \mathbf{x}_{0})} \Big) \\
+ &\leq - \mathbb{E}_{q(\mathbf{x}_{0:T})} \log \frac{p_\theta(\mathbf{x}_{0:T})}{q(\mathbf{x}_{1:T} \vert \mathbf{x}_{0})} \\
+ &= \mathbb{E}_{q(\mathbf{x}_{0:T})}\Big[\log \frac{q(\mathbf{x}_{1:T} \vert \mathbf{x}_{0})}{p_\theta(\mathbf{x}_{0:T})} \Big] = L_\text{VLB}
+ \end{aligned}
+ $$
+## Continuous Diffusion Models

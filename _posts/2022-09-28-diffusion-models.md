@@ -236,20 +236,44 @@ This integrable is intentractable. However, using <span style="color:blue;">anne
 $$
 \begin{aligned}
 p_{\theta}(\mathbf{x}_0)
-&= - \int  p_{\theta}(\mathbf{x}_{0:T}) {\color{blue}\frac{q(\mathbf{x}_{1:T}\vert \mathbf{x}_0)}{q(\mathbf{x}_{1:T}\vert \mathbf{x}_0)}} dx_{1:T}
+&= \int  p_{\theta}(\mathbf{x}_{0:T}) {\color{blue}\frac{q(\mathbf{x}_{1:T}\vert \mathbf{x}_0)}{q(\mathbf{x}_{1:T}\vert \mathbf{x}_0)}} dx_{1:T}\\
+&= \int  q(\mathbf{x}_{1:T}\vert \mathbf{x}_0) \frac{p_{\theta}(\mathbf{x}_{0:T})}{q(\mathbf{x}_{1:T}\vert \mathbf{x}_0)} dx_{1:T}\\
+&= \int  q(\mathbf{x}_{1:T}\vert \mathbf{x}_0)  p(\mathbf{x}_T) \prod^T_{t=1} \frac{p_\theta(\mathbf{x}_{t-1} \vert \mathbf{x}_t)}{q(\mathbf{x}_t\vert \mathbf{x}_{t-1})} dx_{1:T}\\
+&= \mathbb{E}_{q(x_{1:T}\vert x_0)}\left[p(x_T) \prod_{t=1}^T \frac{  p(x_{t-1}|x_t)}{q(x_t|x_{t-1})}\right]
 \end{aligned}
 $$
 
 
+$q(x_{0:T}) = q(x_{1:T}\|x_0)q(x_0) \rightarrow q(x_{1:T}\|x_0)= \frac{q(x_{0:T})}{q(x_0)}= \frac{q(x_0) \prod_{t=1}^T q(x_t\|x_{t-1})}{q(x_0)} =\prod_{t=1}^T q(x_t\|x_{t-1})$ The model probablity is therefore the relative probability of the forward and reverse trajectories averaged over forward trajectories $q(x_{1:T}\vert x_0)$. This can be efficently evaluated using only a single sample from $q(x_{1:T}\vert x_0)$ when the forward and reverse trajectories are identical (when $\beta$ is infinitesimal small). This corresponds to the case of a quasi-static process in statistical physics.
+
+> For infinitesimal $\beta$ the forward and reverse distribution over trajectories can be made identical
+
+
+### Training
+<p>
+We train by minimizing the negative <a href="https://en.wikipedia.org/wiki/Cross_entropy">cross entropy</a> (NCE) \(H[q(\mathbf{x}_0),p_{\theta}(\mathbf{x}_0)]\) between the true underlaying distribution \(q(\mathbf{x}_0)\) and the model probability \(p_{\theta}(\mathbf{x}_0)]\)
+</p>
  $$
  \begin{aligned}
- L_\text{CE}
- &= - \mathbb{E}_{q(\mathbf{x}_0)} \log p_\theta(\mathbf{x}_0) \\
- &= - \mathbb{E}_{q(\mathbf{x}_0)} \log \Big( \int p_\theta(\mathbf{x}_{0:T}) d\mathbf{x}_{1:T} \Big) \\
- &= - \mathbb{E}_{q(\mathbf{x}_0)} \log \Big( \int q(\mathbf{x}_{1:T} \vert \mathbf{x}_0) \frac{p_\theta(\mathbf{x}_{0:T})}{q(\mathbf{x}_{1:T} \vert \mathbf{x}_{0})} d\mathbf{x}_{1:T} \Big) \\
- &= - \mathbb{E}_{q(\mathbf{x}_0)} \log \Big( \mathbb{E}_{q(\mathbf{x}_{1:T} \vert \mathbf{x}_0)} \frac{p_\theta(\mathbf{x}_{0:T})}{q(\mathbf{x}_{1:T} \vert \mathbf{x}_{0})} \Big) \\
- &\leq - \mathbb{E}_{q(\mathbf{x}_{0:T})} \log \frac{p_\theta(\mathbf{x}_{0:T})}{q(\mathbf{x}_{1:T} \vert \mathbf{x}_{0})} \\
- &= \mathbb{E}_{q(\mathbf{x}_{0:T})}\Big[\log \frac{q(\mathbf{x}_{1:T} \vert \mathbf{x}_{0})}{p_\theta(\mathbf{x}_{0:T})} \Big] = L_\text{VLB}
+ L_\text{NCE}
+ &=  \mathbb{E}_{q(\mathbf{x}_0)}\left[-\log p_\theta(\mathbf{x}_0)\right] \\
+ &=  \mathbb{E}_{q(\mathbf{x}_0)}\left[ -\log \Big( \mathbb{E}_{q(\mathbf{x}_{1:T} \vert \mathbf{x}_0)} \left[p(\mathbf{x}_T) \prod^T_{t=1} \frac{p_\theta(\mathbf{x}_{t-1} \vert \mathbf{x}_t)}{q(\mathbf{x}_t\vert \mathbf{x}_{t-1})}\right] \Big)\right] \\
+&\leq  \mathbb{E}_{q(\mathbf{x}_0)}\left[ \mathbb{E}_{q(\mathbf{x}_{1:T} \vert \mathbf{x}_0)} \left[-\log \Big(p(\mathbf{x}_T) \prod^T_{t=1} \frac{p_\theta(\mathbf{x}_{t-1} \vert \mathbf{x}_t)}{q(\mathbf{x}_t\vert \mathbf{x}_{t-1})}\Big)\right] \right] \\
+ &\leq  \mathbb{E}_{q(\mathbf{x}_{0:T})} \left[-\log \Big(p(\mathbf{x}_T) \prod^T_{t=1} \frac{p_\theta(\mathbf{x}_{t-1} \vert \mathbf{x}_t)}{q(\mathbf{x}_t\vert \mathbf{x}_{t-1})}\Big) \right] \\
+ &= \mathbb{E}_{q(\mathbf{x}_{0:T})}\Big[\log \frac{q(\mathbf{x}_{1:T} \vert \mathbf{x}_{0})}{p_\theta(\mathbf{x}_{0:T})} \Big]  = L_\text{VLB}
  \end{aligned}
  $$
+
+ We use Jensen's inequality $\mathbb{E}[f(x)] \ge f(\mathbb{E}[x])$ for convex function. Making use of the fact that $-\log(x)$ is convex we have
+ that $\mathbb{E}[-\log(x)] \ge -\log(\mathbb{E}[x])$. We can simplify this as follows
+
+$$
+\begin{aligned}
+\mathbb{E}_{q(\mathbf{x}_{0:T})} \left[-\log \Big(p(\mathbf{x}_T) \prod^T_{t=1} \frac{p_\theta(\mathbf{x}_{t-1} \vert \mathbf{x}_t)}{q(\mathbf{x}_t\vert \mathbf{x}_{t-1})}\Big) \right]
+&= \mathbb{E}_{q(\mathbf{x}_{0:T})} \left[-\log p(\mathbf{x}_T) - \log\prod^T_{t=1} \frac{p_\theta(\mathbf{x}_{t-1} \vert \mathbf{x}_t)}{q(\mathbf{x}_t\vert \mathbf{x}_{t-1})} \right] \\
+&= \mathbb{E}_{q(\mathbf{x}_{0:T})} \left[-\log p(\mathbf{x}_T) - \sum^T_{t=1}\log \frac{p_\theta(\mathbf{x}_{t-1} \vert \mathbf{x}_t)}{q(\mathbf{x}_t\vert \mathbf{x}_{t-1})} \right]
+= L_\text{VLB}
+\end{aligned}
+$$
+
 ## Continuous Diffusion Models

@@ -330,10 +330,53 @@ q(\mathbf{x}_{t-1} \vert \mathbf{x}_t, \mathbf{x}_0)
 &= \frac{\mathcal{N}(\mathbf{x}_t; \sqrt{1 - \beta_t} \mathbf{x}_{t-1}, \beta_t\mathbf{I})\mathcal{N}(\mathbf{x}_{t-1}; \sqrt{\bar{\alpha}_{t-1}} \mathbf{x}_0, (1 - \bar{\alpha}_{t-1})\mathbf{I})}{\mathcal{N}(\mathbf{x}_t; \sqrt{\bar{\alpha}_t} \mathbf{x}_0, (1 - \bar{\alpha}_t)\mathbf{I})}\\
 &\propto \exp\Big(-\frac{1}{2}\Big(\frac{(\mathbf{x}_t- \sqrt{\alpha_t} \mathbf{x}_{t-1})^2}{\beta_t} + \frac{(\mathbf{x}_{t-1}- \sqrt{\bar{\alpha}_{t-1}}\mathbf{x}_0)^2}{1 - \bar{\alpha}_{t-1}} - \frac{(\mathbf{x}_t-  \sqrt{\bar{\alpha}_t} \mathbf{x}_0)^2}{1 - \bar{\alpha}_t}\Big)\Big)\\
 &= \exp\Big(-\frac{1}{2}\Big(\frac{\mathbf{x}_t^2- \color{red}2\sqrt{\alpha_t} \mathbf{x}_t \mathbf{x}_{t-1}\color{black}+ \color{blue}\alpha_t \mathbf{x}_{t-1}^2}{\beta_t} + \frac{\color{blue}\mathbf{x}_{t-1}^2 \color{black}- \color{red}2\sqrt{\bar{\alpha}_{t-1}}\mathbf{x}_0\mathbf{x}_{t-1} \color{black}+ \bar{\alpha}_{t-1}\mathbf{x}_0^2}{1 - \bar{\alpha}_{t-1}} - \frac{\mathbf{x}_t^2 -  2\sqrt{\bar{\alpha}_t} \mathbf{x}_0\mathbf{x}_t + \bar{\alpha}_t \mathbf{x}_0^2}{1 - \bar{\alpha}_t}\Big)\Big)\\
-&= \exp\Big(-\frac{1}{2}\color{blue}\Big(\frac{\alpha_t}{\beta_t} + \frac{1}{1 - \bar{\alpha}_{t-1}} \Big)\mathbf{x}_{t-1}^2 \color{black}- \color{red}\Big(\frac{ 2\sqrt{\alpha_t}}{\beta_t}\mathbf{x}_t + \frac{2\sqrt{\bar{\alpha}_{t-1}}}{1 - \bar{\alpha}_{t-1}}\mathbf{x}_0\Big)\mathbf{x}_{t-1}\color{black} + C(\mathbf{x}_t, \mathbf{x}_0)\Big)
+&= \exp\Big(-\frac{1}{2}\Big(\color{blue}\Big(\frac{\alpha_t}{\beta_t} + \frac{1}{1 - \bar{\alpha}_{t-1}} \Big)\mathbf{x}_{t-1}^2 \color{black}- \color{red}\Big(\frac{ 2\sqrt{\alpha_t}}{\beta_t}\mathbf{x}_t + \frac{2\sqrt{\bar{\alpha}_{t-1}}}{1 - \bar{\alpha}_{t-1}}\mathbf{x}_0\Big)\mathbf{x}_{t-1}\color{black}  + \frac{\mathbf{x}_t^2}{\beta_t} + \frac{\bar{\alpha}_{t-1}\mathbf{x}_0^2}{1 - \bar{\alpha}_{t-1}}-\frac{\mathbf{x}_t^2 -  2\sqrt{\bar{\alpha}_t} \mathbf{x}_0\mathbf{x}_t  + \bar{\alpha}_t \mathbf{x}_0^2}{1 - \bar{\alpha}_t}\Big)\Big)\\
+&= \exp\Big(-\frac{1}{2}\Big(\color{blue}\mathbf{x}_{t-1}^2\cdot \frac{1}{\frac{1}{\Big(\frac{\alpha_t}{\beta_t} + \frac{1}{1 - \bar{\alpha}_{t-1}} \Big)}} \color{black}- \color{red}2\mathbf{x}_{t-1}\Big(\frac{ \sqrt{\alpha_t}}{\beta_t}\mathbf{x}_t + \frac{\sqrt{\bar{\alpha}_{t-1}}}{1 - \bar{\alpha}_{t-1}}\mathbf{x}_0\Big)\color{black}  + \frac{\mathbf{x}_t^2}{\beta_t} + \frac{\bar{\alpha}_{t-1}\mathbf{x}_0^2}{1 - \bar{\alpha}_{t-1}}-\frac{\mathbf{x}_t^2 -  2\sqrt{\bar{\alpha}_t} \mathbf{x}_0\mathbf{x}_t  + \bar{\alpha}_t \mathbf{x}_0^2}{1 - \bar{\alpha}_t}\Big)\Big)
 \end{aligned}
 $$
 
-Where \(C(\mathbf{x}_t, \mathbf{x}_0)\) is some function not involving \(\mathbf{x}_{t-1}\).
+Recall that a Normal distribution \(\mathcal{N}(\mathcal{x}; \mu, \sigma^2)\) can be expressed as follows
+
+
+$$
+\begin{aligned}
+ \mathcal{N}(\mathcal{x}; \mu, \sigma^2)
+ &= \frac{1}{\sqrt{2\pi}\sigma}\exp\Big(-\frac{1}{2}\frac{(\mathbf{x}-\mu)^2}{\sigma^2} \Big)\\
+ &= \frac{1}{\sqrt{2\pi}\sigma}\exp\Big(-\frac{1}{2}\Big(\frac{\mathbf{x}^2 -2\mathbf{x}\mu+\mu^2}{\sigma^2} \Big)\Big)\\
+  &= \frac{1}{\sqrt{2\pi}\sigma}\exp\Big(-\frac{1}{2}\Big(\frac{\mathbf{x}^2}{\sigma^2}  -2\mathbf{x}\frac{\mu}{\sigma^2} +\frac{\mu^2}{\sigma^2} \Big)\Big)
+\end{aligned}
+$$
+
+Following this and using the prperty \(\color{green}\alpha_t + \beta_t =1 \) we can express the variance as follows:
+
+$$
+\begin{aligned}
+ \color{blue}\sigma^2_t &=  1/(\frac{\alpha_t}{\beta_t} + \frac{1}{1 - \bar{\alpha}_{t-1}}) = 1/(\frac{\alpha_t\cdot (1 - \bar{\alpha}_{t-1}) + \beta_t}{\beta_t (1 - \bar{\alpha}_{t-1})}) = 1/(\frac{\alpha_t - \bar{\alpha}_t + \beta_t}{\beta_t (1 - \bar{\alpha}_{t-1})}) = \color{green}\frac{1 - \bar{\alpha}_{t-1}}{1 - \bar{\alpha}_t }\beta_t
+\end{aligned}
+$$
+
+Then we can extract \(\mu\) by solving
+
+$$
+\begin{aligned}
+  \frac{\mu}{\sigma^2_t} &= \color{red}\Big(\frac{ \sqrt{\alpha_t}}{\beta_t}\mathbf{x}_t + \frac{\sqrt{\bar{\alpha}_{t-1}}}{1 - \bar{\alpha}_{t-1}}\mathbf{x}_0\Big)\\
+  \mu &= \color{red}\Big(\frac{ \sqrt{\alpha_t}}{\beta_t}\mathbf{x}_t + \frac{\sqrt{\bar{\alpha}_{t-1}}}{1 - \bar{\alpha}_{t-1}}\mathbf{x}_0\Big) \color{blue}\sigma^2_t\\
+  &= \color{red}\Big(\frac{ \sqrt{\alpha_t}}{\beta_t}\mathbf{x}_t + \frac{\sqrt{\bar{\alpha}_{t-1}}}{1 - \bar{\alpha}_{t-1}}\mathbf{x}_0\Big) \color{green}\frac{1 - \bar{\alpha}_{t-1}}{1 - \bar{\alpha}_t }\beta_t\\
+  &= \frac{\sqrt{\alpha_t}(1 - \bar{\alpha}_{t-1})}{1 - \bar{\alpha}_t }\mathbf{x}_t  + \frac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{1 - \bar{\alpha}_t }\mathbf{x}_0
+\end{aligned}
+$$
+
+This implies that the following equality holds
+
+$$
+\begin{aligned}
+  \mu^2 = \Big(\frac{\sqrt{\alpha_t}(1 - \bar{\alpha}_{t-1})}{1 - \bar{\alpha}_t }\mathbf{x}_t  + \frac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{1 - \bar{\alpha}_t }\mathbf{x}_0\Big)^2  :=  \frac{\mathbf{x}_t^2}{\beta_t} + \frac{\bar{\alpha}_{t-1}\mathbf{x}_0^2}{1 - \bar{\alpha}_{t-1}}-\frac{\mathbf{x}_t^2 -  2\sqrt{\bar{\alpha}_t} \mathbf{x}_0\mathbf{x}_t  + \bar{\alpha}_t \mathbf{x}_0^2}{1 - \bar{\alpha}_t}
+\end{aligned}
+$$
+
+
+
+
+
 </p>
 ## Continuous Diffusion Models

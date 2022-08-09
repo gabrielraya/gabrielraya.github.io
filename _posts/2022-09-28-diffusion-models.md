@@ -2,7 +2,7 @@
 layout: distill
 title: Diffusion models
 description: An overview of diffusion models (work in progress).
-date: 2022-08-08 0:00:00-0400
+date: 2022-08-09 0:00:00-0400
 
 authors:
    - name: Gabriel Raya
@@ -370,11 +370,16 @@ This implies that the following equality holds
 
 $$
 \begin{aligned}
-  \mu^2 = \Big(\frac{\sqrt{\alpha_t}(1 - \bar{\alpha}_{t-1})}{1 - \bar{\alpha}_t }\mathbf{x}_t  + \frac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{1 - \bar{\alpha}_t }\mathbf{x}_0\Big)^2  :=  \frac{\mathbf{x}_t^2}{\beta_t} + \frac{\bar{\alpha}_{t-1}\mathbf{x}_0^2}{1 - \bar{\alpha}_{t-1}}-\frac{\mathbf{x}_t^2 -  2\sqrt{\bar{\alpha}_t} \mathbf{x}_0\mathbf{x}_t  + \bar{\alpha}_t \mathbf{x}_0^2}{1 - \bar{\alpha}_t}
+  \frac{\mu^2}{\sigma^2_t} =  \color{red}\Big(\frac{ \sqrt{\alpha_t}}{\beta_t}\mathbf{x}_t + \frac{\sqrt{\bar{\alpha}_{t-1}}}{1 - \bar{\alpha}_{t-1}}\mathbf{x}_0\Big) \color{black}\cdot \Big( \frac{\sqrt{\alpha_t}(1 - \bar{\alpha}_{t-1})}{1 - \bar{\alpha}_t }\mathbf{x}_t  + \frac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{1 - \bar{\alpha}_t }\mathbf{x}_0\Big) &:=  \frac{\mathbf{x}_t^2}{\beta_t} + \frac{\bar{\alpha}_{t-1}\mathbf{x}_0^2}{1 - \bar{\alpha}_{t-1}}-\frac{\mathbf{x}_t^2 -  2\sqrt{\bar{\alpha}_t} \mathbf{x}_0\mathbf{x}_t  + \bar{\alpha}_t \mathbf{x}_0^2}{1 - \bar{\alpha}_t}\\
+
+\Big(\frac{ \alpha_t (1 - \bar{\alpha}_{t-1})}{\beta_t (1 - \bar{\alpha}_t)}\mathbf{x}_t +
+
+ \frac{\bar{\alpha}_{t-1}\beta_t}{(1 - \bar{\alpha}_{t-1})(1 - \bar{\alpha}_t)}\mathbf{x}_0\Big)   &:=  (\frac{1}{\beta_t}-\frac{1}{1 - \bar{\alpha}_t})\mathbf{x}_t^2 +\frac{  2\sqrt{\bar{\alpha}_t} }{1 - \bar{\alpha}_t}\mathbf{x}_0\mathbf{x}_t   + (\frac{\bar{\alpha}_{t-1}}{1 - \bar{\alpha}_{t-1}} -\frac{\bar{\alpha}_t}{1 - \bar{\alpha}_t})\mathbf{x}_0^2
+
 \end{aligned}
 $$
 
-
+  <!-- + \frac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{1 - \bar{\alpha}_t }\mathbf{x}_0\Big)  -->
 
 
 

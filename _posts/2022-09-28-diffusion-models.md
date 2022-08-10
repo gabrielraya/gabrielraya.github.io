@@ -2,7 +2,7 @@
 layout: distill
 title: Diffusion models
 description: An overview of diffusion models (work in progress).
-date: 2022-08-09 0:00:00-0400
+date: 2022-08-10 0:00:00-0400
 
 authors:
    - name: Gabriel Raya
@@ -120,7 +120,7 @@ Lets assume that our dataset consists of $N$ i.i.d inputs \(\{\mathbf{x}_0^n\}_{
  $$
  \begin{equation}
  \label{eq:to_be}
- q_0(\mathbf{x}_{0:T})= q_0(\mathbf{x}_0) \prod_{t=1}^T q(\mathbf{x}_t \vert \mathbf{x}_{t-1} )
+ q(\mathbf{x}_{0:T})= q(\mathbf{x}_0) \prod_{t=1}^T q(\mathbf{x}_t \vert \mathbf{x}_{t-1} )
  \end{equation}
  $$
 
@@ -296,9 +296,7 @@ L_\text{VLB}
 \end{aligned}
 $$
 
-(*) Because of the Markov property of the diffuson process \(q(\mathbf{x}_t \vert \mathbf{x}_{t-1})= q(\mathbf{x}_t \vert \mathbf{x}_{t-1}, \mathbf{x}_0)\). Using Bayes' rule
-
-
+(*) Because of the Markov property of the diffuson process \(q(\mathbf{x}_t \vert \mathbf{x}_{t-1})= q(\mathbf{x}_t \vert \mathbf{x}_{t-1}, \mathbf{x}_0)\).<br> (*) Using Bayes' rule
 $$
 \begin{align}
 \label{eq:forward_posterior}
@@ -320,8 +318,16 @@ $$
 \end{aligned}
 $$
 
+Therefore, training requires minimizing the \(L_\text{VLB}\) objective function:
+$$
+\begin{equation}
+\label{eq:vlb}
+\mathbb{E}_{q(\mathbf{x}_0)}\left[ \text{D}_{KL}(q(\mathbf{x}_T \vert \mathbf{x}_0)||p(\mathbf{x}_T)) + \sum^T_{t=2} \text{D}_{KL} (q(\mathbf{x}_{t-1} \vert \mathbf{x}_t, \mathbf{x}_0)||p_\theta(\mathbf{x}_{t-1} \vert \mathbf{x}_t))  - \log p_\theta(\mathbf{x}_0 \vert \mathbf{x}_1)
+\right]
+\end{equation}
+$$
 
-Therefore miniizing the \(L_\text{VLB}\) requires estimating the forward poteriors \(q(\mathbf{x}_{t-1} \vert \mathbf{x}_t, \mathbf{x}_0)\) which are tractable to compute (eq. \ref{eq:forward_posterior}). Recall \(\alpha_t = 1 - \beta_t\) and \(\bar{\alpha}_t = \prod_{i=1}^t \alpha_i\)
+Minimization of this \(L_\text{VLB}\) requires estimating the forward posteriors \(q(\mathbf{x}_{t-1} \vert \mathbf{x}_t, \mathbf{x}_0)\), which are tractable to compute (eq. \ref{eq:forward_posterior}). Now, let's estimate the parameters $\mu$ and $\sigma^2$ of this posterior. Recall \(\alpha_t = 1 - \beta_t\) and \(\bar{\alpha}_t = \prod_{i=1}^t \alpha_i\)
 
 $$
 \begin{aligned}
@@ -347,7 +353,7 @@ $$
 \end{aligned}
 $$
 
-Following this and using the prperty \(\color{green}\alpha_t + \beta_t =1 \) we can express the variance as follows:
+Following this and using the property \(\color{green}\alpha_t + \beta_t =1 \) we can express the variance as follows:
 
 $$
 \begin{aligned}
@@ -367,21 +373,60 @@ $$
 $$
 
 This implies that the following equality holds
-
 $$
 \begin{aligned}
-  \frac{\mu^2}{\sigma^2_t} =  \color{red}\Big(\frac{ \sqrt{\alpha_t}}{\beta_t}\mathbf{x}_t + \frac{\sqrt{\bar{\alpha}_{t-1}}}{1 - \bar{\alpha}_{t-1}}\mathbf{x}_0\Big) \color{black}\cdot \Big( \frac{\sqrt{\alpha_t}(1 - \bar{\alpha}_{t-1})}{1 - \bar{\alpha}_t }\mathbf{x}_t  + \frac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{1 - \bar{\alpha}_t }\mathbf{x}_0\Big) &:=  \frac{\mathbf{x}_t^2}{\beta_t} + \frac{\bar{\alpha}_{t-1}\mathbf{x}_0^2}{1 - \bar{\alpha}_{t-1}}-\frac{\mathbf{x}_t^2 -  2\sqrt{\bar{\alpha}_t} \mathbf{x}_0\mathbf{x}_t  + \bar{\alpha}_t \mathbf{x}_0^2}{1 - \bar{\alpha}_t}\\
-
-\Big(\frac{ \alpha_t (1 - \bar{\alpha}_{t-1})}{\beta_t (1 - \bar{\alpha}_t)}\mathbf{x}_t +
-
- \frac{\bar{\alpha}_{t-1}\beta_t}{(1 - \bar{\alpha}_{t-1})(1 - \bar{\alpha}_t)}\mathbf{x}_0\Big)   &:=  (\frac{1}{\beta_t}-\frac{1}{1 - \bar{\alpha}_t})\mathbf{x}_t^2 +\frac{  2\sqrt{\bar{\alpha}_t} }{1 - \bar{\alpha}_t}\mathbf{x}_0\mathbf{x}_t   + (\frac{\bar{\alpha}_{t-1}}{1 - \bar{\alpha}_{t-1}} -\frac{\bar{\alpha}_t}{1 - \bar{\alpha}_t})\mathbf{x}_0^2
-
+  \color{blue}\frac{\mu^2}{\sigma^2_t} &=  \color{#06a16b}\frac{\mathbf{x}_t^2}{\beta_t} + \frac{\bar{\alpha}_{t-1}\mathbf{x}_0^2}{1 - \bar{\alpha}_{t-1}}-\frac{\mathbf{x}_t^2 -  2\sqrt{\bar{\alpha}_t} \mathbf{x}_0\mathbf{x}_t  + \bar{\alpha}_t \mathbf{x}_0^2}{1 - \bar{\alpha}_t}
 \end{aligned}
 $$
 
-  <!-- + \frac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{1 - \bar{\alpha}_t }\mathbf{x}_0\Big)  -->
+First the LHST
 
+$$
+\begin{aligned}
+  \color{blue}\frac{\mu^2}{\sigma^2_t} &=  \color{red}\Big(\frac{ \sqrt{\alpha_t}}{\beta_t}\mathbf{x}_t^2 + \frac{\sqrt{\bar{\alpha}_{t-1}}}{1 - \bar{\alpha}_{t-1}}\mathbf{x}_0\Big) \color{black}\cdot \Big( \frac{\sqrt{\alpha_t}(1 - \bar{\alpha}_{t-1})}{1 - \bar{\alpha}_t }\mathbf{x}_t  + \frac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{1 - \bar{\alpha}_t }\mathbf{x}_0^2\Big) \\
+  &=\Big(\color{gray} \frac{ \alpha_t (1 - \bar{\alpha}_{t-1})}{\beta_t (1 - \bar{\alpha}_t)}\mathbf{x}_t^2 + \color{black} \frac{ \sqrt{\alpha_t}}{\beta_t}\mathbf{x}_t \cdot \frac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{1 - \bar{\alpha}_t }\mathbf{x}_0 + \frac{\sqrt{\bar{\alpha}_{t-1}}}{1 - \bar{\alpha}_{t-1}}\mathbf{x}_0 \cdot \frac{\sqrt{\alpha_t}(1 - \bar{\alpha}_{t-1})}{1 - \bar{\alpha}_t }\mathbf{x}_t + \color{purple}
+   \frac{\bar{\alpha}_{t-1}\beta_t}{(1 - \bar{\alpha}_{t-1})(1 - \bar{\alpha}_t)}\mathbf{x}_0^2\Big) \\
+   &=\Big(\color{gray} \frac{ \alpha_t (1 - \bar{\alpha}_{t-1})}{\beta_t (1 - \bar{\alpha}_t)}\mathbf{x}_t^2 + \color{black}\frac{ \sqrt{\alpha_t} \sqrt{\bar{\alpha}_{t-1}}}{1 - \bar{\alpha}_t}\mathbf{x}_0 \mathbf{x}_t+
+    \frac{\sqrt{\bar{\alpha}_{t-1}} \sqrt{\alpha_t}}{1 - \bar{\alpha}_t}\mathbf{x}_0 \mathbf{x}_t + \color{purple}
+    \frac{\bar{\alpha}_{t-1}\beta_t}{(1 - \bar{\alpha}_{t-1})(1 - \bar{\alpha}_t)}\mathbf{x}_0^2\Big) \\
+  &=\Big(\color{gray} \frac{ \alpha_t (1 - \bar{\alpha}_{t-1})}{\beta_t (1 - \bar{\alpha}_t)}\mathbf{x}_t^2 + \color{black}\frac{ 2\sqrt{\alpha_t} \sqrt{\bar{\alpha}_{t-1}}}{1 - \bar{\alpha}_t}\mathbf{x}_0 \mathbf{x}_t + \color{purple}
+       \frac{\bar{\alpha}_{t-1}\beta_t}{(1 - \bar{\alpha}_{t-1})(1 - \bar{\alpha}_t)}\mathbf{x}_0^2\Big) \\
+   &=\Big(\color{gray} \frac{ \alpha_t - \bar{\alpha}_{t}}{\beta_t (1 - \bar{\alpha}_t)}\mathbf{x}_t^2 + \color{orange} \frac{ 2  \sqrt{\bar{\alpha}_{t}}}{1 - \bar{\alpha}_t}\mathbf{x}_0 \mathbf{x}_t+\color{purple}
+    \frac{\bar{\alpha}_{t-1}\beta_t}{(1 - \bar{\alpha}_{t-1})(1 - \bar{\alpha}_t)}\mathbf{x}_0^2\Big)
+\end{aligned}
+$$
 
+Now the RHST
+$$
+\begin{aligned}
+  \color{#06a16b}\frac{\mathbf{x}_t^2}{\beta_t} + \frac{\bar{\alpha}_{t-1}\mathbf{x}_0^2}{1 - \bar{\alpha}_{t-1}}-\frac{\mathbf{x}_t^2 -  2\sqrt{\bar{\alpha}_t} \mathbf{x}_0\mathbf{x}_t  + \bar{\alpha}_t \mathbf{x}_0^2}{1 - \bar{\alpha}_t}
+  &= (\frac{1}{\beta_t}-\frac{1}{1 - \bar{\alpha}_t})\mathbf{x}_t^2 +\frac{  2\sqrt{\bar{\alpha}_t} }{1 - \bar{\alpha}_t}\mathbf{x}_0\mathbf{x}_t   + (\frac{\bar{\alpha}_{t-1}}{1 - \bar{\alpha}_{t-1}} -\frac{\bar{\alpha}_t}{1 - \bar{\alpha}_t})\mathbf{x}_0^2\\
+  &= \frac{1 - \bar{\alpha}_t-\beta_t}{\beta_t (1 - \bar{\alpha}_t)}\mathbf{x}_t^2 +\frac{  2\sqrt{\bar{\alpha}_t} }{1 - \bar{\alpha}_t}\mathbf{x}_0\mathbf{x}_t   + \frac{\bar{\alpha}_{t-1}(1 - \bar{\alpha}_{t})- \bar{\alpha}_t(1 - \bar{\alpha}_{t-1})}{(1 - \bar{\alpha}_{t-1})(1 - \bar{\alpha}_{t})} \mathbf{x}_0^2\\
+  &= \frac{\alpha_t - \bar{\alpha}_t}{\beta_t (1 - \bar{\alpha}_t)}\mathbf{x}_t^2 +\frac{  2\sqrt{\bar{\alpha}_t} }{1 - \bar{\alpha}_t}\mathbf{x}_0\mathbf{x}_t   + \frac{\bar{\alpha}_{t-1} - \bar{\alpha}_{t-1}\bar{\alpha}_{t}- \bar{\alpha}_t + \bar{\alpha}_t\bar{\alpha}_{t-1}}{(1 - \bar{\alpha}_{t-1})(1 - \bar{\alpha}_{t})} \mathbf{x}_0^2\\
+  &= \frac{\alpha_t - \bar{\alpha}_t}{\beta_t (1 - \bar{\alpha}_t)}\mathbf{x}_t^2 +\frac{  2\sqrt{\bar{\alpha}_t} }{1 - \bar{\alpha}_t}\mathbf{x}_0\mathbf{x}_t   + \frac{\bar{\alpha}_{t-1} - \bar{\alpha}_t }{(1 - \bar{\alpha}_{t-1})(1 - \bar{\alpha}_{t})} \mathbf{x}_0^2\\
+  &= \color{gray} \frac{\alpha_t - \bar{\alpha}_t}{\beta_t (1 - \bar{\alpha}_t)}\mathbf{x}_t^2 \color{black} + \color{orange} \frac{  2\sqrt{\bar{\alpha}_t} }{1 - \bar{\alpha}_t}\mathbf{x}_0\mathbf{x}_t   \color{black}+  \color{purple}\frac{\bar{\alpha}_{t-1}\beta_t }{(1 - \bar{\alpha}_{t-1})(1 - \bar{\alpha}_{t})} \mathbf{x}_0^2;\quad \text{*}
+\end{aligned}
+$$
+
+(*) \(\bar{\alpha}_{t-1} - \bar{\alpha}_{t} = \bar{\alpha}_{t-1} - \bar{\alpha}_{t-1} \alpha_t =  \bar{\alpha}_{t-1}(1 - \alpha_t) = \bar{\alpha}_{t-1}\beta_t \)<br>
+
+In summary, this derivation shows we can estimate the forward posteriors \(q(\mathbf{x}_{t-1} \vert \mathbf{x}_t, \mathbf{x}_0)\) in <b>closed form</b>, which are needed to evaluated the objective function (eq. \ref{eq:vlb}). Using <d-cite key="ho2020denoising"></d-cite> notation the forward posterior is represented as :
+$$
+\begin{align}
+  q(\mathbf{x}_{t-1} \vert \mathbf{x}_t, \mathbf{x}_0) &= \mathcal{N}(\mathbf{x}_{t-1} ; \tilde{\mu}_t(\mathbf{x}_t,\mathbf{x}_0), \tilde{\beta}_t\mathbf{I}), \\
+  \text{where } \tilde{\mu}_t(\mathbf{x}_t,\mathbf{x}_0) &:= \frac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{1 - \bar{\alpha}_t }\mathbf{x}_0 + \frac{\sqrt{\alpha_t}(1 - \bar{\alpha}_{t-1})}{1 - \bar{\alpha}_t }\mathbf{x}_t \text{ and } \tilde{\beta}_t :=\frac{1 - \bar{\alpha}_{t-1}}{1 - \bar{\alpha}_t }\beta_t
+\end{align}
+$$
+
+I write again the VLB objective function to analyze each component
+$$
+\begin{aligned}
+\mathbb{E}_{q(\mathbf{x}_0)}\left[ \text{D}_{KL}(q(\mathbf{x}_T \vert \mathbf{x}_0)||p(\mathbf{x}_T)) + \sum^T_{t=2} \text{D}_{KL} (q(\mathbf{x}_{t-1} \vert \mathbf{x}_t, \mathbf{x}_0)||p_\theta(\mathbf{x}_{t-1} \vert \mathbf{x}_t))  - \log p_\theta(\mathbf{x}_0 \vert \mathbf{x}_1)
+\right]
+\end{aligned}
+$$
+
+The nice property of this derivation is that now all KL divergences are comparisons between Gaussians, so they can be calculated in a <a href="https://en.wikipedia.org/wiki/Rao%E2%80%93Blackwell_theorem">Rao-Blackwellized</a>  fashion with closed form expressions instead of high variance Monte Carlo estimates <d-cite key="ho2020denoising"></d-cite>.
 
 </p>
 ## Continuous Diffusion Models

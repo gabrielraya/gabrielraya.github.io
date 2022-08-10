@@ -112,7 +112,7 @@ Lets assume that our dataset consists of $N$ i.i.d inputs \(\{\mathbf{x}_0^n\}_{
         <figcaption class="figure-caption text-center">Figure 2. The directed graphical model for a discrete diffusion model is represented by a Markov Chain. The forward/reverse diffusion process systematically and  slowly adds/removes noise.</figcaption>
 </div>
 
-## Forward trajectory
+### Forward trajectory
 
 <p align="justify">
  The forward diffusion process, represented by a Markov chain, is a sequence of random variables \((\mathbf{x}_{0}, \dots, \mathbf{x}_{T})\) where  \(\mathbf{x}_0\) is the input data (initial state) with probability density/distribution \(q(\mathbf{x}_0)\) and the final state \(\mathbf{x}_T\sim \pi(\mathbf{x}_T)\), where \(\pi(\mathbf{x}_T)\) is an easy to sample distribution, i.e., an Isotropic Gaussian.  Each transition in the chain is governed by a perturbation kernel \(q(\mathbf{x}_t \vert \mathbf{x}_{t-1})\). The full forward trajectory, starting from $\mathbf{x}_0$ and performing $T$ steps of diffusion, due to the Markov property, is
@@ -214,9 +214,14 @@ where $\bar{\alpha}_t$ is an decreasing function such that $\bar{\alpha}_1 < ...
 If we know how to reverse the forward process and sample from $q(\mathbf{x}_{t-1}\vert \mathbf{x}_t)$, we will be able to remove the added noise, moving the Gaussian distribution back to the data distribution $q(\mathbf{x}_0)$. For this we learn a parametric model \(p_{\theta}(\mathbf{x}_{0:T})\) to approximate these conditional probabilities in order to run the reverse process.
 </p>
 
+
+
 $$
+\begin{equation}
+\label{eq:reverse_trajectory}
 p_\theta(\mathbf{x}_{0:T}) = p(\mathbf{x}_T) \prod^T_{t=1} p_\theta(\mathbf{x}_{t-1} \vert \mathbf{x}_t) \quad
 p_\theta(\mathbf{x}_{t-1} \vert \mathbf{x}_t) = \mathcal{N}(\mathbf{x}_{t-1}; \mathbf{\mu}_\theta(\mathbf{x}_t, t), \mathbf{\Sigma}_\theta(\mathbf{x}_t, t))
+\end{equation}
 $$
 
 <p align="justify">
@@ -421,12 +426,78 @@ $$
 I write again the VLB objective function to analyze each component
 $$
 \begin{aligned}
-\mathbb{E}_{q(\mathbf{x}_0)}\left[ \text{D}_{KL}(q(\mathbf{x}_T \vert \mathbf{x}_0)||p(\mathbf{x}_T)) + \sum^T_{t=2} \text{D}_{KL} (q(\mathbf{x}_{t-1} \vert \mathbf{x}_t, \mathbf{x}_0)||p_\theta(\mathbf{x}_{t-1} \vert \mathbf{x}_t))  - \log p_\theta(\mathbf{x}_0 \vert \mathbf{x}_1)
+\mathbb{E}_{q(\mathbf{x}_0)}\left[ \underbrace{\text{D}_{KL}(q(\mathbf{x}_T \vert \mathbf{x}_0)||p(\mathbf{x}_T))}_{L_T} + \sum^T_{t=2} \underbrace{\text{D}_{KL} (q(\mathbf{x}_{t-1} \vert \mathbf{x}_t, \mathbf{x}_0)||p_\theta(\mathbf{x}_{t-1} \vert \mathbf{x}_t))}_{L_{t-1}}  - \underbrace{\log p_\theta(\mathbf{x}_0 \vert \mathbf{x}_1)}_{L_0}
 \right]
 \end{aligned}
 $$
 
 The nice property of this derivation is that now all KL divergences are comparisons between Gaussians, so they can be calculated in a <a href="https://en.wikipedia.org/wiki/Rao%E2%80%93Blackwell_theorem">Rao-Blackwellized</a>  fashion with closed form expressions instead of high variance Monte Carlo estimates <d-cite key="ho2020denoising"></d-cite>.
+</p>
+
+<ul>
+  <li>$L_T$ is constant when $\beta_t$ of the forward process are held constant (not learnable) and therefore \color{red}can be ignored during training.</li>
+  <li>$L_{t-1}$ and $L_0$ involve the reverse process. We discuss this in the following section.</li>
+</ul>
+
+We have a reduced objective function, the Variational Lower Bound reduced (VLBR):
+
+$$
+\begin{equation}
+\label{eq:vlb_reduced}
+ L_\text{VLBR} =\mathbb{E}_{q(\mathbf{x}_0)}\left[\sum^T_{t=2} \underbrace{\text{D}_{KL} (q(\mathbf{x}_{t-1} \vert \mathbf{x}_t, \mathbf{x}_0)||p_\theta(\mathbf{x}_{t-1} \vert \mathbf{x}_t))}_{L_{t-1}}  - \underbrace{\log p_\theta(\mathbf{x}_0 \vert \mathbf{x}_1)}_{L_0}
+\right]
+\end{equation}
+$$
+
+### Parameterization of $L_{t-1}$ and connection to denoising score matching
+
+<p align="justify">
+To evaluate the VLBR objective function we still need to choose the Gaussian distribution parameterization of the reverse process  \(p_\theta(\mathbf{x}_{t-1} \vert \mathbf{x}_t) = \mathcal{N}(\mathbf{x}_{t-1}; \mathbf{\mu}_\theta(\mathbf{x}_t, t), \mathbf{\Sigma}_\theta(\mathbf{x}_t, t))\).
+
+<ul>
+  <li>First we set \(\mathbf{\Sigma}_\theta(\mathbf{x}_t, t)= \sigma_t\mathbf{I}\). We could choose \(\sigma_t = \beta_t\)  or \(\sigma_t = \tilde{\beta}_t=\frac{1 - \bar{\alpha}_{t-1}}{1 - \bar{\alpha}_t }\beta_t\). Ho et. al.<d-cite key="ho2020denoising"></d-cite> showed experimentally that both choices lead to similar results. </li>
+  <li>Second, to represent \(\mathbf{\mu}_\theta(\mathbf{x}_t, t)\) we obtain a parameterization derived as following analysis<d-cite key="ho2020denoising"></d-cite> .</li>
+</ul>
+
+
+We can express the \(L_{t-1}\) term as follows
+$$
+\begin{aligned}
+ L_{t-1}
+ &= \text{D}_{KL} \Big(\mathcal{N}(\mathbf{x}_{t-1} ; \tilde{\mu}_t(\mathbf{x}_t,\mathbf{x}_0), \tilde{\beta}_t\mathbf{I})\Big|\Big|\mathcal{N}(\mathbf{x}_{t-1}; \mathbf{\mu}_\theta(\mathbf{x}_t, t), \sigma_t\mathbf{I}))\Big)\\
+\end{aligned}
+$$
+
+Using equation \ref{eq:transition_t} we have that \(\mathbf{x}_0 = \frac{1}{\sqrt{\bar{\alpha}_t}}(\mathbf{x}_t - \sqrt{(1 - \bar{\alpha}_t)}\mathbf{z_t}) \). We can now reexpressed \(\tilde{\mu}_t\)
+
+$$
+\begin{aligned}
+  \tilde{\mu}_t(\mathbf{x}_t,\mathbf{x}_0) &= \frac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{1 - \bar{\alpha}_t } \frac{1}{\sqrt{\bar{\alpha}_t}}(\mathbf{x}_t - \sqrt{(1 - \bar{\alpha}_t)}\mathbf{z_t}) + \frac{\sqrt{\alpha_t}(1 - \bar{\alpha}_{t-1})}{1 - \bar{\alpha}_t }\mathbf{x}_t\\
+  &= \Big(\frac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{1 - \bar{\alpha}_t } \frac{1}{\sqrt{\bar{\alpha}_t}}+ \frac{\sqrt{\alpha_t}(1 - \bar{\alpha}_{t-1})}{1 - \bar{\alpha}_t }\Big)\mathbf{x}_t - \frac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{1 - \bar{\alpha}_t } \frac{1}{\sqrt{\bar{\alpha}_t}} \sqrt{(1 - \bar{\alpha}_t)}\mathbf{z_t}\\
+  &= \frac{\sqrt{\bar{\alpha}_{t-1}}\beta_t + \sqrt{\bar{\alpha}_t}\sqrt{\alpha_t}(1 - \bar{\alpha}_{t-1})}{(1 - \bar{\alpha}_t)\sqrt{\bar{\alpha}_t} }\mathbf{x}_t - \frac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{1 - \bar{\alpha}_t } \frac{1}{\sqrt{\bar{\alpha}_t}} \sqrt{(1 - \bar{\alpha}_t)}\mathbf{z_t}\\
+  &= \frac{\sqrt{\bar{\alpha}_{t-1}}(1-\alpha_t) + \sqrt{\bar{\alpha}_t}\sqrt{\alpha_t}(1 - \bar{\alpha}_{t-1})}{(1 - \bar{\alpha}_t)\sqrt{\bar{\alpha}_t} }\mathbf{x}_t - \frac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{1 - \bar{\alpha}_t } \frac{1}{\sqrt{\bar{\alpha}_t}} \sqrt{(1 - \bar{\alpha}_t)}\mathbf{z_t}\\
+  &= \frac{\sqrt{\bar{\alpha}_{t-1}}-\sqrt{\bar{\alpha}_{t-1}}\sqrt{\alpha_t}\sqrt{\alpha_t} + \sqrt{\bar{\alpha}_t}\sqrt{\alpha_t} - \sqrt{\bar{\alpha}_t}\sqrt{\alpha_t}\bar{\alpha}_{t-1}}{(1 - \bar{\alpha}_t)\color{orange}\sqrt{\bar{\alpha}_{t-1}}\sqrt{\alpha_t}}\color{black}\mathbf{x}_t - \frac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{1 - \bar{\alpha}_t } \frac{1}{\sqrt{\bar{\alpha}_t}} \sqrt{(1 - \bar{\alpha}_t)}\mathbf{z_t}\\
+  &= \frac{\sqrt{\bar{\alpha}_{t-1}}-\color{red}\sqrt{\bar{\alpha}_{t}}\sqrt{\alpha_t} \color{black}+ \color{red}\sqrt{\bar{\alpha}_t}\sqrt{\alpha_t} \color{black}- \sqrt{\bar{\alpha}_t}\sqrt{\alpha_t}\bar{\alpha}_{t-1}}{(1 - \bar{\alpha}_t)\color{orange}\sqrt{\bar{\alpha}_{t-1}}\sqrt{\alpha_t}}\color{black}\mathbf{x}_t - \frac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{1 - \bar{\alpha}_t } \frac{1}{\sqrt{\bar{\alpha}_t}} \sqrt{(1 - \bar{\alpha}_t)}\mathbf{z_t}\\
+  &= \frac{\color{green}\sqrt{\bar{\alpha}_{t-1}}\color{black}- \color{green}\sqrt{\bar{\alpha}_{t-1}} \color{black}\sqrt{\alpha_t} \sqrt{\alpha_t}\bar{\alpha}_{t-1}}{(1 - \bar{\alpha}_t)\color{orange}\sqrt{\bar{\alpha}_{t-1}}\sqrt{\alpha_t}}\color{black}\mathbf{x}_t - \frac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{1 - \bar{\alpha}_t } \frac{1}{\sqrt{\bar{\alpha}_t}} \sqrt{(1 - \bar{\alpha}_t)}\mathbf{z_t}\\
+  &= \frac{(1 - \sqrt{\alpha_t} \sqrt{\alpha_t}\bar{\alpha}_{t-1})\color{green}\sqrt{\bar{\alpha}_{t-1}}\color{black}}{(1 - \bar{\alpha}_t)\color{orange}\sqrt{\bar{\alpha}_{t-1}}\sqrt{\alpha_t}}\color{black}\mathbf{x}_t - \frac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{1 - \bar{\alpha}_t } \frac{1}{\sqrt{\bar{\alpha}_t}} \sqrt{(1 - \bar{\alpha}_t)}\mathbf{z_t}\\
+  &= \frac{1}{\sqrt{\alpha_t}}\color{black}\mathbf{x}_t - \frac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{1 - \bar{\alpha}_t } \frac{1}{\sqrt{\bar{\alpha}_t}} \sqrt{(1 - \bar{\alpha}_t)}\mathbf{z_t}
+\end{aligned}
+$$
+
+\color{orange}\sqrt{\bar{\alpha}_{t-1}}\sqrt{\alpha_t}}\color{black}\mathbf{x}_t
+\tilde{\mu}_t(\mathbf{x}_t,\mathbf{x}_0)
+
+ Ho et. al.<d-cite key="ho2020denoising"></d-cite> established a new explicit connection between diffusion models and denoising score matching that allows choosing these parameterization of the reverse process that leads to a simplified, <b>weighted variational bound objective</b> for diffusion models. Using equations \ref{eq:forward_posterior} and \ref{eq:reverse_trajectory}
+
+
+
+
+ $$
+ \begin{align}
+   q(\mathbf{x}_{t-1} \vert \mathbf{x}_t, \mathbf{x}_0) &= \mathcal{N}(\mathbf{x}_{t-1} ; \tilde{\mu}_t(\mathbf{x}_t,\mathbf{x}_0), \tilde{\beta}_t\mathbf{I}), \\
+   \text{where } \tilde{\mu}_t(\mathbf{x}_t,\mathbf{x}_0) &:= \frac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{1 - \bar{\alpha}_t }\mathbf{x}_0 + \frac{\sqrt{\alpha_t}(1 - \bar{\alpha}_{t-1})}{1 - \bar{\alpha}_t }\mathbf{x}_t \text{ and } \tilde{\beta}_t :=\frac{1 - \bar{\alpha}_{t-1}}{1 - \bar{\alpha}_t }\beta_t
+ \end{align}
+ $$
 
 </p>
 ## Continuous Diffusion Models

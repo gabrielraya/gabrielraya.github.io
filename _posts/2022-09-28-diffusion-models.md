@@ -561,26 +561,25 @@ $$
 \begin{align}
 L_{t-1} &=  \mathbb{E}_{q(\mathbf{x}_{t-1} \vert \mathbf{x}_t, \mathbf{x}_0)}\Big[\frac{1}{2\sigma_t^2}||\tilde{\mu}_t(\mathbf{x}_t,\mathbf{x}_0)-\mu_{\theta}(\mathbf{x}_t,t)||^2\Big]\\
 &=  \mathbb{E}_{\mathbf{x}_0, \mathbf{\epsilon}}\Big[\frac{1}{2\sigma_t^2}\Big|\Big|\tilde{\mu}_t\Big(\mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon}),\frac{1}{\sqrt{\bar{\alpha}_t}}(\mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon})- \sqrt{1 - \bar{\alpha}_t}\mathbf{\epsilon})\Big)-\mu_{\theta}(\mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon}),t)\Big|\Big|^2\Big] \\
-&=  \mathbb{E}_{\mathbf{x}_0, \mathbf{\epsilon}}\Big[\frac{1}{2\sigma_t^2}\Big|\Big|\tilde{\mu}_t\Big(\mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon}),\frac{1}{\sqrt{\bar{\alpha}_t}}(\mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon})- \sqrt{1 - \bar{\alpha}_t}\mathbf{\epsilon})\Big)-\mu_{\theta}(\mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon}),t)\Big|\Big|^2\Big]\\
-&=  \mathbb{E}_{\mathbf{x}_0, \mathbf{\epsilon}}\Big[\frac{1}{2\sigma_t^2}\Big|\Big|\color{blue}\frac{ 1}{\sqrt{\alpha}_t} \Big(\mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon}) \color{red}-\frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}} \mathbf{\epsilon}\Big)\color{black}-\mu_{\theta}(\mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon}),t)\Big|\Big|^2\Big]\\
+&=  \mathbb{E}_{\mathbf{x}_0, \mathbf{\epsilon}}\Big[\frac{1}{2\sigma_t^2}\Big|\Big|\color{blue}\frac{ 1}{\sqrt{\alpha}_t} \Big(\mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon}) \color{red}-\frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}} \mathbf{\epsilon}\Big)\color{black}-\mu_{\theta}(\mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon}),t)\Big|\Big|^2\Big]\text{ (*)}\label{eq:objective_function_reparameterized}\\
 &=  \mathbb{E}_{\mathbf{x}_0, \mathbf{\epsilon}}\Big[\frac{1}{2\sigma_t^2}\Big|\Big|\color{blue}\frac{ 1}{\sqrt{\alpha}_t} \Big(\mathbf{x}_t \color{red}-\frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}} \mathbf{\epsilon}\Big)\color{black}-\color{blue}\frac{ 1}{\sqrt{\alpha}_t} \Big(\mathbf{x}_t\color{red}-\frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}} \color{green}\mathbf{\epsilon}(\mathbf{x}_t, t)\color{black}\Big)\Big|\Big|^2\Big]; \text{ (**)}\\
 &=  \mathbb{E}_{\mathbf{x}_0, \mathbf{\epsilon}}\Big[\frac{1}{2\sigma_t^2}\Big|\Big|\color{blue}-\frac{ 1}{\sqrt{\alpha}_t}\color{red}\frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}} \color{black}(\mathbf{\epsilon}\color{red}-\color{green}\mathbf{\epsilon}(\mathbf{x}_t, t)\color{black})\Big|\Big|^2\Big]\\
 &=  \mathbb{E}_{\mathbf{x}_0, \mathbf{\epsilon}}\Big[ \frac{\beta_t^2}{2\sigma_t^2\alpha_t(1 - \bar{\alpha}_t)}\Big|\Big| \mathbf{\epsilon} - \color{green}\mathbf{\epsilon}(\mathbf{x}_t, t) \color{black}\Big|\Big|^2\Big]
-
-\label{eq:objective_function_reparameterized}
 \end{align}
 $$
 
-A proof below, where
+(*) It follows from the definition of the mean forward posterior :
+
 $$
 \begin{aligned}
-& \tilde{\mu}_t\Big(\mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon}),\frac{1}{\sqrt{\bar{\alpha}_t}}(\mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon})- \sqrt{1 - \bar{\alpha}_t}\mathbf{\epsilon})\Big) := \frac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{1 - \bar{\alpha}_t }\mathbf{x}_0 + \frac{\sqrt{\alpha_t}(1 - \bar{\alpha}_{t-1})}{1 - \bar{\alpha}_t }\mathbf{x}_t\\
+\tilde{\mu}_t(\mathbf{x}_t,\mathbf{x}_0) &= \frac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{1 - \bar{\alpha}_t }\mathbf{x}_0 + \frac{\sqrt{\alpha_t}(1 - \bar{\alpha}_{t-1})}{1 - \bar{\alpha}_t }\mathbf{x}_t \stackrel{\text{to prove}}{=}  \color{blue}\frac{ 1}{\sqrt{\alpha}_t}  \mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon}) \color{red}-\frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t} }\frac{1}{\sqrt{\alpha}_t} \mathbf{\epsilon}\\
+&= \frac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{1 - \bar{\alpha}_t }\mathbf{x}_0 + \frac{\sqrt{\alpha_t}(1 - \bar{\alpha}_{t-1})}{1 - \bar{\alpha}_t }\mathbf{x}_t\\
   &= \frac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{1 - \bar{\alpha}_t }\frac{1}{\sqrt{\bar{\alpha}_t}}(\mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon})- \sqrt{1 - \bar{\alpha}_t}\mathbf{\epsilon}) + \frac{\sqrt{\alpha_t}(1 - \bar{\alpha}_{t-1})}{1 - \bar{\alpha}_t }\mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon})  \\
   &= \color{blue}\frac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{1 - \bar{\alpha}_t }\frac{1}{\sqrt{\bar{\alpha}_t}}\mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon}) + \frac{\sqrt{\alpha_t}(1 - \bar{\alpha}_{t-1})}{1 - \bar{\alpha}_t }\mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon})\color{black} - \color{red}\frac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{1 - \bar{\alpha}_t }\frac{1}{\sqrt{\bar{\alpha}_t}} \sqrt{1 - \bar{\alpha}_t}\mathbf{\epsilon}\\
 \end{aligned}
 $$
 
-First lets develop the LHST (blue)
+First let's develop the LHST (<font  color="blue">blue</font>)
 $$
 \begin{aligned}
   \quad &:= \color{blue}\frac{\sqrt{\bar{\alpha}_{t-1}}\beta_t \mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon})+ \sqrt{\bar{\alpha}_t}\sqrt{\alpha_t}(1 - \bar{\alpha}_{t-1})\mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon}) }{\sqrt{\bar{\alpha}_t}(1 - \bar{\alpha}_t)}\\
@@ -594,7 +593,7 @@ $$
 $$
 
 
-Now the RHST (red)
+Now the RHST (<font  color="red">red</font>)
 $$
 \begin{aligned}
  \color{red} -\frac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{1 - \bar{\alpha}_t }\frac{1}{\sqrt{\bar{\alpha}_t}} \sqrt{1 - \bar{\alpha}_t}\mathbf{\epsilon}
@@ -615,7 +614,8 @@ $$
 
 
 <p align="justify">
-Equation \ref{eq:objective_function_reparameterized} reveals that \(\mu_{\theta}\) must predict \(\frac{ 1}{\sqrt{\alpha}_t} \Big(\mathbf{x}_t -\frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}} \mathbf{\epsilon}\Big)\) given \(\mathbf{x}_t\). This comes from the fact that the goal is to minimize \(L_{t-1}\), so
+
+(**) Equation \ref{eq:objective_function_reparameterized} reveals that \(\mu_{\theta}\) must predict \(\color{blue}\frac{ 1}{\sqrt{\alpha}_t} \Big(\mathbf{x}_t  \color{red}-\frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}} \mathbf{\epsilon}\Big)\) given \(\mathbf{x}_t\) because we aim to minimize \(L_{t-1}\), therefore:
 
 $$
 \begin{aligned}
@@ -628,31 +628,40 @@ Since \(\mathbf{x}_t\) is available as input to the model, we may choose the par
 
 $$
 \begin{align}
- \mu_{\theta}(\mathbf{x}_t,t)= \tilde{\mu}_{t}\Big(\mathbf{x}_t,\frac{1}{\sqrt{\bar{\alpha}_t}}(\mathbf{x}_t- \sqrt{1 - \bar{\alpha}_t}\mathbf{\epsilon})\Big) := \color{blue}\frac{ 1}{\sqrt{\alpha}_t} \Big(\mathbf{x}_t\color{red}-\frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}} \color{green}\mathbf{\epsilon}(\mathbf{x}_0, \mathbf{x}_t)\Big)\\
+ \mu_{\theta}(\mathbf{x}_t,t)= \tilde{\mu}_{t}\Big(\mathbf{x}_t,\frac{1}{\sqrt{\bar{\alpha}_t}}(\mathbf{x}_t- \sqrt{1 - \bar{\alpha}_t}\mathbf{\epsilon}_{\theta}(\mathbf{x}_t))\Big) := \color{blue}\frac{ 1}{\sqrt{\alpha}_t} \Big(\mathbf{x}_t\color{red}-\frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}} \color{green}\mathbf{\epsilon}_{\theta}(\mathbf{x}_t, t)\Big)\\
 \end{align}
 $$
 
-
-
-Recall \(\mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon})  = \sqrt{\bar{\alpha}_t} \mathbf{x}_0 +  \sqrt{1 - \bar{\alpha}_t}\mathbf{\epsilon}\), we can rearraged this as \(\mathbf{\epsilon}(\mathbf{x}_0, \mathbf{x}_t) = \frac{\mathbf{x}_t - \sqrt{\bar{\alpha}_t} \mathbf{x}_0}{\sqrt{1 - \bar{\alpha}_t}}\). However, to generate samples we do not have access to \(\mathbf{x}_0\) and
-
-
+Since \(\mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon})  = \sqrt{\bar{\alpha}_t} \mathbf{x}_0 +  \sqrt{1 - \bar{\alpha}_t}\mathbf{\epsilon}\), we can rearraged this as \(\mathbf{\epsilon}(\mathbf{x}_0, \mathbf{x}_t) = \frac{\mathbf{x}_t - \sqrt{\bar{\alpha}_t} \mathbf{x}_0}{\sqrt{1 - \bar{\alpha}_t}}\). Therefore, the diffusion model is defined by the parametric Gaussian distribution
 $$
 \begin{aligned}
- p_\theta(\mathbf{x}_{t-1} \vert \mathbf{x}_t) &= \mathcal{N}(\mathbf{x}_{t-1}; \mathbf{\mu}_\theta(\mathbf{x}_t, t) \mathbf{\Sigma}_\theta(\mathbf{x}_t, t))\\
- &= \mathcal{N}(\mathbf{x}_{t-1}; \color{blue}\frac{ 1}{\sqrt{\alpha}_t} \Big(\mathbf{x}_t\color{red}-\frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}} \color{green}\mathbf{\epsilon}(\mathbf{x}_0, \mathbf{x}_t)\Big)\color{black}, \sigma_t	\mathbf{I})
+ p_\theta(\mathbf{x}_{t-1} \vert \mathbf{x}_t) &= \mathcal{N}(\mathbf{x}_{t-1}; \mathbf{\mu}_\theta(\mathbf{x}_t, t), \mathbf{\Sigma}_\theta(\mathbf{x}_t, t))\\
+ &= \mathcal{N}(\mathbf{x}_{t-1}; \color{blue}\frac{ 1}{\sqrt{\alpha}_t} \Big(\mathbf{x}_t\color{red}-\frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}} \color{green}\mathbf{\epsilon}_{\theta}(\mathbf{x}_t, t)\Big)\color{black}, \sigma_t	\mathbf{I})
 \end{aligned}
 $$
 
+To generate samples using the generative Markov chain we
 
- Ho et. al.<d-cite key="ho2020denoising"></d-cite> established a new explicit connection between diffusion models and denoising score matching that allows choosing these parameterization of the reverse process that leads to a simplified, <b>weighted variational bound objective</b> for diffusion models. Using equations \ref{eq:forward_posterior} and \ref{eq:reverse_trajectory}
-</p>
+$$
+\begin{aligned}
+ \mathbf{x}_{t-1} = \frac{ 1}{\sqrt{\alpha}_t} \Big(\mathbf{x}_t\color{red}-\frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}} \color{green}\mathbf{\epsilon}(\mathbf{x}_0, \mathbf{x}_t)\Big)\color{black} +  \sigma_t	\mathbf{\epsilon}; \quad \mathbf{\epsilon}\sim \mathcal{N}(\mathbf{0}, \mathbf{I})
+\end{aligned}
+$$
+
+The complete sampling procedure, Algorithm 2, resembles Langevin dynamics  
+
+
 
 
 <div style="align: left; text-align:center;">
         <img class="img-fluid  " src="{{ site.baseurl }}/assets/img/diffusion/algorithm.PNG" style="width: 700px;">
         <figcaption class="figure-caption text-center">Figure 4. Algorithm.</figcaption>
 </div>
+</p>
+
+
+### Connection to Langevin Dynamics
+Ho et. al.<d-cite key="ho2020denoising"></d-cite> established a new explicit connection between diffusion models and denoising score matching that allows choosing these parameterization of the reverse process that leads to a simplified, <b>weighted variational bound objective</b> for diffusion models. Using equations \ref{eq:forward_posterior} and \ref{eq:reverse_trajectory}
 
 
 

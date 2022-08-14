@@ -562,8 +562,8 @@ $$
 L_{t-1} &=  \mathbb{E}_{q(\mathbf{x}_{t-1} \vert \mathbf{x}_t, \mathbf{x}_0)}\Big[\frac{1}{2\sigma_t^2}||\tilde{\mu}_t(\mathbf{x}_t,\mathbf{x}_0)-\mu_{\theta}(\mathbf{x}_t,t)||^2\Big]\\
 &=  \mathbb{E}_{\mathbf{x}_0, \mathbf{\epsilon}}\Big[\frac{1}{2\sigma_t^2}\Big|\Big|\tilde{\mu}_t\Big(\mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon}),\frac{1}{\sqrt{\bar{\alpha}_t}}(\mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon})- \sqrt{1 - \bar{\alpha}_t}\mathbf{\epsilon})\Big)-\mu_{\theta}(\mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon}),t)\Big|\Big|^2\Big] \\
 &=  \mathbb{E}_{\mathbf{x}_0, \mathbf{\epsilon}}\Big[\frac{1}{2\sigma_t^2}\Big|\Big|\color{blue}\frac{ 1}{\sqrt{\alpha}_t} \Big(\mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon}) \color{red}-\frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}} \mathbf{\epsilon}\Big)\color{black}-\mu_{\theta}(\mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon}),t)\Big|\Big|^2\Big]\text{ (*)}\label{eq:objective_function_reparameterized}\\
-&=  \mathbb{E}_{\mathbf{x}_0, \mathbf{\epsilon}}\Big[\frac{1}{2\sigma_t^2}\Big|\Big|\color{blue}\frac{ 1}{\sqrt{\alpha}_t} \Big(\mathbf{x}_t \color{red}-\frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}} \mathbf{\epsilon}\Big)\color{black}-\color{blue}\frac{ 1}{\sqrt{\alpha}_t} \Big(\mathbf{x}_t\color{red}-\frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}} \color{green}\mathbf{\epsilon}(\mathbf{x}_t, t)\color{black}\Big)\Big|\Big|^2\Big]; \text{ (**)}\\
-&=  \mathbb{E}_{\mathbf{x}_0, \mathbf{\epsilon}}\Big[\frac{1}{2\sigma_t^2}\Big|\Big|\color{blue}-\frac{ 1}{\sqrt{\alpha}_t}\color{red}\frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}} \color{black}(\mathbf{\epsilon}\color{red}-\color{green}\mathbf{\epsilon}(\mathbf{x}_t, t)\color{black})\Big|\Big|^2\Big]\\
+&=  \mathbb{E}_{\mathbf{x}_0, \mathbf{\epsilon}}\Big[\frac{1}{2\sigma_t^2}\Big|\Big|\color{blue}\frac{ 1}{\sqrt{\alpha}_t} \Big(\mathbf{x}_t \color{red}-\frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}} \mathbf{\epsilon}\Big)\color{black}-\color{blue}\frac{ 1}{\sqrt{\alpha}_t} \Big(\mathbf{x}_t\color{red}-\frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}} \color{green}\mathbf{\epsilon}_{\theta}(\mathbf{x}_t, t)\color{black}\Big)\Big|\Big|^2\Big]; \text{ (**)}\\
+&=  \mathbb{E}_{\mathbf{x}_0, \mathbf{\epsilon}}\Big[\frac{1}{2\sigma_t^2}\Big|\Big|\color{blue}-\frac{ 1}{\sqrt{\alpha}_t}\color{red}\frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}} \color{black}(\mathbf{\epsilon}\color{red}-\color{green}\mathbf{\epsilon}_{\theta}(\mathbf{x}_t, t)\color{black})\Big|\Big|^2\Big]\\
 &=  \mathbb{E}_{\mathbf{x}_0, \mathbf{\epsilon}}\Big[ \frac{\beta_t^2}{2\sigma_t^2\alpha_t(1 - \bar{\alpha}_t)}\Big|\Big| \mathbf{\epsilon} - \color{green}\mathbf{\epsilon}(\mathbf{x}_t, t) \color{black}\Big|\Big|^2\Big]
 \end{align}
 $$
@@ -644,31 +644,40 @@ To generate samples using the generative Markov chain we
 
 $$
 \begin{aligned}
- \mathbf{x}_{t-1} = \frac{ 1}{\sqrt{\alpha}_t} \Big(\mathbf{x}_t\color{red}-\frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}} \color{green}\mathbf{\epsilon}(\mathbf{x}_0, \mathbf{x}_t)\Big)\color{black} +  \sigma_t	\mathbf{\epsilon}; \quad \mathbf{\epsilon}\sim \mathcal{N}(\mathbf{0}, \mathbf{I})
+ \mathbf{x}_{t-1} = \frac{ 1}{\sqrt{\alpha}_t} \Big(\mathbf{x}_t\color{red}-\frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}} \color{green}\mathbf{\epsilon}_{\theta}(\mathbf{x}_t, t)\Big)\color{black} +  \sigma_t	\mathbf{\epsilon}; \quad \mathbf{\epsilon}\sim \mathcal{N}(\mathbf{0}, \mathbf{I})
 \end{aligned}
 $$
 
-The complete sampling procedure, Algorithm 2, resembles Langevin dynamics  
+The complete sampling procedure, <a href="#algorithm">Algorithm 2</a>, resembles Langevin dynamics with \(\mathbf{\epsilon}_{\theta}(\mathbf{x}_t, t)\) as a learned gradient of the data density, the score.  
 
 
-
-
-<div style="align: left; text-align:center;">
+<div style="align: left; text-align:center;" id="algorithm">
         <img class="img-fluid  " src="{{ site.baseurl }}/assets/img/diffusion/algorithm.PNG" style="width: 700px;">
-        <figcaption class="figure-caption text-center">Figure 4. Algorithm.</figcaption>
 </div>
 </p>
+
+
+In conclusion, this shows that the VLB objective function reduces to equation \ref{eq:denosing_sm}, which resamples denoising score matching over multiple noise scales indexed by $t$.
+$$
+\begin{align}
+\label{eq:denosing_sm}
+L_{t-1} &=  \mathbb{E}_{\mathbf{x}_0, \mathbf{\epsilon}}\Big[ \frac{\beta_t^2}{2\sigma_t^2\alpha_t(1 - \bar{\alpha}_t)}\Big|\Big| \mathbf{\epsilon} - \color{green}\mathbf{\epsilon}(\mathbf{x}_t, t) \color{black}\Big|\Big|^2\Big]
+\end{align}
+$$
 
 
 ### Connection to Langevin Dynamics
 Ho et. al.<d-cite key="ho2020denoising"></d-cite> established a new explicit connection between diffusion models and denoising score matching that allows choosing these parameterization of the reverse process that leads to a simplified, <b>weighted variational bound objective</b> for diffusion models. Using equations \ref{eq:forward_posterior} and \ref{eq:reverse_trajectory}
 
 
-
-
-
 <b> Summary </b>
 
+> To summarize, we can train the reverse process mean function approximator $\mathbf{\mu}_{\theta}$ to predict  ̃$\tilde{\mu}_t$, or by modifying its parameterization, we can train it to predict $\mathbf{\epsilon}$.
+
+
+
+<!--
+ but we found this to lead to worse sample quality early in our experiments.) We have shown that the -prediction parameterization both resembles Langevin dynamics and simplifies the diffusion model’s variational bound to an objective that resembles denoising score matching. Nonetheless, it is just another parameterization of pθ(xt−1|xt), so we verify its effectiveness in Section 4 in an ablation where we compare predicting  against predicting  ̃ μt. -->
 <ul>
   <li> <p align="justify">We start with a predefined forward process that evolves over a time interval $t\in[0,T]$, systematically converting input data, $\mathbf{x}_0$, into noise through a perturbation kernel  $q(\mathbf{x}_t \vert \mathbf{x}_{t-1})$ using a noise schedule $\beta_t$.
   </p>
@@ -758,16 +767,20 @@ $$
 
 
 
-
+</p>
 ## Continuous Diffusion Models
 
 
 
-## Aplications
+## Applications
+
+<p align="justify">
+Generative models can be used for several applications. One recent remarkable application is <a href="https://openai.com/dall-e-2/">DALL-E 2</a>, A NEW AI system that can create realistic images and art from a description in natural language.  <a href="https://openai.com/dall-e-2/">DALL-E 2</a> uses diffusion models to produce higher-quality image samples. For more details about <a href="https://openai.com/dall-e-2/">DALL-E 2</a> see the scientific paper  <a href="https://arxiv.org/abs/2204.06125Hierarchical"> Text-Conditional Image Generation with CLIP Latents</a> <d-cite key="ramesh2022hierarchical"></d-cite>
+</p>
 
 
 <div style="align: left; text-align:center;">
         <img class="img-fluid  " src="{{ site.baseurl }}/assets/img/diffusion/applications.PNG" style="width: 700px;">
         <img class="img-fluid  " src="{{ site.baseurl }}/assets/img/diffusion/dalle_tree.PNG" style="width: 700px;">
-        <figcaption class="figure-caption text-center">Figure 4. Variations of art created by <a href="https://mariavoncken.com/">Maria Voncken</a>..</figcaption>
+        <figcaption class="figure-caption text-center">Figure 4. Variations of <b>original art</b> made by <a href="https://mariavoncken.com/">Maria Voncken</a> created by <a href="https://openai.com/dall-e-2/">DALL-E 2</a>.</figcaption>
 </div>

@@ -644,12 +644,13 @@ $$
 To generate samples using the generative Markov chain we simply reparameterize the Gaussian  distribution \(p_\theta(\mathbf{x}_{t-1} \vert \mathbf{x}_t)\):
 
 $$
-\begin{aligned}
- \mathbf{x}_t =  \mathbf{x}_{t-1}
-\end{aligned}
-$$
+\begin{align}
+\label{eq:sampling}
+ \mathbf{x}_{t-1} &=  \frac{ 1}{\sqrt{\alpha}_t} \Big(\mathbf{x}_t\color{red}-\frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}} \color{green}\mathbf{\epsilon}_{\theta}(\mathbf{x}_t, t)\Big)\color{black} +  \sigma_t	\mathbf{\epsilon}; \quad \mathbf{\epsilon}\sim \mathcal{N}(\mathbf{0}, \mathbf{I})
+\end{align}
+$$  
 
-<a href="#algorithm">Algorithm 2</a>, resembles Langevin dynamics with \(\mathbf{\epsilon}_{\theta}(\mathbf{x}_t, t)\) as a learned gradient of the data density, the score.  Langevin dynamics can produce samples from a probability density \(q(x)\) using only the score function \(\nabla_x \log q(x)\). In the context of MCMC samplers this is known as the Metropolis-adjusted Langevin algorithm (MALA)
+<a href="#algorithm">Algorithm 2</a>, resembles Langevin dynamics with \(\mathbf{\epsilon}_{\theta}(\mathbf{x}_t, t)\) as a learned gradient of the data density, the score.  The reversible Langevin dynamics diffusion can produce samples from a probability density \(q(x)\), with variance \(\eta^2\)  using only the score function \(\nabla_x \log q(x)\). In the context of MCMC samplers this is known as the Metropolis-adjusted Langevin algorithm (MALA)
 
 
 
@@ -657,17 +658,22 @@ $$
 
  Following the reverse process, the notation is slightly changed so that the initial value \(\mathbf{x_T}\sim \pi(\mathbf{x})\), here \(\pi(\mathbf{x})=\mathcal{N}(\mathbf{0}, \mathbf{I})\). Langevin dynamics recursively computes
 
+ $$
+ \begin{align}
+  \mathbf{x}_{t-1} &=  \mathbf{x}_{t} + \frac{}{2}
+ \end{align}
+ $$
 
 
-$$
+<!-- $$
 \begin{align}
  \mathbf{x}_{t-1} &=  \sqrt{\alpha}_t} \Big(\mathbf{x}_t\color{red}-\frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}} \color{green}\mathbf{\epsilon}_{\theta}(\mathbf{x}_t, t)\Big)\color{black} +  \sigma_t	\mathbf{\epsilon}; \quad \mathbf{\epsilon}\sim \mathcal{N}(\mathbf{0}, \mathbf{I})\\
  &=  \frac{ 1}{\sqrt{\alpha}_t}\mathbf{x}_t\color{red}-\frac{\beta_t}{\sqrt{\alpha_t(1 - \bar{\alpha}_t)}} \color{green}\mathbf{\epsilon}_{\theta}(\mathbf{x}_t, t) \color{black} +  \sigma_t	\mathbf{\epsilon}; \quad \mathbf{\epsilon}\sim \mathcal{N}(\mathbf{0}, \mathbf{I})
 \end{align}
-$$
+$$ -->
 
 
-Recal \(\sigma_t = \beta_t\)  or \(\sigma_t = \tilde{\beta}_t=\frac{1 - \bar{\alpha}_{t-1}}{1 - \bar{\alpha}_t }\beta_t\)
+<!-- Recall \(\sigma_t = \beta_t\)  or \(\sigma_t = \tilde{\beta}_t=\frac{1 - \bar{\alpha}_{t-1}}{1 - \bar{\alpha}_t }\beta_t\)
 
 $$
 \begin{align}
@@ -675,7 +681,7 @@ $$
  \mathbf{x}_{t-1} &=  \frac{ 1}{\sqrt{\alpha}_t} \Big(\mathbf{x}_t\color{red}-\frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}} \color{green}\mathbf{\epsilon}_{\theta}(\mathbf{x}_t, t)\Big)\color{black} +  \sigma_t	\mathbf{\epsilon}; \quad \mathbf{\epsilon}\sim \mathcal{N}(\mathbf{0}, \mathbf{I})\\
  &=  \frac{ 1}{\sqrt{\alpha}_t}\mathbf{x}_t\color{red}-\frac{\beta_t}{\sqrt{\alpha_t(1 - \bar{\alpha}_t)}} \color{green}\mathbf{\epsilon}_{\theta}(\mathbf{x}_t, t) \color{black} +  \sigma_t	\mathbf{\epsilon}; \quad \mathbf{\epsilon}\sim \mathcal{N}(\mathbf{0}, \mathbf{I})\\
 \end{align}
-$$
+$$ -->
 
 
 
@@ -826,15 +832,19 @@ Generative models can be used for several applications. One recent remarkable ap
 </div><br>
 <p align="justify">
 You can also ask <a href="https://openai.com/dall-e-2/">DALL-E 2</a> to generate an image given a text. Let's try to recreate the original art from above with <a href="https://openai.com/dall-e-2/">DALL-E 2</a>.
-<a href="#dalle"> Figure 4</a> shows several queries that attempt  to recreate the drawing of the older man from above. However, as you can see, <a href="https://openai.com/dall-e-2/">DALL-E 2</a> requires an accurate description to match what you have in mind, the more specific the query. The more information <a href="https://openai.com/dall-e-2/">DALL-E 2</a> has to create what you might expect!
+<a href="#dalle"> Figure 4</a> shows several queries that attempt  to recreate the drawing of the older man from above. However, as you can see, <a href="https://openai.com/dall-e-2/">DALL-E 2</a> requires an accurate description to match what you have in mind, the more specific the query. The more information <a href="https://openai.com/dall-e-2/">DALL-E 2</a> has to create what you might expect! Yet, you can as well get surprised with new ideas!
 </p>
 
 <div style="align: left; text-align:center;" id="dalle">
         <img class="img-fluid  " src="{{ site.baseurl }}/assets/img/diffusion/old_man_1.PNG" style="width: 700px;">
-        <figcaption><b>Query</b>: <i>"Drawing of an older man with a cap and winter cloths"</i>.</figcaption>     
+        <figcaption><b>Query</b>: <i>"<font  color="blue">Drawing</font> of an older man with a cap and winter clothes"</i>.</figcaption>     
         <img class="img-fluid  " src="{{ site.baseurl }}/assets/img/diffusion/old_man_2.PNG" style="width: 700px;">
-        <figcaption><b>Query</b>: <i>"Portrait of an older man with a cap and winter cloths in black and white"</i>.</figcaption>       
+        <figcaption><b>Query</b>: <i>"<font  color="blue">Portrait</font> of an older man with a cap and winter clothes <font  color="blue">in black and white</font> "</i>.</figcaption>       
         <img class="img-fluid  " src="{{ site.baseurl }}/assets/img/diffusion/old_man_3.PNG" style="width: 700px;">
-        <figcaption><b>Query</b>: <i>"A portrait drawing of an older man with a cap and winter cloths in black and white"</i>.</figcaption><br>    
+        <figcaption><b>Query</b>: <i>"<font  color="blue">A portrait drawing</font> of an older man with a cap and winter clothes <font  color="blue">in black and white</font> "</i>.</figcaption>
+        <img class="img-fluid  " src="{{ site.baseurl }}/assets/img/diffusion/old_man_4.PNG" style="width: 700px;">
+        <figcaption><b>Query</b>: <i>"<font  color="blue">A renaissance portrait drawing</font> of an older man with a cap and winter clothes <font  color="blue">in black and white</font> "</i>.</figcaption>
+        <img class="img-fluid  " src="{{ site.baseurl }}/assets/img/diffusion/old_man_5.PNG" style="width: 700px;">
+        <figcaption><b>Query</b>: <i>"<font  color="blue">A photorealistic portrait drawing</font> of an older man with a cap and winter clothes <font  color="blue">in black and white</font> "</i>.</figcaption><br>    
         <figcaption class="figure-caption text-center">Figure 5. Images generated by <a href="https://openai.com/dall-e-2/">DALL-E 2</a>  for a given query.</figcaption>
 </div>

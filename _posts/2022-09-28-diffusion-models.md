@@ -564,7 +564,7 @@ L_{t-1} &=  \mathbb{E}_{q(\mathbf{x}_{t-1} \vert \mathbf{x}_t, \mathbf{x}_0)}\Bi
 &=  \mathbb{E}_{\mathbf{x}_0, \mathbf{\epsilon}}\Big[\frac{1}{2\sigma_t^2}\Big|\Big|\color{blue}\frac{ 1}{\sqrt{\alpha}_t} \Big(\mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon}) \color{red}-\frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}} \mathbf{\epsilon}\Big)\color{black}-\mu_{\theta}(\mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon}),t)\Big|\Big|^2\Big]\text{ (*)}\label{eq:objective_function_reparameterized}\\
 &=  \mathbb{E}_{\mathbf{x}_0, \mathbf{\epsilon}}\Big[\frac{1}{2\sigma_t^2}\Big|\Big|\color{blue}\frac{ 1}{\sqrt{\alpha}_t} \Big(\mathbf{x}_t \color{red}-\frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}} \mathbf{\epsilon}\Big)\color{black}-\color{blue}\frac{ 1}{\sqrt{\alpha}_t} \Big(\mathbf{x}_t\color{red}-\frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}} \color{green}\mathbf{\epsilon}_{\theta}(\mathbf{x}_t, t)\color{black}\Big)\Big|\Big|^2\Big]; \text{ (**)}\\
 &=  \mathbb{E}_{\mathbf{x}_0, \mathbf{\epsilon}}\Big[\frac{1}{2\sigma_t^2}\Big|\Big|\color{blue}-\frac{ 1}{\sqrt{\alpha}_t}\color{red}\frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}} \color{black}(\mathbf{\epsilon}\color{red}-\color{green}\mathbf{\epsilon}_{\theta}(\mathbf{x}_t, t)\color{black})\Big|\Big|^2\Big]\\
-&=  \mathbb{E}_{\mathbf{x}_0, \mathbf{\epsilon}}\Big[ \frac{\beta_t^2}{2\sigma_t^2\alpha_t(1 - \bar{\alpha}_t)}\Big|\Big| \mathbf{\epsilon} - \color{green}\mathbf{\epsilon}(\mathbf{x}_t, t) \color{black}\Big|\Big|^2\Big]
+&=  \mathbb{E}_{\mathbf{x}_0, \mathbf{\epsilon}}\Big[ \frac{\beta_t^2}{2\sigma_t^2\alpha_t(1 - \bar{\alpha}_t)}\Big|\Big| \mathbf{\epsilon} - \color{green}\mathbf{\epsilon}_{\theta}(\mathbf{x}_t, t) \color{black}\Big|\Big|^2\Big]
 \end{align}
 $$
 
@@ -634,10 +634,11 @@ $$
 
 Since \(\mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon})  = \sqrt{\bar{\alpha}_t} \mathbf{x}_0 +  \sqrt{1 - \bar{\alpha}_t}\mathbf{\epsilon}\), we can rearraged this as \(\mathbf{\epsilon}(\mathbf{x}_0, \mathbf{x}_t) = \frac{\mathbf{x}_t - \sqrt{\bar{\alpha}_t} \mathbf{x}_0}{\sqrt{1 - \bar{\alpha}_t}}\). Therefore, the diffusion model is defined by the parametric Gaussian distribution
 $$
-\begin{aligned}
+\begin{align}
  p_\theta(\mathbf{x}_{t-1} \vert \mathbf{x}_t) &= \mathcal{N}(\mathbf{x}_{t-1}; \mathbf{\mu}_\theta(\mathbf{x}_t, t), \mathbf{\Sigma}_\theta(\mathbf{x}_t, t))\\
- &= \mathcal{N}(\mathbf{x}_{t-1}; \color{blue}\frac{ 1}{\sqrt{\alpha}_t} \Big(\mathbf{x}_t\color{red}-\frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}} \color{green}\mathbf{\epsilon}_{\theta}(\mathbf{x}_t, t)\Big)\color{black}, \sigma_t	\mathbf{I})
-\end{aligned}
+ &= \mathcal{N}(\mathbf{x}_{t-1}; \color{blue}\frac{ 1}{\sqrt{\alpha}_t} \Big(\mathbf{x}_t\color{red}-\frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}} \color{green}\mathbf{\epsilon}_{\theta}(\mathbf{x}_t, t)\Big)\color{black}, \sigma_t^2	\mathbf{I})
+ \label{eq:diffusion_trainsition}
+\end{align}
 $$
 
 To generate samples using the generative Markov chain we
@@ -651,12 +652,25 @@ $$
 The complete sampling procedure, <a href="#algorithm">Algorithm 2</a>, resembles Langevin dynamics with \(\mathbf{\epsilon}_{\theta}(\mathbf{x}_t, t)\) as a learned gradient of the data density, the score.  
 
 
+Langevin dynamics can produce samples from a probability density q(x) using only the score function ∇x log p(x).
+$$
+\begin{align}
+\label{eq:sampling}
+ \mathbf{x}_{t} = \mathbf{x}_{t-1} +\frac{ 1}{\sqrt{\alpha}_t} \Big(\mathbf{x}_t\color{red}-\frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}} \color{green}\mathbf{\epsilon}_{\theta}(\mathbf{x}_t, t)\Big)\color{black} +  \sigma_t	\mathbf{\epsilon}; \quad \mathbf{\epsilon}\sim \mathcal{N}(\mathbf{0}, \mathbf{I})
+\end{align}
+$$
+
+
+
 <div style="align: left; text-align:center;" id="algorithm">
         <img class="img-fluid  " src="{{ site.baseurl }}/assets/img/diffusion/algorithm.PNG" style="width: 700px;">
 </div>
 </p>
 
 
+
+
+<p align="justify">
 In conclusion, this shows that the VLB objective function reduces to equation \ref{eq:denosing_sm}, which resamples denoising score matching over multiple noise scales indexed by $t$.
 $$
 \begin{align}
@@ -666,8 +680,24 @@ L_{t-1} &=  \mathbb{E}_{\mathbf{x}_0, \mathbf{\epsilon}}\Big[ \frac{\beta_t^2}{2
 $$
 
 
+We still need to estimate \(L_0= \log p_{\theta}(\mathbf{x}_0\vert \mathbf{x}_1)\). Ho et. al proposed to model \(L_0\) in such a way that the range of the data $[-1,1]$ operates in the same range as the Gaussian using a separate discrete decoder derived from \(\mathcal{N}(\mathbf{x}_0; \mathbf{\mu}_\theta(\mathbf{x}_1, 1), \sigma_1^2	\mathbf{I})\)
+
+
+</p>
 ### Connection to Langevin Dynamics
 Ho et. al.<d-cite key="ho2020denoising"></d-cite> established a new explicit connection between diffusion models and denoising score matching that allows choosing these parameterization of the reverse process that leads to a simplified, <b>weighted variational bound objective</b> for diffusion models. Using equations \ref{eq:forward_posterior} and \ref{eq:reverse_trajectory}
+
+
+
+### Simplication
+
+Empirically, Ho. et al. obtained better results in terms of sample quality (and simpler to implement) to train on the following variant of the variational bound:
+$$
+\begin{align}
+\label{eq:denosing_sm_simple}
+L_{\text{simple}}(\theta) &=  \mathbb{E}_{t, \mathbf{x}_0, \mathbf{\epsilon}}\Big[ \Big|\Big| \mathbf{\epsilon} - \color{green}\mathbf{\epsilon}(\mathbf{x}_t, t) \color{black}\Big|\Big|^2\Big]; \quad t \sim U[1,T]
+\end{align}
+$$
 
 
 <b> Summary </b>
@@ -716,15 +746,18 @@ Ho et. al.<d-cite key="ho2020denoising"></d-cite> established a new explicit con
  \right];\quad \text{Markov property + Bayes' rule (*).}\\
  &=\mathbb{E}_{q(\mathbf{x}_0)}\left[\sum^T_{t=2} \underbrace{\text{D}_{KL} (q(\mathbf{x}_{t-1} \vert \mathbf{x}_t, \mathbf{x}_0)||p_\theta(\mathbf{x}_{t-1} \vert \mathbf{x}_t))}_{L_{t-1}}  - \underbrace{\log p_\theta(\mathbf{x}_0 \vert \mathbf{x}_1)}_{L_0}
  \right]\\
-   &= \mathbb{E}_{q(\mathbf{x}_0)}\left[\sum^T_{t=2}\text{D}_{KL} (q(\mathbf{x}_{t-1} \vert \mathbf{x}_t, \mathbf{x}_0)||p_\theta(\mathbf{x}_{t-1} \vert \mathbf{x}_t))\right]\\
-  &=\mathbb{E}_{q(\mathbf{x}_0)}\left[\sum^T_{t=2}\mathbb{E}_{q(\mathbf{x}_{t-1} \vert \mathbf{x}_t, \mathbf{x}_0)}\Big[\log \frac{q(\mathbf{x}_{t-1} \vert \mathbf{x}_t, \mathbf{x}_0)}{p_\theta(\mathbf{x}_{t-1} \vert \mathbf{x}_t)} \Big]\right]\\
+   &= \mathbb{E}_{q(\mathbf{x}_0)}\left[\sum^T_{t=2}\underbrace{\text{D}_{KL} (q(\mathbf{x}_{t-1} \vert \mathbf{x}_t, \mathbf{x}_0)||p_\theta(\mathbf{x}_{t-1} \vert \mathbf{x}_t))}_{L_{t-1}}\right] - \mathbb{E}_{q(\mathbf{x}_0)}\left[\underbrace{\log p_\theta(\mathbf{x}_0 \vert \mathbf{x}_1)}_{L_0}
+   \right]\\
+  &=\mathbb{E}_{q(\mathbf{x}_0)}\left[\sum^T_{t=2}\underbrace{\mathbb{E}_{q(\mathbf{x}_{t-1} \vert \mathbf{x}_t, \mathbf{x}_0)}\Big[\log \frac{q(\mathbf{x}_{t-1} \vert \mathbf{x}_t, \mathbf{x}_0)}{p_\theta(\mathbf{x}_{t-1} \vert \mathbf{x}_t)}}_{L_{t-1}} \Big]\right]\\
   &=\mathbb{E}_{q(\mathbf{x}_0)}\left[\sum^T_{t=2}\mathbb{E}_{q(\mathbf{x}_{t-1} \vert \mathbf{x}_t, \mathbf{x}_0)}\Big[\log \frac{\mathcal{N}(\mathbf{x}_{t-1} ; \tilde{\mu}_t(\mathbf{x}_t,\mathbf{x}_0), \tilde{\beta}_t\mathbf{I})}{\mathcal{N}(\mathbf{x}_{t-1}; \mathbf{\mu}_\theta(\mathbf{x}_t, t), \sigma_t^2\mathbf{I})} \Big]\right]\\
   &=\mathbb{E}_{q(\mathbf{x}_0)}\left[\sum^T_{t=2}\mathbb{E}_{q(\mathbf{x}_{t-1} \vert \mathbf{x}_t, \mathbf{x}_0)}\Big[LLR (\mathbf{x}_{t-1})\Big]\right]\\
-  &=  \mathbb{E}_{q(\mathbf{x}_{t-1} \vert \mathbf{x}_t, \mathbf{x}_0)}\Big[\frac{1}{2\sigma_t^2}||\tilde{\mu}_t(\mathbf{x}_t,\mathbf{x}_0)-\mu_{\theta}(\mathbf{x}_t,t)||^2\Big]\\
- &=  \mathbb{E}_{\mathbf{x}_0, \mathbf{\epsilon}}\Big[\frac{1}{2\sigma_t^2}\Big|\Big|\tilde{\mu}_t\Big(\mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon}),\frac{1}{\sqrt{\bar{\alpha}_t}}(\mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon})- \sqrt{1 - \bar{\alpha}_t}\mathbf{\epsilon})\Big)-\mu_{\theta}(\mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon}),t)\Big|\Big|^2\Big] \\
- &=  \mathbb{E}_{\mathbf{x}_0, \mathbf{\epsilon}}\Big[\frac{1}{2\sigma_t^2}\Big|\Big|\tilde{\mu}_t\Big(\mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon}),\frac{1}{\sqrt{\bar{\alpha}_t}}(\mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon})- \sqrt{1 - \bar{\alpha}_t}\mathbf{\epsilon})\Big)-\mu_{\theta}(\mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon}),t)\Big|\Big|^2\Big]\\
- &=  \mathbb{E}_{\mathbf{x}_0, \mathbf{\epsilon}}\Big[\frac{1}{2\sigma_t^2}\Big|\Big|\color{blue}\frac{ 1}{\sqrt{\alpha}_t} \Big(\mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon}) \color{red}-\frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}} \mathbf{\epsilon}\Big)\color{black}-\mu_{\theta}(\mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon}),t)\Big|\Big|^2\Big]\\
- &= \mathbb{E}_{\mathbf{x}_0, \mathbf{\epsilon}}\Big[\frac{1}{2\sigma_t^2}\Big|\Big|\color{blue}\frac{ 1}{\sqrt{\alpha}_t} \Big(\mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon}) \color{red}-\frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}} \mathbf{\epsilon}\Big)\color{black}-\mu_{\theta}(\mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon}),t)\Big|\Big|^2\Big];\quad\text{ After parameterization}
+  &= \mathbb{E}_{q(\mathbf{x}_0)}\left[\sum^T_{t=2} \mathbb{E}_{q(\mathbf{x}_{t-1} \vert \mathbf{x}_t, \mathbf{x}_0)}\Big[\frac{1}{2\sigma_t^2}||\tilde{\mu}_t(\mathbf{x}_t,\mathbf{x}_0)-\mu_{\theta}(\mathbf{x}_t,t)||^2\Big]\right]\\
+ &= \mathbb{E}_{q(\mathbf{x}_0)}\left[\sum^T_{t=2} \mathbb{E}_{\mathbf{x}_0, \mathbf{\epsilon}}\Big[\frac{1}{2\sigma_t^2}\Big|\Big|\tilde{\mu}_t\Big(\mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon}),\frac{1}{\sqrt{\bar{\alpha}_t}}(\mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon})- \sqrt{1 - \bar{\alpha}_t}\mathbf{\epsilon})\Big)-\mu_{\theta}(\mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon}),t)\Big|\Big|^2\Big]\right] \\
+ &= \mathbb{E}_{q(\mathbf{x}_0)}\left[\sum^T_{t=2} \mathbb{E}_{\mathbf{x}_0, \mathbf{\epsilon}}\Big[\frac{1}{2\sigma_t^2}\Big|\Big|\color{blue}\frac{ 1}{\sqrt{\alpha}_t} \Big(\mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon}) \color{red}-\frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}} \mathbf{\epsilon}\Big)\color{black}-\mu_{\theta}(\mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon}),t)\Big|\Big|^2\Big]\right]\\
+ &= \mathbb{E}_{q(\mathbf{x}_0)}\left[\sum^T_{t=2} \mathbb{E}_{\mathbf{x}_0, \mathbf{\epsilon}}\Big[\frac{1}{2\sigma_t^2}\Big|\Big|\color{blue}\frac{ 1}{\sqrt{\alpha}_t} \Big(\mathbf{x}_t \color{red}-\frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}} \mathbf{\epsilon}\Big)\color{black}-\color{blue}\frac{ 1}{\sqrt{\alpha}_t} \Big(\mathbf{x}_t\color{red}-\frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}} \color{green}\mathbf{\epsilon}_{\theta}(\mathbf{x}_t, t)\color{black}\Big)\Big|\Big|^2\Big]\right]; \text{ Parameterization}\\
+ &= \mathbb{E}_{q(\mathbf{x}_0)}\left[\sum^T_{t=2} \mathbb{E}_{\mathbf{x}_0, \mathbf{\epsilon}}\Big[\frac{1}{2\sigma_t^2}\Big|\Big|\color{blue}-\frac{ 1}{\sqrt{\alpha}_t}\color{red}\frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}} \color{black}(\mathbf{\epsilon}\color{red}-\color{green}\mathbf{\epsilon}_{\theta}(\mathbf{x}_t, t)\color{black})\Big|\Big|^2\Big]\right]\\
+ &= \mathbb{E}_{q(\mathbf{x}_0)}\left[\sum^T_{t=2} \mathbb{E}_{\mathbf{x}_0, \mathbf{\epsilon}}\Big[ \frac{\beta_t^2}{2\sigma_t^2\alpha_t(1 - \bar{\alpha}_t)}\Big|\Big| \mathbf{\epsilon} - \color{green}\mathbf{\epsilon}_{\theta}(\mathbf{x}_t, t) \color{black}\Big|\Big|^2\Big]\right]\\
+ &= \mathbb{E}_{q(\mathbf{x}_0)}\left[\mathbb{E}_{t, \mathbf{x}_0, \mathbf{\epsilon}}\Big[ \Big|\Big| \mathbf{\epsilon} - \color{green}\mathbf{\epsilon}(\mathbf{x}_t, t) \color{black}\Big|\Big|^2\Big]\right]=L_{\text{simple}}(\theta); \quad t \sim U[1,T]
   \end{aligned}
   $$
 
@@ -755,19 +788,9 @@ Ho et. al.<d-cite key="ho2020denoising"></d-cite> established a new explicit con
 </ul>
 
 <p align="justify">
-<b>Interpretation</b> The variational lower bound objective tell us that what we have to minimize is <span style="color:blue;">the log-likelihood ration of the forward trajectory wrt the reverse estimated trajectory average over forward trajectories </span>. If \(LLR = 1 \rightarrow L_\text{VLB}=0\). This objective function aims to obtain a model that in average describe the same forward trajectories but in reverse. Therefore, training requires minimizing the \(L_\text{VLB}\) objective function:
+<b>Interpretation</b> The variational lower bound objective tell us that what we have to minimize is <span style="color:blue;">the log-likelihood ration of the forward trajectory wrt the reverse estimated trajectory average over forward trajectories</span>. If \(LLR = 1 \rightarrow L_\text{VLB}=0\). This objective function aims to obtain a model that in average describe the same forward trajectories but in reverse.  
 </p>
-$$
-\begin{equation}
-\mathbb{E}_{q(\mathbf{x}_0)}\left[ \text{D}_{KL}(q(\mathbf{x}_T \vert \mathbf{x}_0)||p(\mathbf{x}_T)) + \sum^T_{t=2} \text{D}_{KL} (q(\mathbf{x}_{t-1} \vert \mathbf{x}_t, \mathbf{x}_0)||p_\theta(\mathbf{x}_{t-1} \vert \mathbf{x}_t))  - \log p_\theta(\mathbf{x}_0 \vert \mathbf{x}_1)
-\right]
-\end{equation}
-$$
 
-
-
-
-</p>
 ## Continuous Diffusion Models
 
 
@@ -775,12 +798,12 @@ $$
 ## Applications
 
 <p align="justify">
-Generative models can be used for several applications. One recent remarkable application is <a href="https://openai.com/dall-e-2/">DALL-E 2</a>, A NEW AI system that can create realistic images and art from a description in natural language.  <a href="https://openai.com/dall-e-2/">DALL-E 2</a> uses diffusion models to produce higher-quality image samples. For more details about <a href="https://openai.com/dall-e-2/">DALL-E 2</a> see the scientific paper  <a href="https://arxiv.org/abs/2204.06125Hierarchical"> Text-Conditional Image Generation with CLIP Latents</a> <d-cite key="ramesh2022hierarchical"></d-cite>
+Generative models can be used for several applications. One recent remarkable application is <a href="https://openai.com/dall-e-2/">DALL-E 2</a>, a new AI system that can create realistic images and art from a description in natural language.  <a href="https://openai.com/dall-e-2/">DALL-E 2</a> uses diffusion models to produce higher-quality image samples. For more details about <a href="https://openai.com/dall-e-2/">DALL-E 2</a> see the scientific paper  <a href="https://arxiv.org/abs/2204.06125Hierarchical"> Text-Conditional Image Generation with CLIP Latents</a> <d-cite key="ramesh2022hierarchical"></d-cite>.
 </p>
 
 
 <div style="align: left; text-align:center;">
         <img class="img-fluid  " src="{{ site.baseurl }}/assets/img/diffusion/applications.PNG" style="width: 700px;">
         <img class="img-fluid  " src="{{ site.baseurl }}/assets/img/diffusion/dalle_tree.PNG" style="width: 700px;">
-        <figcaption class="figure-caption text-center">Figure 4. Variations of <b>original art</b> made by <a href="https://mariavoncken.com/">Maria Voncken</a> created by <a href="https://openai.com/dall-e-2/">DALL-E 2</a>.</figcaption>
+        <figcaption class="figure-caption text-center">Figure 4. Sample variations of <b>original art</b> (first column) made by <a href="https://mariavoncken.com/">Maria Voncken</a> generated by <a href="https://openai.com/dall-e-2/">DALL-E 2</a>,  an AI system that uses diffusion models to produce higher-quality image data.</figcaption>
 </div>

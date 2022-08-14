@@ -2,12 +2,14 @@
 layout: distill
 title: Diffusion models explained
 description: An overview of diffusion models (work in progress).
-date: 2022-08-10 0:00:00-0400
+date: 2022-08-14 0:00:00-0400
 
 authors:
    - name: Gabriel Raya
      url: "https://gabrielraya.com/"
-
+     affiliations:
+           name: JADS Research
+           url: "https://www.tue.nl/en/research/research-areas/data-science/jheronimus-academy-of-data-science/"
 bibliography: 2018-12-22-distill.bib
 
 keywords:
@@ -68,6 +70,7 @@ For more in-depth information, I will always suggest reading the original papers
 
 - [Deep Unsupervised Learning using Nonequilibrium Thermodynamics, 2015](https://arxiv.org/abs/1503.03585).
 - [Denoising Diffusion Probabilistic Models, 2020](https://arxiv.org/abs/2006.11239)
+- [Generative Modeling by Estimating Gradients of the Data Distribution](https://arxiv.org/abs/1907.05600)
 - [Score-Based Generative Modeling through Stochastic Differential Equations](https://openreview.net/forum?id=PxTIG12RRHS)
 
 I also recommend reading the following blog post, from which some information I have added here to provide a complete picture.  
@@ -559,7 +562,11 @@ $$
 L_{t-1} &=  \mathbb{E}_{q(\mathbf{x}_{t-1} \vert \mathbf{x}_t, \mathbf{x}_0)}\Big[\frac{1}{2\sigma_t^2}||\tilde{\mu}_t(\mathbf{x}_t,\mathbf{x}_0)-\mu_{\theta}(\mathbf{x}_t,t)||^2\Big]\\
 &=  \mathbb{E}_{\mathbf{x}_0, \mathbf{\epsilon}}\Big[\frac{1}{2\sigma_t^2}\Big|\Big|\tilde{\mu}_t\Big(\mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon}),\frac{1}{\sqrt{\bar{\alpha}_t}}(\mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon})- \sqrt{1 - \bar{\alpha}_t}\mathbf{\epsilon})\Big)-\mu_{\theta}(\mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon}),t)\Big|\Big|^2\Big] \\
 &=  \mathbb{E}_{\mathbf{x}_0, \mathbf{\epsilon}}\Big[\frac{1}{2\sigma_t^2}\Big|\Big|\tilde{\mu}_t\Big(\mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon}),\frac{1}{\sqrt{\bar{\alpha}_t}}(\mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon})- \sqrt{1 - \bar{\alpha}_t}\mathbf{\epsilon})\Big)-\mu_{\theta}(\mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon}),t)\Big|\Big|^2\Big]\\
-&=  \mathbb{E}_{\mathbf{x}_0, \mathbf{\epsilon}}\Big[\frac{1}{2\sigma_t^2}\Big|\Big|\color{blue}\frac{ 1}{\sqrt{\alpha}_t} \Big(\mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon}) \color{red}-\frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}} \mathbf{\epsilon}\Big)\color{black}-\mu_{\theta}(\mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon}),t)\Big|\Big|^2\Big]
+&=  \mathbb{E}_{\mathbf{x}_0, \mathbf{\epsilon}}\Big[\frac{1}{2\sigma_t^2}\Big|\Big|\color{blue}\frac{ 1}{\sqrt{\alpha}_t} \Big(\mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon}) \color{red}-\frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}} \mathbf{\epsilon}\Big)\color{black}-\mu_{\theta}(\mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon}),t)\Big|\Big|^2\Big]\\
+&=  \mathbb{E}_{\mathbf{x}_0, \mathbf{\epsilon}}\Big[\frac{1}{2\sigma_t^2}\Big|\Big|\color{blue}\frac{ 1}{\sqrt{\alpha}_t} \Big(\mathbf{x}_t \color{red}-\frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}} \mathbf{\epsilon}\Big)\color{black}-\color{blue}\frac{ 1}{\sqrt{\alpha}_t} \Big(\mathbf{x}_t\color{red}-\frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}} \color{green}\mathbf{\epsilon}(\mathbf{x}_t, t)\color{black}\Big)\Big|\Big|^2\Big]; \text{ (**)}\\
+&=  \mathbb{E}_{\mathbf{x}_0, \mathbf{\epsilon}}\Big[\frac{1}{2\sigma_t^2}\Big|\Big|\color{blue}-\frac{ 1}{\sqrt{\alpha}_t}\color{red}\frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}} \color{black}(\mathbf{\epsilon}\color{red}-\color{green}\mathbf{\epsilon}(\mathbf{x}_t, t)\color{black})\Big|\Big|^2\Big]\\
+&=  \mathbb{E}_{\mathbf{x}_0, \mathbf{\epsilon}}\Big[ \frac{\beta_t^2}{2\sigma_t^2\alpha_t(1 - \bar{\alpha}_t)}\Big|\Big| \mathbf{\epsilon} - \color{green}\mathbf{\epsilon}(\mathbf{x}_t, t) \color{black}\Big|\Big|^2\Big]
+
 \label{eq:objective_function_reparameterized}
 \end{align}
 $$
@@ -613,8 +620,7 @@ Equation \ref{eq:objective_function_reparameterized} reveals that \(\mu_{\theta}
 $$
 \begin{aligned}
 \mathbb{E}_{q(\mathbf{x}_{t-1} \vert \mathbf{x}_t, \mathbf{x}_0)}\Big[\frac{1}{2\sigma_t^2}||\tilde{\mu}_t -\mu_{\theta}(\mathbf{x}_t,t)||^2\Big]&=0 \rightarrow \tilde{\mu}_t(\mathbf{x}_t,\mathbf{x}_0)=\mu_{\theta}(\mathbf{x}_t,t)\\
-\mu_{\theta}(\mathbf{x}_t,t) &=\tilde{\mu}_t(\mathbf{x}_t,\mathbf{x}_0)\\
- &=  \color{blue}\frac{ 1}{\sqrt{\alpha}_t} \Big(\mathbf{x}_t  \color{red}-\frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}} \mathbf{\epsilon}\Big)
+\mu_{\theta}(\mathbf{x}_t,t) &=\tilde{\mu}_t(\mathbf{x}_t,\mathbf{x}_0) =  \color{blue}\frac{ 1}{\sqrt{\alpha}_t} \Big(\mathbf{x}_t  \color{red}-\frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}} \mathbf{\epsilon}\Big)
 \end{aligned}
 $$
 
@@ -622,7 +628,7 @@ Since \(\mathbf{x}_t\) is available as input to the model, we may choose the par
 
 $$
 \begin{align}
- \mu_{\theta}(\mathbf{x}_t,t)= \tilde{\mu}_{\theta}\Big(\mathbf{x}_t,\frac{1}{\sqrt{\bar{\alpha}_t}}(\mathbf{x}_t- \sqrt{1 - \bar{\alpha}_t}\mathbf{\epsilon})\Big) := \color{blue}\frac{ 1}{\sqrt{\alpha}_t} \Big(\mathbf{x}_t\color{red}-\frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}} \color{green}\mathbf{\epsilon}(\mathbf{x}_0, \mathbf{x}_t)\Big)\\
+ \mu_{\theta}(\mathbf{x}_t,t)= \tilde{\mu}_{t}\Big(\mathbf{x}_t,\frac{1}{\sqrt{\bar{\alpha}_t}}(\mathbf{x}_t- \sqrt{1 - \bar{\alpha}_t}\mathbf{\epsilon})\Big) := \color{blue}\frac{ 1}{\sqrt{\alpha}_t} \Big(\mathbf{x}_t\color{red}-\frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}} \color{green}\mathbf{\epsilon}(\mathbf{x}_0, \mathbf{x}_t)\Big)\\
 \end{align}
 $$
 
@@ -631,13 +637,11 @@ $$
 Recall \(\mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon})  = \sqrt{\bar{\alpha}_t} \mathbf{x}_0 +  \sqrt{1 - \bar{\alpha}_t}\mathbf{\epsilon}\), we can rearraged this as \(\mathbf{\epsilon}(\mathbf{x}_0, \mathbf{x}_t) = \frac{\mathbf{x}_t - \sqrt{\bar{\alpha}_t} \mathbf{x}_0}{\sqrt{1 - \bar{\alpha}_t}}\). However, to generate samples we do not have access to \(\mathbf{x}_0\) and
 
 
-
-
 $$
-\begin{align}
-L_{t-1} &= \mathbb{E}_{\mathbf{x}_0, \mathbf{\epsilon}}\Big[\frac{1}{2\sigma_t^2}\Big|\Big|\color{blue}\frac{ 1}{\sqrt{\alpha}_t} \Big(\mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon}) \color{red}-\frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}} \mathbf{\epsilon}\Big)\color{black}-\mu_{\theta}(\mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon}),t)\Big|\Big|^2\Big]\\
-&= \mathbb{E}_{\mathbf{x}_0, \mathbf{\epsilon}}\Big[\frac{1}{2\sigma_t^2}\Big|\Big|\color{blue}\frac{ 1}{\sqrt{\alpha}_t} \Big(\mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon}) \color{red}-\frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}} \mathbf{\epsilon}\Big)\color{black}-\mu_{\theta}(\mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon}),t)\Big|\Big|^2\Big]
-\end{align}
+\begin{aligned}
+ p_\theta(\mathbf{x}_{t-1} \vert \mathbf{x}_t) &= \mathcal{N}(\mathbf{x}_{t-1}; \mathbf{\mu}_\theta(\mathbf{x}_t, t) \mathbf{\Sigma}_\theta(\mathbf{x}_t, t))\\
+ &= \mathcal{N}(\mathbf{x}_{t-1}; \color{blue}\frac{ 1}{\sqrt{\alpha}_t} \Big(\mathbf{x}_t\color{red}-\frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}} \color{green}\mathbf{\epsilon}(\mathbf{x}_0, \mathbf{x}_t)\Big)\color{black}, \sigma_t	\mathbf{I})
+\end{aligned}
 $$
 
 
@@ -646,7 +650,7 @@ $$
 
 
 <div style="align: left; text-align:center;">
-        <img class="img-fluid  " src="{{ site.baseurl }}/assets/img/diffusion/algorithm.png" style="width: 700px;">
+        <img class="img-fluid  " src="{{ site.baseurl }}/assets/img/diffusion/algorithm.PNG" style="width: 700px;">
         <figcaption class="figure-caption text-center">Figure 4. Algorithm.</figcaption>
 </div>
 
@@ -754,7 +758,7 @@ $$
 
 
 <div style="align: left; text-align:center;">
-        <img class="img-fluid  " src="{{ site.baseurl }}/assets/img/diffusion/applications.png" style="width: 700px;">
-        <img class="img-fluid  " src="{{ site.baseurl }}/assets/img/diffusion/dalle_tree.PNG" style="width: 700px;"> 
+        <img class="img-fluid  " src="{{ site.baseurl }}/assets/img/diffusion/applications.PNG" style="width: 700px;">
+        <img class="img-fluid  " src="{{ site.baseurl }}/assets/img/diffusion/dalle_tree.PNG" style="width: 700px;">
         <figcaption class="figure-caption text-center">Figure 4. Variations of art created by <a href="https://mariavoncken.com/">Maria Voncken</a>..</figcaption>
 </div>

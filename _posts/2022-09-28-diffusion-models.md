@@ -641,22 +641,39 @@ $$
 \end{align}
 $$
 
-To generate samples using the generative Markov chain we
+To generate samples using the generative Markov chain we simply reparameterize the Gaussian  distribution \(p_\theta(\mathbf{x}_{t-1} \vert \mathbf{x}_t)\):
 
 $$
 \begin{aligned}
- \mathbf{x}_{t-1} = \frac{ 1}{\sqrt{\alpha}_t} \Big(\mathbf{x}_t\color{red}-\frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}} \color{green}\mathbf{\epsilon}_{\theta}(\mathbf{x}_t, t)\Big)\color{black} +  \sigma_t	\mathbf{\epsilon}; \quad \mathbf{\epsilon}\sim \mathcal{N}(\mathbf{0}, \mathbf{I})
+ \mathbf{x}_t =  \mathbf{x}_{t-1}
 \end{aligned}
 $$
 
-The complete sampling procedure, <a href="#algorithm">Algorithm 2</a>, resembles Langevin dynamics with \(\mathbf{\epsilon}_{\theta}(\mathbf{x}_t, t)\) as a learned gradient of the data density, the score.  
+<a href="#algorithm">Algorithm 2</a>, resembles Langevin dynamics with \(\mathbf{\epsilon}_{\theta}(\mathbf{x}_t, t)\) as a learned gradient of the data density, the score.  Langevin dynamics can produce samples from a probability density \(q(x)\) using only the score function \(\nabla_x \log q(x)\). In the context of MCMC samplers this is known as the Metropolis-adjusted Langevin algorithm (MALA)
 
 
-Langevin dynamics can produce samples from a probability density q(x) using only the score function ∇x log p(x).
+
+<d-cite key="roberts1998optimal"></d-cite>
+
+ Following the reverse process, the notation is slightly changed so that the initial value \(\mathbf{x_T}\sim \pi(\mathbf{x})\), here \(\pi(\mathbf{x})=\mathcal{N}(\mathbf{0}, \mathbf{I})\). Langevin dynamics recursively computes
+
+
+
+$$
+\begin{align}
+ \mathbf{x}_{t-1} &=  \sqrt{\alpha}_t} \Big(\mathbf{x}_t\color{red}-\frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}} \color{green}\mathbf{\epsilon}_{\theta}(\mathbf{x}_t, t)\Big)\color{black} +  \sigma_t	\mathbf{\epsilon}; \quad \mathbf{\epsilon}\sim \mathcal{N}(\mathbf{0}, \mathbf{I})\\
+ &=  \frac{ 1}{\sqrt{\alpha}_t}\mathbf{x}_t\color{red}-\frac{\beta_t}{\sqrt{\alpha_t(1 - \bar{\alpha}_t)}} \color{green}\mathbf{\epsilon}_{\theta}(\mathbf{x}_t, t) \color{black} +  \sigma_t	\mathbf{\epsilon}; \quad \mathbf{\epsilon}\sim \mathcal{N}(\mathbf{0}, \mathbf{I})
+\end{align}
+$$
+
+
+Recal \(\sigma_t = \beta_t\)  or \(\sigma_t = \tilde{\beta}_t=\frac{1 - \bar{\alpha}_{t-1}}{1 - \bar{\alpha}_t }\beta_t\)
+
 $$
 \begin{align}
 \label{eq:sampling}
- \mathbf{x}_{t} = \mathbf{x}_{t-1} +\frac{ 1}{\sqrt{\alpha}_t} \Big(\mathbf{x}_t\color{red}-\frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}} \color{green}\mathbf{\epsilon}_{\theta}(\mathbf{x}_t, t)\Big)\color{black} +  \sigma_t	\mathbf{\epsilon}; \quad \mathbf{\epsilon}\sim \mathcal{N}(\mathbf{0}, \mathbf{I})
+ \mathbf{x}_{t-1} &=  \frac{ 1}{\sqrt{\alpha}_t} \Big(\mathbf{x}_t\color{red}-\frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}} \color{green}\mathbf{\epsilon}_{\theta}(\mathbf{x}_t, t)\Big)\color{black} +  \sigma_t	\mathbf{\epsilon}; \quad \mathbf{\epsilon}\sim \mathcal{N}(\mathbf{0}, \mathbf{I})\\
+ &=  \frac{ 1}{\sqrt{\alpha}_t}\mathbf{x}_t\color{red}-\frac{\beta_t}{\sqrt{\alpha_t(1 - \bar{\alpha}_t)}} \color{green}\mathbf{\epsilon}_{\theta}(\mathbf{x}_t, t) \color{black} +  \sigma_t	\mathbf{\epsilon}; \quad \mathbf{\epsilon}\sim \mathcal{N}(\mathbf{0}, \mathbf{I})\\
 \end{align}
 $$
 
@@ -798,12 +815,26 @@ $$
 ## Applications
 
 <p align="justify">
-Generative models can be used for several applications. One recent remarkable application is <a href="https://openai.com/dall-e-2/">DALL-E 2</a>, a new AI system that can create realistic images and art from a description in natural language.  <a href="https://openai.com/dall-e-2/">DALL-E 2</a> uses diffusion models to produce higher-quality image samples. For more details about <a href="https://openai.com/dall-e-2/">DALL-E 2</a> see the scientific paper  <a href="https://arxiv.org/abs/2204.06125Hierarchical"> Text-Conditional Image Generation with CLIP Latents</a> <d-cite key="ramesh2022hierarchical"></d-cite>.
+Generative models can be used for several applications. One recent remarkable application is <a href="https://openai.com/dall-e-2/">DALL-E 2</a>, a new AI system that can create realistic images and art from a description in natural language.  <a href="https://openai.com/dall-e-2/">DALL-E 2</a> uses diffusion models to produce high-quality image samples. For more details about <a href="https://openai.com/dall-e-2/">DALL-E 2</a> see the scientific paper  <a href="https://arxiv.org/abs/2204.06125Hierarchical"> Text-Conditional Image Generation with CLIP Latents</a> <d-cite key="ramesh2022hierarchical"></d-cite>.
 </p>
 
 
 <div style="align: left; text-align:center;">
         <img class="img-fluid  " src="{{ site.baseurl }}/assets/img/diffusion/applications.PNG" style="width: 700px;">
         <img class="img-fluid  " src="{{ site.baseurl }}/assets/img/diffusion/dalle_tree.PNG" style="width: 700px;">
-        <figcaption class="figure-caption text-center">Figure 4. Sample variations of <b>original art</b> (first column) made by <a href="https://mariavoncken.com/">Maria Voncken</a> generated by <a href="https://openai.com/dall-e-2/">DALL-E 2</a>,  an AI system that uses diffusion models to produce higher-quality image data.</figcaption>
+        <figcaption class="figure-caption text-center">Figure 4. Sample variations of <b>original art</b> (first column) made by <a href="https://mariavoncken.com/">Maria Voncken</a> generated by <a href="https://openai.com/dall-e-2/">DALL-E 2</a>, an AI system that uses diffusion models to produce high-quality image data.</figcaption>
+</div><br>
+<p align="justify">
+You can also ask <a href="https://openai.com/dall-e-2/">DALL-E 2</a> to generate an image given a text. Let's try to recreate the original art from above with <a href="https://openai.com/dall-e-2/">DALL-E 2</a>.
+<a href="#dalle"> Figure 4</a> shows several queries that attempt  to recreate the drawing of the older man from above. However, as you can see, <a href="https://openai.com/dall-e-2/">DALL-E 2</a> requires an accurate description to match what you have in mind, the more specific the query. The more information <a href="https://openai.com/dall-e-2/">DALL-E 2</a> has to create what you might expect!
+</p>
+
+<div style="align: left; text-align:center;" id="dalle">
+        <img class="img-fluid  " src="{{ site.baseurl }}/assets/img/diffusion/old_man_1.PNG" style="width: 700px;">
+        <figcaption><b>Query</b>: <i>"Drawing of an older man with a cap and winter cloths"</i>.</figcaption>     
+        <img class="img-fluid  " src="{{ site.baseurl }}/assets/img/diffusion/old_man_2.PNG" style="width: 700px;">
+        <figcaption><b>Query</b>: <i>"Portrait of an older man with a cap and winter cloths in black and white"</i>.</figcaption>       
+        <img class="img-fluid  " src="{{ site.baseurl }}/assets/img/diffusion/old_man_3.PNG" style="width: 700px;">
+        <figcaption><b>Query</b>: <i>"A portrait drawing of an older man with a cap and winter cloths in black and white"</i>.</figcaption><br>    
+        <figcaption class="figure-caption text-center">Figure 5. Images generated by <a href="https://openai.com/dall-e-2/">DALL-E 2</a>  for a given query.</figcaption>
 </div>

@@ -650,17 +650,22 @@ $$
 \end{align}
 $$  
 
-<a href="#algorithm">Algorithm 2</a>, resembles Langevin dynamics with \(\mathbf{\epsilon}_{\theta}(\mathbf{x}_t, t)\) as a learned gradient of the data density, the score.  The reversible Langevin dynamics diffusion can produce samples from a probability density \(q(x)\), with variance \(\eta^2\)  using only the score function \(\nabla_x \log q(x)\). In the context of MCMC samplers this is known as the Metropolis-adjusted Langevin algorithm (MALA)
+<a href="#algorithm">Algorithm 2</a>, resembles Langevin dynamics with \(\mathbf{\epsilon}_{\theta}(\mathbf{x}_t, t)\) as a learned gradient of the data density, the score.  A Langevin diffusion for a multivariate probability density function \(q(\mathbf{x}_0)\) is a natural non-explosive diffusion which is reversible with respect to \(q(\mathbf{x}_0)\)<d-cite key="roberts1998optimal"></d-cite>. It makes use of the gradient of \(q\) to move more often in directions in which \(q\) is increasing, producing samples from the probability density \(q(\mathbf{x}_0)\), with variance \(\sigma^2\).  using only the score function \(\nabla_x \log q(x)\).<br>
 
+Definition 1 [Langevin diffusion]). <i> The reversible Langevin diffusion for the \(n\)-dimensional density \(q(x)\), with variance \(\sigma^2\), is the diffusion process \(\{X_t\}\) which satisfies the stochastic differential equation</i>.
+  $$
+  \begin{align}
+   d\mathbf{X}_{t} &= \frac{\sigma^2}{2}\nabla \log q(\mathbf{X}_t) + \sigma d\mathbf{W}_t
+  \end{align}
+  $$
 
-
-<d-cite key="roberts1998optimal"></d-cite>
+where \(\mathbf{W}_t\) is standard $n$-dimensional Brownian motion. Thus, the natural discrete approximation can be written
 
  Following the reverse process, the notation is slightly changed so that the initial value \(\mathbf{x_T}\sim \pi(\mathbf{x})\), here \(\pi(\mathbf{x})=\mathcal{N}(\mathbf{0}, \mathbf{I})\). Langevin dynamics recursively computes
 
  $$
  \begin{align}
-  \mathbf{x}_{t-1} &=  \mathbf{x}_{t} + \frac{}{2}
+  \mathbf{x}_{t-1} &=  \mathbf{x}_{t} +\frac{\sigma^2_n}{2}\nabla \log q(\mathbf{x}_t) + \sigma_t	\mathbf{\epsilon}; \quad \mathbf{\epsilon}\sim \mathcal{N}(\mathbf{0}, \mathbf{I})
  \end{align}
  $$
 

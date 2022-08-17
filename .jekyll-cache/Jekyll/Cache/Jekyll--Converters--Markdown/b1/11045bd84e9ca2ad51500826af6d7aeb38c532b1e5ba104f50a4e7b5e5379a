@@ -1,0 +1,85 @@
+I"<!-- _pages/publications.md -->
+<div class="publications">
+  <h2 class="year">2021</h2>
+  <ol class="bibliography"><li><!-- _layouts/bib.html -->
+      <div class="row">
+        <div class="col-sm-2 abbr"><abbr class="badge">SPIE</abbr></div>
+
+        <!-- Entry bib key -->
+        <div id="Aswolinskiy" class="col-sm-8">
+        
+          <!-- Title -->
+          <div class="title">Neural image compression for non-small cell lung cancer subtype classification in H&amp;E stained whole-slide images</div>
+          <!-- Author -->
+          <div class="author">
+          
+
+          W. Aswolinskiy,&nbsp;D. Tellez,&nbsp;<em>G. Raya</em>, and
+            <span class="more-authors" title="click to view 5 more authors" onclick="
+                  var element = $(this);
+                  element.attr('title', '');
+                  var more_authors_text = element.text() == '5 more authors' ? 'Lieke Woude, Monika Looijen-Salamon, Jeroen Laak, Katrien Grunberg, Francesco Ciompi' : '5 more authors';
+                  var cursorPosition = 0;
+                  var textAdder = setInterval(function(){
+                    element.text(more_authors_text.substring(0, cursorPosition + 1));
+                    if (++cursorPosition == more_authors_text.length){
+                      clearInterval(textAdder);
+                    }
+                }, '10');
+                ">5 more authors</span></div>
+
+          <!-- Journal/Book title and date -->
+          <div class="periodical">
+            <em></em> Jan 2021
+          </div>
+        
+          <!-- Links/Buttons -->
+          <div class="links">
+            <a class="abstract btn btn-sm z-depth-0" role="button">Abs</a>
+            <a href="https://spie.org/MI/conferencedetails/digital-and-computational-pathology?SSO=1" class="btn btn-sm z-depth-0" role="button">HTML</a>
+            <a href="https://wiki.examode.eu/images/d/d2/Spie_2021_NIC_LUAD_VS_LUSC_final.pdf" class="btn btn-sm z-depth-0" role="button">PDF</a>
+          </div>
+
+          <!-- Hidden abstract block -->
+          <div class="abstract hidden">
+            <p>Classification of non-small-cell lung cancer (NSCLC) into adenocarcinoma (LUAD) and squamous cell carcinoma (LUSC) is essential to select the appropriate treatment for the patient. However, most machine learning approaches require many detailed annotations of whole slide images. We propose to use Neural Image Compression (NIC), which requires only slide-level labels, to classify NSCLC. We show that NIC approaches state of the art performance on lung classification when trained on &gt;2,000 slides from the TCGA and TCIA databases. The models reach AUCs in the range 0.84-0.98 on several internal and external cohorts.</p>
+          </div>
+        </div>
+      </div>
+</li></ol>
+
+  <h2 class="year">2020</h2>
+  <ol class="bibliography"><li><!-- _layouts/bib.html -->
+      <div class="row">
+        <div class="col-sm-2 abbr"><abbr class="badge">MSc. Thesis</abbr></div>
+
+        <!-- Entry bib key -->
+        <div id="GRaya" class="col-sm-8">
+        
+          <!-- Title -->
+          <div class="title">Unsupervised Out-of-distribution detection in digital pathology</div>
+          <!-- Author -->
+          <div class="author">
+          
+
+          <em>G. Raya</em></div>
+
+          <!-- Journal/Book title and date -->
+          <div class="periodical">
+            <em></em> Nov 2020
+          </div>
+        
+          <!-- Links/Buttons -->
+          <div class="links">
+            <a href="https://www.ru.nl/publish/pages/769526/msc_thesis_gabriel_raya.pdf" class="btn btn-sm z-depth-0" role="button">PDF</a>
+            <a href="https://docs.google.com/presentation/d/1UwtZ-lIbPYMSM4xFeUjr8CCyNZi8VoSM/edit#slide=id.p1" class="btn btn-sm z-depth-0" role="button">Slides</a>
+          </div>
+
+          
+        </div>
+      </div>
+</li></ol>
+
+
+</div>
+:ET

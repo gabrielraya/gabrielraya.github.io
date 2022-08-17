@@ -1,4 +1,4 @@
-posts_in_working_progress/*
+post_templates/*
 _site
 .bundle
 .sass-cache

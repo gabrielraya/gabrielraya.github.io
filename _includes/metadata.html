@@ -8,56 +8,6 @@
     {%- endif -%}
 {%- endif %}
 
-    <!-- Standard metadata -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>
-    {%- if site.title == "blank" -%}
-        {%- capture title -%}{{ site.first_name }} {{ site.middle_name }} {{ site.last_name }}{%- endcapture -%}
-    {%- else -%}
-        {%- capture title -%}{{ site.title }}{%- endcapture -%}
-    {%- endif -%}
-    {% if page.url == '/blog/index.html' %}
-        {{ site.blog_nav_title }} | {{ title }}
-    {%- elsif page.title != "blank" and page.url != "/" -%}
-        {{ page.title }} | {{ title }}
-    {%- else -%}
-        {{ title }}
-    {%- endif -%}
-    </title>
-    <meta name="author" content="{{ site.first_name }} {{ site.middle_name }} {{ site.last_name }}" />
-    <meta name="description" content="{%- if page.description -%}{{ page.description }}{%- else -%}{{ site.description }}{%- endif -%}" />
-{%- if page.keywords or site.keywords %}
-    <meta name="keywords" content="{%- if page.keywords -%}{{ page.keywords }}{%- else -%}{{ site.keywords }}{%- endif -%}" />
-{%- endif %}
-
-{%- if site.serve_og_meta %}
-
-    <!-- OpenGraph -->
-    <meta property="og:site_name" content="{{ title }}" />
-    <meta property="og:type" content="website" />
-    <meta property="og:title" content="{%- if page.title -%}{{ title }} | {{ page.title }}{%- else -%}{{ title }}{%- endif -%}" />
-    <meta property="og:url" content="{{ page.url | prepend: site.baseurl | prepend: site.url | remove_first: 'index.html' }}" />
-    <meta property="og:description" content="{%- if page.description -%}{{ page.description }}{%- else -%}{{ site.description }}{%- endif -%}" />
-    {% if page.og_image or site.og_image -%}
-    <meta property="og:image" content="{%- if page.og_image -%}{{ page.og_image }}{%- else -%}{{ site.og_image }}{%- endif -%}" />
-    {%- endif %}
-    <meta property="og:locale" content="{{ site.lang }}" />
-
-    <!-- Twitter card -->
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="{%- if page.title -%}{{ page.title }}{%- else -%}{{ title }}{%- endif -%}" />
-    <meta name="twitter:description" content="{%- if page.description -%}{{ page.description }}{%- else -%}{{ site.description }}{%- endif -%}" />
-    {% if page.og_image or site.og_image -%}
-    <meta name="twitter:image" content="{%- if page.og_image -%}{{ page.og_image }}{%- else -%}{{ site.og_image }}{%- endif -%}" />
-    {%- endif %}
-    {% if site.twitter_username -%}
-    <meta name="twitter:site" content="@{{ site.twitter_username }}" />
-    <meta name="twitter:creator" content="@{{ site.twitter_username }}" />
-    {%- endif %}
-{%- endif %}
-
 {%- if site.serve_schema_org %}
 
     <!-- Schema.org -->
@@ -147,7 +97,7 @@
         "description": "{%- if page.description -%}{{ page.description }}{%- else if site.description -%}{{ site.description }}{%- endif -%}",
         "headline": "{%- if page.title -%}{{ page.title }}{%- else -%}{{ site.title }}{%- endif -%}",
         {% if sameaslinks != blank -%}
-        "sameAs": {{ sameaslinks }}, 
+        "sameAs": {{ sameaslinks }},
         {%- endif %}
         "name": "{{ site.first_name }} {{ site.middle_name }} {{ site.last_name }}",
         "@context": "https://schema.org"

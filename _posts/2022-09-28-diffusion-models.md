@@ -153,7 +153,7 @@ Lets assume that our dataset consists of \( N \) i.i.d inputs \( \{\mathbf{x}_0^
 ### Forward process
 
 <p align="justify">
- The forward diffusion process, represented by a Markov chain, is a sequence of random variables \( (\mathbf{x}_{0}, \dots, \mathbf{x}_{T}) \) where  \( \mathbf{x}_0 \) is the input data (initial state) with probability density/distribution \( q(\mathbf{x}_0) \) and the final state \( \mathbf{x}_T\sim \pi(\mathbf{x}_T) \), where \( \pi(\mathbf{x}_T) \) is an easy to sample distribution, i.e., an Isotropic Gaussian.  Each transition in the chain is governed by a perturbation kernel \( q(\mathbf{x}_t \vert \mathbf{x}_{t-1}) \). The full forward trajectory, starting from \( \mathbf{x}_0 \)and performing \( T \) steps of diffusion, due to the Markov property, is:
+ The forward diffusion process, represented by a Markov chain, is a sequence of random variables \( (\mathbf{x}_{0}, \dots, \mathbf{x}_{T}) \) where  \( \mathbf{x}_0 \) is the input data (initial state) with probability density/distribution \( q(\mathbf{x}_0) \) and the final state \( \mathbf{x}_T\sim \pi(\mathbf{x}_T) \), where \( \pi(\mathbf{x}_T) \) is an easy to sample distribution, i.e., an Isotropic Gaussian.  Each transition in the chain is governed by a perturbation kernel \( q(\mathbf{x}_t \vert \mathbf{x}_{t-1}) \). The full forward trajectory, starting from \( \mathbf{x}_0 \) and performing \( T \) steps of diffusion, due to the Markov property, is:
 </p>
 
 <p>

@@ -2,7 +2,7 @@
 layout: paper
 title: "Spontaneous symmetry breaking in generative diffusion models"
 date: 2023-05-31
-
+tags: diffusion symmetry-breaking generative-models
 authors:
   - name: Gabriel Raya
     url: "https://gabrielraya.com/"
@@ -50,7 +50,13 @@ _styles: >
   }
 ---
 
+
+
 <h2 style="color: #363535  !important; font-size: 32px !important; font-family: Arial, sans-serif !important;">Summary</h2>
+
+{% include scripts/script.html %}
+
+
 
 <div class="list">
 <ul>

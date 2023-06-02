@@ -33,35 +33,38 @@
 
     <!-- Content -->
     <div class="post distill">
-      <div class="highlight-clean" style="padding-bottom: 0;">
-        <div class="container" style="max-width: 40%;">
-          <h1 class="text-center" style= "font-size: 45x; ">{{ page.title }}</h1>
-        </div>
-        <div class="container" style="max-width: 21%;">
-          <div class="row">
-            {% for author in page.authors %}
-            <div class="col-md-6">
-              <h5 class="text-center" style="margin: 0;"><a href="{{ author.authorURL }}">{{ author.name }}</a></h5>
-              <h6 class="text-center">{{ author.affiliations.name }}</h6>
+
+      <div class="highlight-clean text-center" style="padding-bottom: 0;">
+          <div class="container">
+            <div class="row justify-content-center">
+                <h1>{{ page.title }}</h1>
             </div>
-            {% endfor %}
-          </div>
-        </div>
-        <div class="container text-center" style="max-width: 30%; margin-bottom: 8px;">
-          <div class="row">
-            <div class="col-md-12">
-              <a class="btn btn-primary" role="button" href="https://arxiv.org/abs/2305.19693">Paper (arXiv, 35.5 MB)</a>
-              <a class="btn btn-light" role="button" href="https://github.com/gabrielraya/symmetry_breaking_diffusion_models">GitHub</a>
+            <div class="row justify-content-center">
+              {% for author in page.authors %}
+              <div class="col-md-3">
+                <h5><a href="{{ author.authorURL }}"><span style="color: #0079FF; font-weight: bold;">{{ author.name }}</a></h5>
+                <h6>{{ author.affiliations.name }}</h6>
+              </div>
+              {% endfor %}
+            </div>
+            <div class="row justify-content-center">
+              <div class="col-md-12">
+                <a class="btn btn-primary" role="button" href="https://arxiv.org/abs/2305.19693">Paper (arXiv, 35.5 MB)</a>
+                <a class="btn btn-light" role="button" href="https://github.com/gabrielraya/symmetry_breaking_diffusion_models">GitHub</a>
+              </div>
+            </div>
+            <div class="row justify-content-center">
+              <div class="col-lg-10">
+                <div id="figure1">
+                  <img class="img-fluid" src="{{ site.baseurl }}/assets/img/ssdm/main_image_hq.png" alt="Figure 1">
+                  <figcaption class="figure-caption"><b>Figure 1:</b> Symmetry breaking in a one-dimensional problem (a) with two data points (-1,1) and on (b) CelebA64. Figures on top show the potential at different time points.</figcaption>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-        <div class="container text-center" style="max-width: 39%;">
-          <div style="align: left; text-align:center; " id="figure1"  >
-                  <img class="img-fluid  " src="{{ site.baseurl }}/assets/img/ssdm/main_image_hq.png" style="width: 100%;">
-                  <figcaption class="figure-caption text-center" style="margin-top: 10px;"><b>Figure 1</b>.Symmetry breaking in a one-dimensional problem (a) with two data points (-1,1) and on (b) CelebA64. Figures on top show the potential at different time points.</figcaption>
-          </div>
-        </div>
-      </div>
+
+
 
       <d-article>
         {% if page.toc -%}

@@ -2,6 +2,7 @@
 layout: paper
 title: "Spontaneous symmetry breaking in generative diffusion models"
 date: 2023-05-31
+tags: diffusion-models symmetry-breaking generative-models
 
 authors:
   - name: Gabriel Raya
@@ -14,6 +15,11 @@ authors:
     affiliations:
       name: Radboud University
 
+keywords:
+  - generative models
+  - diffusion models
+  - score-based generative models
+  - symmetry breaking
 
 pdf:
   - location: "assets/img/ssdm/paper.pdf"

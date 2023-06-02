@@ -547,7 +547,7 @@ The performance boost is striking in some datasets, with a 2x increase in CelebA
 steps. As evidenced by the results showcased in Figure 3.
 </p>
 <div id="figure3" style="text-align: center;">
-    <img class="img-fluid" src="{{ site.baseurl }}/assets/img/ssdm/ddpm_results.png" style="width: 100%;">
+    <img class="img-fluid" src="{{ site.baseurl }}/assets/img/ssdm/ddpm_results.PNG" style="width: 100%;">
     <figcaption class="figure-caption" style="text-align: justify;">Figure 3.  Comparison of stochastic DDPM samplers on CelebA64 with varying denoising steps. Subfigures (a) and (c) represent the generative model performance for 5 denoising steps, while (b) and (d) showcase the results for 10 denoising steps. The DDPM was initialized with the common standard initialization point sstart = 800 for 5 steps and sstart = 900 for 10 steps. Notably, our Gaussian late start initialization (gls-DDPM) with sstart = 400 for both 5 and 10 denoising steps demonstrates significant improvements in FID scores and diversity, leveraging spontaneous symmetry breaking in diffusion models.</figcaption>
 </div>
 

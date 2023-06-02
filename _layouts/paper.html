@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    {%- include head.html %}
+
+    {% include scripts/jquery.html %}
+    {% include scripts/mathjax.html %}
+    <!-- Distill js -->
+    <script src="{{ '/assets/js/distillpub/template.v2.js' | relative_url }}"></script>
+    <script src="{{ '/assets/js/distillpub/transforms.v2.js' | relative_url }}"></script>
+    <script src="{{ '/assets/js/distillpub/overrides.js' | relative_url }}"></script>
+    {% if page._styles %}
+    <!-- Page/Post style -->
+    <style type="text/css">
+      {{ page._styles }}
+    </style>
+    {%- endif %}
+
+    <style>
+      h1, h2, h3 {
+        color: #363535 !important;
+        font-family: Arial, sans-serif !important;
+      }
+    </style>
+  </head>
+
+
+
+  <body class="{%- if site.navbar_fixed -%}fixed-top-nav{%- endif -%} {%- unless site.footer_fixed -%}sticky-bottom-footer{%- endunless -%}">
+
+    <!-- Header -->
+
+    <!-- Content -->
+    <div class="post distill">
+      <div class="highlight-clean" style="padding-bottom: 0;">
+        <div class="container" style="max-width: 40%;">
+          <h1 class="text-center" style= "font-size: 45x; ">{{ page.title }}</h1>
+        </div>
+        <div class="container" style="max-width: 21%;">
+          <div class="row">
+            {% for author in page.authors %}
+            <div class="col-md-6">
+              <h5 class="text-center" style="margin: 0;"><a href="{{ author.authorURL }}">{{ author.name }}</a></h5>
+              <h6 class="text-center">{{ author.affiliations.name }}</h6>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        <div class="container text-center" style="max-width: 30%; margin-bottom: 8px;">
+          <div class="row">
+            <div class="col-md-12">
+              <a class="btn btn-primary" role="button" href="https://arxiv.org/abs/2305.19693">Paper (arXiv, 35.5 MB)</a>
+              <a class="btn btn-light" role="button" href="https://github.com/gabrielraya/symmetry_breaking_diffusion_models">GitHub</a>
+            </div>
+          </div>
+        </div>
+        <div class="container text-center" style="max-width: 39%;">
+          <div style="align: left; text-align:center; " id="figure1"  >
+                  <img class="img-fluid  " src="{{ site.baseurl }}/assets/img/ssdm/main_image_hq.png" style="width: 100%;">
+                  <figcaption class="figure-caption text-center" style="margin-top: 10px;"><b>Figure 1</b>.Symmetry breaking in a one-dimensional problem (a) with two data points (-1,1) and on (b) CelebA64. Figures on top show the potential at different time points.</figcaption>
+          </div>
+        </div>
+      </div>
+
+      <d-article>
+        {% if page.toc -%}
+        <d-contents>
+          <nav class="l-text figcaption">
+          <h3>Contents</h3>
+            {% for section in page.toc -%}
+            <div><a href="#{{ section.name | slugify }}">{{ section.name }}</a></div>
+            {% if section.subsections -%}
+            <ul>
+              {% for subsection in section.subsections -%}
+              <li><a href="#{{ subsection.name | slugify }}">{{ subsection.name }}</a></li>
+              {% endfor %}
+            </ul>
+            {%- endif -%}
+            {%- endfor %}
+          </nav>
+        </d-contents>
+        {%- endif %}
+
+        {{ content }}
+      </d-article>
+
+      <d-appendix>
+        <d-footnote-list></d-footnote-list>
+        <d-citation-list></d-citation-list>
+      </d-appendix>
+
+    </div>
+
+    <!-- Footer -->
+    {%- include footer.html %}
+
+    <d-bibliography src="{{ page.bibliography | prepend: '/assets/bibliography/' | relative_url }}"></d-bibliography>
+
+    {% include scripts/bootstrap.html %}
+    {% include scripts/analytics.html %}
+  </body>
+</html>

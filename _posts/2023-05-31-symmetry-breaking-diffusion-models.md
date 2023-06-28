@@ -86,12 +86,14 @@ _styles: >
 
 <p align="justify">
 To illustrate spontaneous symmetry breaking in diffusion models, we begin with a one-dimensional example. We use a dataset consisting of only two points: -1 and 1, each with an equal probability of selection (See Figure 1a). For the purpose of our analysis, we re-express the generative dynamics of the diffusion model in terms of a potential energy function \(u(x, t)\). The corresponding potential equation for the VP-SDE (DDPM), ignoring constant terms, is the following:
+<div id="equation" style="text-align: center;">
+    <img class="img-fluid" src="{{ site.baseurl }}/assets/img/ssdm/eq1.png" style="max-width: 85%; display: inline-block;">
+</div>
 </p>
-
+<!--
 \begin{equation}
     u(x, t) = \beta(T - t) \left( -\frac{1}{4} x^2 -  \log{\left(e^{-\frac{(x - \theta_{T-t})^2}{2 (1 - \theta_{T-t}^2)}} + e^{-\frac{(x + \theta_{T-t})^2}{2 (1 - \theta_{T-t}^2)}} \right)} \right)
-\end{equation}
-
+\end{equation} -->
 <p align="justify">
 We can now analyze how the potential \(u(x, t)\) evolves over time as we change the parameter \(\theta\). A symmetry-breaking event is marked by a notable change in the shape of the potential well. For instance, after reaching a critical value \(\theta_c\), the potential splits, indicating a shift in the dynamics. Prior to the critical point, the system exhibits mean-reversion towards a stable fixed-point located at the origin \(x=0\)
 (See the figure below on the right, indicated by the <span style="color: green; font-weight: bold;">green</span> line.). However, once the symmetry breaking occurs, this stable point becomes unstable (dashed <span style="color: green;">green</span> line.), giving rise to the emergence of two new stable points (shown in <span style="color: blue; font-weight: bold;">blue</span> and <span style="color: orange; font-weight: bold;">orange</span>). These points act as attractors, guiding the system towards the data manifold.
@@ -103,9 +105,9 @@ By exploring the potential below, you can observe the expected change in the sha
 
 
 <!-- Add the necessary HTML elements -->
-<div id="container" style="display: flex;">
-  <div id="plot1" style="flex: 1; margin-right: 20px;"></div>
-  <div id="plot2" style="flex: 1;"></div>
+<div id="container" style="display: flex; flex-wrap: wrap; justify-content: space-between; max-width: 100%;" >
+  <div id="plot1" style="flex: 1; margin-right: 20px; box-sizing: border-box;"></div>
+  <div id="plot2" style="flex: 1; box-sizing: border-box;"></div>
 </div>
 
 <!-- Add the script tags to include d3.js -->
@@ -140,26 +142,11 @@ By exploring the potential below, you can observe the expected change in the sha
     var height = 0.8 * width; // Make the plots square-sized
     var theta_c = Math.sqrt(Math.sqrt(2) - 1); // Calculate theta_c
 
-    // Create SVG element for Plot 1
-    var svg1 = d3.select("#plot1")
-      .append("svg")
-      .attr("width", width + margin.left + margin.right)
-      .attr("height", height + margin.top + margin.bottom)
-      .append("g")
-      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-    // Create SVG element for Plot 2
-    var svg2 = d3.select("#plot2")
-      .append("svg")
-      .attr("width",  width + margin.left + margin.right)
-      .attr("height", height + margin.top + margin.bottom)
-      .append("g")
-      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
     // Determine the domain of x values
     var xDomain = d3.extent([...theta, 1.01], function(d) {
       return d;
     });
+
 
     // Determine the domain of y values
     var yDomain = d3.extent([...x_up, ...x_down, ...x_mid, 1.1], function(d) {
@@ -192,6 +179,23 @@ By exploring the potential below, you can observe the expected change in the sha
         return yScale1(d);
       });
 
+      // Create SVG element for Plot 1
+      var svg1 = d3.select("#plot1")
+        .append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+      // Create SVG element for Plot 2
+      var svg2 = d3.select("#plot2")
+        .append("svg")
+        .attr("width",  width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+
     // Function to compute the value of theta_fn
     function theta_fn(s, beta_max, beta_min) {
       if (Array.isArray(s)) {
@@ -216,7 +220,7 @@ By exploring the potential below, you can observe the expected change in the sha
       svg1.selectAll("*").remove();
 
       // Generate data points based on the current value of a
-      var data = d3.range(-5, 5, 0.1).map(function(x) {
+      var data = d3.range(-3, 3, 0.1).map(function(x) {
         return { x: x, y: calculatePotential(x, a, 0.1, 20, 1.0, 1000) };
       });
 
@@ -244,7 +248,6 @@ By exploring the potential below, you can observe the expected change in the sha
                    .x(function(d) { return xScale(d.x); })
                    .y(function(d) { return yScale(d.y); });
 
-
       // Add the line to the SVG
       svg1.append("path")
         .datum(data)
@@ -256,7 +259,7 @@ By exploring the potential below, you can observe the expected change in the sha
       // Add x-axis
       svg1.append("g")
         .attr("transform", "translate(0," + height + ")")
-        .call(d3.axisBottom(xScale1));
+        .call(d3.axisBottom(xScale));
 
       // Add y-axis
       svg1.append("g")

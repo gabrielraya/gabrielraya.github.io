@@ -87,7 +87,7 @@ _styles: >
 <p align="justify">
 To illustrate spontaneous symmetry breaking in diffusion models, we begin with a one-dimensional example. We use a dataset consisting of only two points: -1 and 1, each with an equal probability of selection (See Figure 1a). For the purpose of our analysis, we re-express the generative dynamics of the diffusion model in terms of a potential energy function \(u(x, t)\). The corresponding potential equation for the VP-SDE (DDPM), ignoring constant terms, is the following:
 <div id="equation" style="text-align: center;">
-    <img class="img-fluid" src="{{ site.baseurl }}/assets/img/ssdm/eq1.png" style="max-width: 85%; display: inline-block;">
+    <img class="img-fluid" src="{{ site.baseurl }}/assets/img/ssdm/eq1.PNG" style="max-width: 85%; display: inline-block;">
 </div>
 </p>
 <!--

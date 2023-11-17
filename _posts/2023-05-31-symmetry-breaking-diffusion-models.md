@@ -48,14 +48,29 @@ _styles: >
     margin-bottom: 0.;
     line-height: 1.1em;
   }
+  .responsive-video {
+    position: relative;
+    padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+    height: 0;
+  }
+  .responsive-video iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+  }
 ---
 
+
+<div class="responsive-video">
+    <iframe src="https://www.youtube.com/embed/IG0NNE9bpWU?si=UJWq4pH10XxrY9nE&start=1" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
 
 
 <h2 style="color: #363535  !important; font-size: 32px !important; font-family: Arial, sans-serif !important;">Summary</h2>
 
 {% include scripts/script.html %}
-
 
 
 <div class="list">
@@ -106,8 +121,8 @@ By exploring the potential below, you can observe the expected change in the sha
 
 <!-- Add the necessary HTML elements -->
 <div id="container" style="display: flex; flex-wrap: wrap; justify-content: space-between; max-width: 100%;" >
-  <div id="plot1" style="flex: 1; margin-right: 20px; box-sizing: border-box;"></div>
-  <div id="plot2" style="flex: 1; box-sizing: border-box;"></div>
+  <div id="plot1" style="flex: 0 0 50%;  box-sizing: border-box;"></div>
+  <div id="plot2" style="flex: 0 0 50%; box-sizing: border-box;"></div>
 </div>
 
 <!-- Add the script tags to include d3.js -->

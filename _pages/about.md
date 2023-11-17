@@ -2,7 +2,7 @@
 layout: about
 title: about
 permalink: /
-description: <a href="https://www.tue.nl/en/research/research-areas/data-science/jheronimus-academy-of-data-science/">JADS Research</a> • <a href="https://www.tilburguniversity.edu/about/schools/humanities/departments/dca">CSAI</a> • <a href="https://www.tilburguniversity.edu/">Tilburg University</a> • <a href="https://www.tue.nl/en/our-university/departments/mathematics-and-computer-science/">TU/e </a>
+description: <a href="https://research.tue.nl/en/organisations/jads-den-bosch-tue">JADS Research</a> • <a href="https://www.tilburguniversity.edu/about/schools/humanities/departments/dca">CSAI</a> • <a href="https://www.tilburguniversity.edu/">Tilburg University</a> • <a href="https://www.tue.nl/en/our-university/departments/mathematics-and-computer-science/">TU/e </a>
 
 #<a href="https://www.tue.nl/en/research/research-areas/data-science/jheronimus-academy-of-data-science/">JADS Research</a> • <a href="https://www.tilburguniversity.edu/about/schools/humanities/departments/dca">Department of Cognitive Science and Artificial Intelligence</a> • <a href="https://www.tilburguniversity.edu/">Tilburg University</a> • <a href="https://www.tue.nl/en/our-university/departments/mathematics-and-computer-science/">TU/e </a>
 #<a href="https://www.tue.nl/en/research/research-areas/data-science/jheronimus-academy-of-data-science/">JADS Research</a>  • <a href="https://www.tilburguniversity.edu/about/schools/humanities/departments/dca">Tilburg University</a> • <a href="https://www.tue.nl/en/our-university/departments/mathematics-and-computer-science/">Eindhoven University of Technology TU/e </a>
@@ -20,7 +20,8 @@ social: true  # includes social icons at the bottom of the page
 ---
 
 <p align="justify">
-I am a Ph.D. Candidate in Machine Learning at Tilburg University & TU/e working on the intersection of <b>explicit deep generative models</b>, <b>causality</b>, and <b>reinforcement learning</b>.<br><br>
+I am a Ph.D. Candidate in Machine Learning at Tilburg University & TU/e , and a visiting researcher at the <a href="https://www.ru.nl/donders/">Donders Institute for Brain, Cognition and Behaviour</a>, working under the guidance of <a href="https://www.artcogsys.com/team/luca">Luca Ambrogioni</a>. My research focuses on probabilitic deep generative models, with a special interest in diffusion models. I am particularly interested in integrating concepts from statistical physics and critical phenomena to enhance our understanding of particle generation and the emergence of complex phenomena. This interdisciplinary approach not only deepens our understanding of generative models but also sheds light on the intricate processes underlying complex systems in nature.
+<br><br>
 
 Previous to my Ph.D., I obtained a Master's degree in Computer Science from <a href="https://www.ru.nl/english/">Radboud University</a>, where I researched unsupervised out-of-distribution detection applied to digital pathology with <a href="https://www.twanvl.nl/">Twan van Laarhoven</a>  and
 <a href="https://www.computationalpathologygroup.eu/members/jasper-linmans/">Jasper Linmans</a>.

@@ -24,7 +24,7 @@ image:
 
 # Below is an example of injecting additional post-specific styles.
 # If you use this post as a template, delete this _styles block.
-_styles: >
+_styles: > 
   .fake-img {
     background: #bbb;
     border: 1px solid rgba(0, 0, 0, 0.1);

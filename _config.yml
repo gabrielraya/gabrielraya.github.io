@@ -55,7 +55,7 @@ og_image: # The site-wide (default for all links) Open Graph preview image
 # -----------------------------------------------------------------------------
 
 github_username: gabrielraya # your GitHub user name
-twitter_username: # your Twitter handle
+twitter_username: gaboraya # your Twitter handle
 linkedin_username: rayagabriel # your LinkedIn user name
 scholar_userid: 6bTCWLcAAAAJ # your Google Scholar ID
 orcid_id: # your ORCID ID
@@ -69,7 +69,7 @@ keybase_username: # your keybase user name
 wikidata_id: # your wikidata id
 
 contact_note: >
-  Feel free to get in contanct.
+  If you have any questions or are interested in collaborating, please feel free to contact me!
 google_analytics: G-BC981LW1SD # out your google-analytics code
 panelbear_analytics: XXXXXXXXX # panelbear analytics site ID
 

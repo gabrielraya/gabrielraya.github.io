@@ -2,7 +2,7 @@
 layout: about
 title: about
 permalink: /
-description: <a href="https://ai.sony/projects/ai_for_creators/">Sony AI</a> • <a href="https://research.tue.nl/en/organisations/jads-den-bosch-tue">JADS Research</a> • <a href="https://www.tilburguniversity.edu/about/schools/humanities/departments/dca">CSAI</a> • <a href="https://www.tilburguniversity.edu/">Tilburg University</a> • <a href="https://www.tue.nl/en/our-university/departments/mathematics-and-computer-science/">TU/e </a>
+description: <a href="https://research.tue.nl/en/organisations/jads-den-bosch-tue">JADS AI</a> • <a href="https://research.tue.nl/en/organisations/jads-den-bosch-tue">JADS Research</a> • <a href="https://www.tilburguniversity.edu/about/schools/humanities/departments/dca">CSAI</a> • <a href="https://www.tilburguniversity.edu/">Tilburg University</a> • <a href="https://www.tue.nl/en/our-university/departments/mathematics-and-computer-science/">TU/e </a>
 
 #<a href="https://www.tue.nl/en/research/research-areas/data-science/jheronimus-academy-of-data-science/">JADS Research</a> • <a href="https://www.tilburguniversity.edu/about/schools/humanities/departments/dca">Department of Cognitive Science and Artificial Intelligence</a> • <a href="https://www.tilburguniversity.edu/">Tilburg University</a> • <a href="https://www.tue.nl/en/our-university/departments/mathematics-and-computer-science/">TU/e </a>
 #<a href="https://www.tue.nl/en/research/research-areas/data-science/jheronimus-academy-of-data-science/">JADS Research</a>  • <a href="https://www.tilburguniversity.edu/about/schools/humanities/departments/dca">Tilburg University</a> • <a href="https://www.tue.nl/en/our-university/departments/mathematics-and-computer-science/">Eindhoven University of Technology TU/e </a>

@@ -1,0 +1,1467 @@
+<!DOCTYPE html>
+<!-- _layouts/distill.html -->
+<html>
+  <head><!-- Metadata, OpenGraph and Schema.org -->
+
+
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+<title>Gabriel  Raya
+   | Diffusion models explained
+</title>
+<meta name="author" content="Gabriel  Raya" />
+<meta name="description" content="Gabriel Raya's academic website.">
+
+<!-- Meta Data -->
+
+<meta name="keywords" content="generative models, diffusion models, score-based generative models">
+<meta name="description" content="An overview of diffusion models (work in progress).">
+
+
+<!-- Open Graph -->
+
+
+<!-- Bootstrap & MDB -->
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" integrity="sha512-MoRNloxbStBcD8z3M/2BmnT+rg4IsMxPkXaGh2zD6LGNNFE80W3onsAhRcMAMrSoyWL9xD7Ert0men7vR8LUZg==" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.19.1/css/mdb.min.css" integrity="sha512-RO38pBRxYH3SoOprtPTD86JFOclM51/XTIdEPh5j8sj4tp8jmQIx26twG52UaLi//hQldfrh7e51WzP9wuP32Q==" crossorigin="anonymous" />
+
+<!-- Fonts & Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css"  integrity="sha512-1PKOgIY59xJ8Co8+NE6FZ+LOAZKjy+KY8iq0G4B3CyeY6wYHN3yt9PW0XpSriVlkMXe40PTKnXrLnZ9+fkDaog==" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.9.0/css/academicons.min.css" integrity="sha512-W4yqoT1+8NLkinBLBZko+dFB2ZbHsYLDdr50VElllRcNt2Q4/GSs6u71UHKxB7S6JEMCp5Ve4xjh3eGQl/HRvg==" crossorigin="anonymous">
+<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Roboto+Slab:100,300,400,500,700|Material+Icons">
+
+<!-- Code Syntax Highlighting -->
+<link rel="stylesheet" href="/assets/css/jekyll-pygments-themes-github.css" />
+
+<!-- Styles -->
+
+<link rel="shortcut icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🤖</text></svg>">
+
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="canonical" href="/blog/2022/diffusion-models/">
+
+
+<!-- JQuery -->
+<!-- jQuery -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+
+
+
+<!-- Theming-->
+
+  <script src="/assets/js/theme.js"></script>
+  <!-- Load DarkMode JS -->
+<script src="/assets/js/dark_mode.js"></script>
+
+
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-BC981LW1SD"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+
+    gtag('config', 'G-BC981LW1SD');
+  </script>
+
+
+
+
+
+    <!-- jQuery -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+
+    
+<!-- MathJax -->
+<script type="text/javascript">
+  window.MathJax = {
+    tex: {
+      tags: 'ams'
+    }
+  };
+</script>
+<script defer type="text/javascript" id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3.2.1/es5/tex-mml-chtml.js"></script>
+<script defer src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+
+
+    <!-- Distill js -->
+    <script src="/assets/js/distillpub/template.v2.js"></script>
+    <script src="/assets/js/distillpub/transforms.v2.js"></script>
+    <script src="/assets/js/distillpub/overrides.js"></script>
+    
+    <!-- Page/Post style -->
+    <style type="text/css">
+      .fake-img {
+  background: #bbb;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 12px;
+} .fake-img p {
+  font-family: monospace;
+  color: white;
+  text-align: left;
+  margin: 12px 0;
+  text-align: center;
+  font-size: 16px;
+}
+.list ul {
+    line-height: 1.2em;
+    float: left;
+}
+
+    </style>
+  </head>
+
+  <d-front-matter>
+    <script async type="text/json">{
+      "title": "Diffusion models explained",
+      "description": "An overview of diffusion models (work in progress).",
+      "published": "August 14, 2022",
+      "authors": [
+        {
+          "author": "Gabriel Raya",
+          "authorURL": "https://gabrielraya.com/",
+          "affiliations": [
+            {
+              "name": "JADS Research",
+              "url": "https://www.tue.nl/en/research/research-areas/data-science/jheronimus-academy-of-data-science/"
+            }
+          ]
+        }
+        
+      ],
+      "katex": {
+        "delimiters": [
+          {
+            "left": "$",
+            "right": "$",
+            "display": false
+          },
+          {
+            "left": "$$",
+            "right": "$$",
+            "display": true
+          }
+        ]
+      }
+    }</script>
+  </d-front-matter>
+
+  <body class="fixed-top-nav">
+
+    <!-- Header --><header>
+
+    <!-- Nav Bar -->
+      <nav id="navbar" class="navbar navbar-light navbar-expand-sm fixed-top">
+      <div class="container">
+        <a class="navbar-brand title font-weight-lighter" href="/"><span class="font-weight-bold">Gabriel&nbsp;</span>Raya</a>
+      <!-- Navbar Toggle -->
+      <button class="navbar-toggler collapsed ml-auto" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar top-bar"></span>
+        <span class="icon-bar middle-bar"></span>
+        <span class="icon-bar bottom-bar"></span>
+      </button>
+      <div class="collapse navbar-collapse text-right" id="navbarNav">
+        <ul class="navbar-nav ml-auto flex-nowrap">
+          <!-- About -->
+          <li class="nav-item ">
+            <a class="nav-link" href="/">
+              about
+              
+            </a>
+          </li>
+
+          <!-- comment this section/ Uncomment it when a blog is ready -->
+          
+          <!-- Blog -->
+          <li class="nav-item active">
+            <a class="nav-link" href="/blog/">
+              blog
+              
+            </a>
+          </li>
+          
+          <!-- Until here -->
+
+
+          <!-- Other pages -->
+          
+          
+          
+          
+          
+          
+          
+          <li class="nav-item ">
+              <a class="nav-link" href="/projects/">
+                projects
+                
+              </a>
+          </li>
+          
+          
+          
+          <li class="nav-item ">
+              <a class="nav-link" href="/publications/">
+                publications
+                
+              </a>
+          </li>
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          <li class="nav-item ">
+              <a class="nav-link" href="/repositories/">
+                repositories
+                
+              </a>
+          </li>
+          
+          
+          
+            <div class = "toggle-container">
+              <a id = "light-toggle">
+                  <i class="fas fa-moon"></i>
+                  <i class="fas fa-sun"></i>
+              </a>
+            </div>
+          
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+</header>
+
+
+    <!-- Content -->
+    <div class="post distill">
+
+      <d-title>
+        <h1>Diffusion models explained</h1>
+        <p>An overview of diffusion models (work in progress).</p>
+      </d-title>
+
+      <d-byline></d-byline>
+
+      <d-article>
+        <d-contents>
+          <nav class="l-text figcaption">
+          <h3>Contents</h3>
+            <div><a href="#introduction">Introduction</a></div>
+            <div><a href="#diffusion-models">Diffusion models</a></div>
+            <div><a href="#discrete-diffusion-models">Discrete diffusion models</a></div>
+            <ul>
+              <li><a href="#forward-process">Forward process</a></li>
+              <li><a href="#reverse-process">Reverse process</a></li>
+              <li><a href="#training">Training</a></li>
+              <li><a href="#gaussian-parameterization">Gaussian parameterization</a></li>
+              
+            </ul><div><a href="#continuous-diffusion-models">Continuous diffusion models</a></div>
+            <div><a href="#applications">Applications</a></div>
+            <div><a href="#summary">Summary</a></div>
+            
+          </nav>
+        </d-contents>
+
+        <h2 id="introduction">Introduction</h2>
+
+<p align="justify">
+If you are reading this post, then you may have heard that diffusion models are kind of the <em>big thing</em> for generating high-quality image data. Simply see below:
+</p>
+
+<div class="container">
+  <div class="row">
+      <div class="col-3">
+          <img class="center" src="/assets/img/diffusion/sample_quality_2.PNG" style="width: 100%;" />
+      </div>
+      <div class="col-3">
+          <img class="img-fluid rounded z-depth-1" src="/assets/img/diffusion/sample_quality.PNG" style="width: 100%;" />
+      </div>
+      <div class="col-3">
+          <img class="img-fluid rounded z-depth-1" src="/assets/img/diffusion/sample_quality_4.PNG" style="width: 100%;" />
+      </div>
+      <div class="col-3">
+          <img class="img-fluid rounded z-depth-1" src="/assets/img/diffusion/sample_quality_5.PNG" style="width: 100%;" />
+      </div>
+  </div>
+  <figcaption class="figure-caption text-center"><b>Figure 1</b>. Samples generated by a Diffusion model (Song.et.al.<d-cite key="song2020score"></d-cite> ). </figcaption><br />
+</div>
+
+<p align="justify">
+However, grasping diffusion models may seem initially daunting, and you may easily get confused by terms such as denoising diffusion and score-based generative models. Therefore, this blog post aims to provide a big picture of diffusion models, whether you prefer to call them diffusion, denoising diffusion, or score-based diffusion models. All of them have the same roots, the diffusion process, so I will refer to them as Diffusion models and make it explicit when a singular idea comes from a particular approach.<br /><br />
+
+For more in-depth information, I will always suggest reading the original papers:
+</p>
+<div class="list">
+  <ul>
+    <li><a href="https://arxiv.org/abs/1503.03585"><i>Deep Unsupervised Learning using Nonequilibrium Thermodynamics, 2015</i></a></li>
+    <li><a href="https://arxiv.org/abs/2006.11239"><i>Denoising Diffusion Probabilistic Models, 2020</i></a></li>
+    <li><a href="https://arxiv.org/abs/1907.05600"><i>Generative Modeling by Estimating Gradients of the Data Distribution</i></a></li>
+    <li><a href="https://openreview.net/forum?id=PxTIG12RRHS"><i>Score-Based Generative Modeling through Stochastic Differential Equations</i></a></li>
+  </ul>
+</div>
+<p align="justify">
+I also recommend reading the following blog post, from which some information I have added here to provide a complete picture.  
+</p>
+<div class="list">
+  <ul>
+    <li><a href="https://lilianweng.github.io/posts/2021-07-11-diffusion-models/"><i>What are Diffusion Models?</i></a></li>
+  </ul>
+</div>
+<p align="justify">
+Before starting, I would like to recall that modeling high-dimensional distributions where training, sampling, and evaluating probabilities are tractable is not easy. As a result, approximation techniques such as variational inference and sampling methods have been developed over the years. Now, with Diffusion models, we can do that and more!
+</p>
+
+<h2 id="diffusion-models">Diffusion models</h2>
+<p align="justify">
+Diffusion Models are probabilistic models that are capable of modeling high-dimensional distributions using two diffusion processes: 1) a   <em>forward diffusion process</em> maps data to a noise distribution, i.e., an isotropic Gaussian, and 2) a <em>reverse diffusion process</em> that moves samples from the noise distribution back to the data distribution. The essential idea in diffusion models, inspired by nonequilibrium statistical physics and introduced by Sohl-Dickstein et al. <d-cite key="sohl2015deep"></d-cite>, is to <b>systematically</b> and slowly destroy structure in a data distribution through an iterative diffusion process. Then learn a reverse diffusion process that restores structure in data. In this way, <font color="red">learning in a diffusion model consists of estimating small perturbations</font> (see <a href="#figure2"> Figure 2.</a>), which is more tractable than approximating the partition function.<br /><br />
+
+Stochastic processes are sequences of random variables that can be either time-continuous or discrete. Because a diffusion process is a stochastic process, diffusion models can be time-continuous or discrete. Therefore, I will start first by explaining time-discrete diffusion models. Once we have grasped the fundamental idea, we will move to time-continuous diffusion processes, which generalize the time-discrete diffusion process where an Itô stochastic differential equation describes the evolution of the system.
+</p>
+<h2 id="discrete-diffusion-models">Discrete diffusion models</h2>
+
+<p align="justify">
+<b>Notation</b><br />
+It may be helpful to keep in mind this standard notation when using discrete diffusion models.
+</p>
+
+<div class="list">
+  <ul>
+    <li>\( q_0(\mathbf{x}_0) \): the unknown data distribution</li>
+    <li>\( p_{\theta}(\mathbf{x}_0) \): the model probability</li>
+    <li>\( q(\mathbf{x}_0, ... , \mathbf{x}_T) \): the forward trajectory (chose by design)</li>
+    <li>\( p_{\theta}(\mathbf{x}_0, ..., \mathbf{x}_T) \): the parametric reverse trajectory (learnable)</li>
+  </ul>
+</div>
+
+<p align="justify">
+Lets assume that our dataset consists of \( N \) i.i.d inputs \( \{\mathbf{x}_0^n\}_{n=0}^N \sim q_0(\mathbf{x}) \) sampled from an unknown distribution \( q_0(\mathbf{x}_0) \), where the lower-index is used to denoted the time-dependency in the diffusion process. The goal is to find a parametric model \( p_{\theta}(\mathbf{x}_0) \approx q_0(\mathbf{x}_0) \) using a reversible diffusion process that evolves over a discrete time variable  \( t \in[0,T] \).
+
+
+<div style="align: left; text-align:center;" id="figure2">
+        <img class="img-fluid  " src="/assets/img/diffusion/generative_markov_chain_annotated.png" style="width: 700px;" />
+        <figcaption class="figure-caption text-center"><b>Figure 2</b>. A Markov Chain represents the directed graphical model for a discrete diffusion model. The forward/reverse diffusion process systematically and slowly adds/removes noise.</figcaption>
+</div>
+</p>
+
+<h3 id="forward-process">Forward process</h3>
+
+<p align="justify">
+ The forward diffusion process, represented by a Markov chain, is a sequence of random variables \( (\mathbf{x}_{0}, \dots, \mathbf{x}_{T}) \) where  \( \mathbf{x}_0 \) is the input data (initial state) with probability density/distribution \( q(\mathbf{x}_0) \) and the final state \( \mathbf{x}_T\sim \pi(\mathbf{x}_T) \), where \( \pi(\mathbf{x}_T) \) is an easy to sample distribution, i.e., an Isotropic Gaussian.  Each transition in the chain is governed by a perturbation kernel \( q(\mathbf{x}_t \vert \mathbf{x}_{t-1}) \). The full forward trajectory, starting from \( \mathbf{x}_0 \) and performing \( T \) steps of diffusion, due to the Markov property, is:
+</p>
+
+<p>
+ $$
+ q(\mathbf{x}_{0:T})= q(\mathbf{x}_0) \prod_{t=1}^T q(\mathbf{x}_t \vert \mathbf{x}_{t-1} )
+ $$
+</p>
+
+<p align="justify">
+<a href="#figure2">Figure 2</a> shows, with dotted lines (from right to left), how the forward diffusion process systematically perturbed the input data $\mathbf{x}_0$  over time $t\in[0,T]$ using  $q(\mathbf{x}_t \vert \mathbf{x}_{t-1})$, gradually converting $\mathbf{x}_0$ into noise, losing slowly its distinguishable features as $t$, the diffusion step, becomes larger. Eventually, when $T \to \infty$, $\mathbf{x}_T$ is equivalent to an isotropic Gaussian distribution. The stationary distribution is chosen by design, so the forward process does not have learnable parameters. Sohl-Dickstein et. al. <d-cite key="sohl2015deep"></d-cite> proposed the following perturbation kernel such that the stationary distribution is Isotropic Gaussian:
+</p>
+
+<p>
+$$
+\begin{equation}
+\label{eq:transition_kernel}
+q(\mathbf{x}_t \vert \mathbf{x}_{t-1}) = \mathcal{N}(\mathbf{x}_t; \sqrt{1 - \beta_t} \mathbf{x}_{t-1}, \beta_t\mathbf{I})
+\end{equation}
+$$
+</p>
+
+<p align="justify">
+where \( \beta_t \) is the variance schedule, a sequence of positive noise scales such that \( 0 &lt; \beta_1, \beta_2, ..., \beta_T &lt; 1 \). This model in the literature is also known as DDPM <d-cite key="ho2020denoising"></d-cite>, for the time-discrete case, or Variance-Preserving (VP) <d-cite key="song2020score"></d-cite>, for the time-continuous case. Therefore under this settings, the forward process evolves according to equation \ref{eq:transition_kernel}.<br />
+
+ A nice property of the above process is that we can sample \( \mathbf{x}_t \) at any arbitrary time step $t$ in a closed form using <a href="https://lilianweng.github.io/posts/2018-08-12-vae/#reparameterization-trick">reparameterization trick</a>. Let \( \alpha_t = 1 - \beta_t \) and \( \bar{\alpha}_t = \prod_{i=1}^t \alpha_i \), and now \( q(\mathbf{x}_t \vert \mathbf{x}_{t-1}) = \mathcal{N}(\mathbf{x}_t; \sqrt{\alpha_t} \mathbf{x}_{t-1}, 1-\alpha_t\mathbf{I}) \)
+</p>
+
+<p>
+$$
+\begin{aligned}
+\mathbf{x}_1 &amp;= \sqrt{\alpha_1}\mathbf{x}_0 + \sqrt{1 - \alpha_1}\mathbf{\epsilon}_0 \quad\quad\quad\quad\quad\text{ ;where } \mathbf{\epsilon}_0, \mathbf{\epsilon}_1, \dots \sim \mathcal{N}(\mathbf{0}, \mathbf{I}) \\
+\mathbf{x}_2 &amp;= \sqrt{\alpha_2}\mathbf{x}_1 + \sqrt{1 - \alpha_2}\mathbf{\epsilon}_1\\
+&amp;= \sqrt{\alpha_2}\left(\sqrt{\alpha_1}\mathbf{x}_0 + \sqrt{1 - \alpha_1}\mathbf{\epsilon}_0\right) + \sqrt{1 - \alpha_2}\mathbf{\epsilon}_1\\
+&amp;= \sqrt{\alpha_2\alpha_1}\mathbf{x}_0
++ \underbrace{\sqrt{\alpha_2(1 - \alpha_1)}\mathbf{\epsilon}_0}_{\mathbf{\epsilon}_0^*}
++ \underbrace{\sqrt{1 - \alpha_2}\mathbf{\epsilon}_1}_{\mathbf{\epsilon}_1^*}\\
+&amp;= \sqrt{\alpha_2\alpha_1} \mathbf{x}_0
++ \sqrt{1 - \alpha_1\alpha_2}\bar{\mathbf{\epsilon}}_1
+\quad\quad\quad\text{ ;where } \bar{\mathbf{\epsilon}}_{1} \text{ merges two Gaussians (*).} \\
+&amp;= \dots \\
+x_t &amp;= \sqrt{\bar{\alpha}_t}\mathbf{x}_0 + \sqrt{1 - \bar{\alpha}_t}\mathbf{\epsilon}_{t} \\
+q(\mathbf{x}_t \vert \mathbf{x}_0) &amp;= \mathcal{N}(\mathbf{x}_t; \sqrt{\bar{\alpha}_t} \mathbf{x}_0, (1 - \bar{\alpha}_t)\mathbf{I}) \quad\quad\quad\text{ ; Transition density function.}
+\end{aligned}
+$$
+</p>
+
+<p align="justify">
+(*) Recall the properties of the sum of two Gaussian random variables. Let \( \mathbf{\epsilon}_0^* \sim \mathcal{N}(\mathbf{\mu}_0, \sigma^2_0\mathbf{I}) \), and \( \mathbf{\epsilon}_1^{*} \sim \mathcal{N}(\mathbf{\mu}_1, \sigma^2_1\mathbf{I}) \).
+Then, the new random variable  \( \mathbf{z}= \mathbf{\epsilon}_0^*+ \mathbf{\epsilon}_1^* \) has density \( \mathcal{N}(\mathbf{\mu}_0+\mathbf{\mu}_1, (\sigma^2_0+\sigma^2_1)\mathbf{I}) \). First we can de-reparametrized \( \epsilon_0^* \) and  \( \epsilon_1^* \) so we get \( \mathcal{N}(0,Var(\epsilon_0^*)) \) and \( \mathcal{N}(0,Var(\epsilon_1^*)) \) correspondingly. We have that the sum of these two Gaussians is
+</p>
+
+<p>
+$$
+\begin{aligned}
+\mathbf{z}&amp;= \mathbf{\epsilon}_{0}^{*}+ \mathbf{\epsilon}_{1}^{*}\\
+&amp;=\mathcal{N}(0,Var(\epsilon_0^{*})+ Var(\epsilon_1^{*}))\\
+&amp;=\mathcal{N}(0,(1 - \alpha_1 \alpha_2)\mathbf{I}))\quad\quad\quad  \text{ ;Using the property of the variance (*).}\\
+&amp;=\sqrt{1- \alpha_1 \alpha_2}\bar{\mathbf{\epsilon}}_{1} \quad \text{ ;where } \bar{\mathbf{\epsilon}}_{1}\sim \mathcal{N}(\mathbf{0}, \mathbf{I}) \text{  and used reparameterization}\\
+\end{aligned}
+$$
+</p>
+
+<p align="justify">
+(*) Recall that \( Var(aX) = a^2 Var(X) \); Therefore, we have the following
+\( Var(\epsilon_0^*) = Var(\sqrt{\alpha_2(1 - \alpha_1)}\mathbf{\epsilon}_0)= \alpha_2(1 - \alpha_1) \)
+\( Var(\epsilon_1^*) =Var(\sqrt{1 - \alpha_2}\mathbf{\epsilon}_1)= 1 - \alpha_2 \)
+\( Var(\epsilon_0^*) + Var(\epsilon_1^*)= \alpha_2(1 - \alpha_1)1 - \alpha_2= 1 - \alpha_1 \alpha_2 \)<br />
+
+
+More concretely, we can sample $\mathbf{x}_t$ for any timestep $t$ in closed form given $\mathbf{x}_0$ using the so-called t-step transition probability.  
+</p>
+
+<p>
+$$
+\begin{equation}
+\label{eq:transition_t}
+q(\mathbf{x}_t \vert \mathbf{x}_0) = \mathcal{N}(\mathbf{x}_t; \sqrt{\bar{\alpha}_t} \mathbf{x}_0, (1 - \bar{\alpha}_t)\mathbf{I})
+\end{equation}
+$$
+</p>
+
+<p align="justify">
+where \( \bar{\alpha}_t \) is an decreasing function such that \( \bar{\alpha}_1 &lt; ... &lt; \bar{\alpha}_T \). The power signal of \( \mathbf{x}_0 \) decreases over time while the noise intensifies. Figure 3 shows a 2D animation of the behavior of the forward diffusion process where each transition is governed by equation \ref{eq:transition_t} for 4 different inputs \( \mathbf{x}_0 \) located at (10,-10), (-10,-10), (10,10), and (10,-10). Each input trajectory is repeated three times to observe the stochastic behavior of the diffusion process. The forward diffusion process will systematically move all \( \mathbf{x}_0 \)'s to an Isotropic Gaussian distribution as \( t\rightarrow T=1000 \).
+</p>
+
+<div class="container" style="align: left; text-align:center;" id="figure3">
+  <div class="row">
+      <div class="col-6">
+          <img class="center" src="/assets/img/diffusion/ddpm_animation.gif" style="width: 100%;" />
+      </div>
+  <div class="col-6">
+      <div class="col-10">
+          <img class="center" src="/assets/img/diffusion/signal.png" style="width: 110%;" />
+      </div>
+      <div class="col-10">
+          <img class="center" src="/assets/img/diffusion/noise.png" style="width: 110%;" />
+      </div>
+  </div>
+  </div>
+  <figcaption class="figure-caption text-center">Figure 3. 2D Animation of the Forward Diffusion process over 1000 timesteps using equation \ref{eq:transition_kernel}. The forward diffusion process systematically perturbed the input data \( \mathbf{x}_0 \), gradually converting \( q_0(\mathbf{x}_0) \) into an Isotropic Gaussian distribution for different initial states \( \mathbf{x}_0 \). The two plots in the right show the corresponding evolution of the <b>signal</b> and <b>noise</b> factor over time.</figcaption>
+</div>
+<p><br /></p>
+
+<p align="justify">
+<b>In summary</b>: the forward diffusion process maps any sample to a chosen stationary distribution. For this example, under the transition kernel of equation \ref{eq:transition_t}, to an Isotropic Gaussian.
+
+
+<div class="list">
+  <ul>
+    <li>The forward process \( \mathcal{F} \) has a structure that allows us to observe meaningful evolution over time and ensures that this is tractable, given the Markov property.</li>
+  </ul>
+</div>
+
+</p>
+
+<h3 id="reverse-process">Reverse process</h3>
+<p align="justify">
+If we know how to reverse the forward process and sample from \( q(\mathbf{x}_{t-1} | \mathbf{x}_t) \),
+we will be able to remove the added noise, moving the Gaussian distribution back to the data distribution \( q(\mathbf{x}_0) \).
+For this, we learn a parametric model \(p_{\theta}(\mathbf{x}_{0:T})\) to approximate these conditional probabilities to run the reverse process.
+</p>
+
+<p>
+$$
+\begin{equation}
+\label{eq:reverse_trajectory}
+p_\theta(\mathbf{x}_{0:T}) = p(\mathbf{x}_T) \prod^T_{t=1} p_\theta(\mathbf{x}_{t-1} | \mathbf{x}_t) \quad
+p_\theta(\mathbf{x}_{t-1} | \mathbf{x}_t) = \mathcal{N}(\mathbf{x}_{t-1}; \mathbf{\mu}_\theta(\mathbf{x}_t, t), \mathbf{\Sigma}_\theta(\mathbf{x}_t, t))
+\end{equation}
+$$
+</p>
+
+<p align="justify">
+This reverse process is similarly define by a Markov chain with learned Gaussian transitions starting at \( p(\mathbf{x}_T)= \mathcal{N}(\mathbf{x}_T;\mathbf{0}, \mathbf{I}) \). The reversal of the diffusion process has the identical functional form as the forward process as \( \beta \rightarrow 0\) <d-cite key="sohl2015deep"></d-cite>.<br />
+
+Then a generative Markov chain converts \( q_T \approx p_{\theta}(\mathbf{x}_T) \), the simple distribution, into a target (data) distribution using a diffusion process. <a href="#figure2"> Figure 2.</a> shows how the generative Markov chain generates samples like the training distribution starting from \( \mathbf{x}_T \sim p(\mathbf{x}_T) \). The model probability is defined by:
+</p>
+
+<p>
+ $$
+ \begin{equation}
+ p_{\theta}(\mathbf{x}_0) = \int  p_{\theta}(\mathbf{x}_{0:T}) dx_{1:T}
+ \end{equation}
+ $$
+ </p>
+
+<p align="justify">
+This integral is intractable. However, using <span style="color:blue;">annealed importance sampling</span> and the <a href="https://en.wikipedia.org/wiki/Jarzynski_equality">Jarzynski equality</a> we have:
+</p>
+
+<p>
+$$
+\begin{aligned}
+p_{\theta}(\mathbf{x}_0)
+&amp;= \int  p_{\theta}(\mathbf{x}_{0:T}) {\color{blue}\frac{q(\mathbf{x}_{1:T}| \mathbf{x}_0)}{q(\mathbf{x}_{1:T}\vert \mathbf{x}_0)}} dx_{1:T}\\
+&amp;= \int  q(\mathbf{x}_{1:T} | \mathbf{x}_0) \frac{p_{\theta}(\mathbf{x}_{0:T})}{q(\mathbf{x}_{1:T}\vert \mathbf{x}_0)} dx_{1:T}\\
+&amp;= \int  q(\mathbf{x}_{1:T} | \mathbf{x}_0)  p(\mathbf{x}_T) \prod^T_{t=1} \frac{p_\theta(\mathbf{x}_{t-1} | \mathbf{x}_t)}{q(\mathbf{x}_t | \mathbf{x}_{t-1})} dx_{1:T}\\
+&amp;= \mathbb{E}_{q(x_{1:T} | x_0)}\left[p(x_T) \prod_{t=1}^T \frac{  p(x_{t-1}|x_t)}{q(x_t|x_{t-1})}\right]
+\end{aligned}
+$$
+</p>
+
+<p align="justify">
+\( q(\mathbf{x}_{0:T}) = q(\mathbf{x}_{1:T} | \mathbf{x}_0)q(\mathbf{x}_0) \rightarrow q(\mathbf{x}_{1:T} | x_0) = \frac{q(\mathbf{x}_{0:T})}{q(\mathbf{x}_0)} = \frac{q(\mathbf{x}_0) \prod_{t=1}^T q(\mathbf{x}_t | \mathbf{x}_{t-1})}{q(\mathbf{x}_0)} =\prod_{t=1}^T q(\mathbf{x}_t | \mathbf{x}_{t-1}) \) The model probability is, therefore, the relative likelihood of the forward and reverse trajectories averaged over forward trajectories \( q(\mathbf{x}_{1:T} | \mathbf{x}_0) \). This objective function can be efficiently evaluated using only a single sample from \( q(\mathbf{x}_{1:T} | \mathbf{x}_0) \) when the forward and reverse trajectories are identical (when \( \beta \) is infinitesimally small). This form corresponds to the case of a quasi-static process in statistical physics.
+</p>
+
+<blockquote>
+  <p>For infinitesimal $\beta$ the forward and reverse distribution over trajectories can be made identical <d-cite key="sohl2015deep"></d-cite></p>
+</blockquote>
+
+<h3 id="training">Training</h3>
+
+<p align="justify">
+We train by minimizing the <a href="https://en.wikipedia.org/wiki/Cross_entropy">cross entropy</a> (CE) \( H \left[q(\mathbf{x}_0), p_{\theta}(\mathbf{x}_0) \right] \) between the true underlaying distribution \( q(\mathbf{x}_0) \) and the model probability \( p_{\theta}(\mathbf{x}_0) \)
+</p>
+
+<p>
+ $$
+ \begin{aligned}
+ L_\text{CE}
+ &amp;=  \mathbb{E}_{q(\mathbf{x}_0)}\left[ -\log p_\theta(\mathbf{x}_0) \right] \\
+ &amp;=  \mathbb{E}_{q(\mathbf{x}_0)}\left[ -\log \Big( \mathbb{E}_{q(\mathbf{x}_{1:T} | \mathbf{x}_0)}
+      \left[ p(\mathbf{x}_T) \prod^T_{t=1} \frac{p_\theta(\mathbf{x}_{t-1} | \mathbf{x}_t)}{q(\mathbf{x}_t\vert \mathbf{x}_{t-1})}
+      \right] \Big)\right] \\
+&amp;\leq  \mathbb{E}_{q(\mathbf{x}_0)}\left[ \mathbb{E}_{q(\mathbf{x}_{1:T} \vert \mathbf{x}_0)} \left[-\log \Big(p(\mathbf{x}_T) \prod^T_{t=1} \frac{p_\theta(\mathbf{x}_{t-1} \vert \mathbf{x}_t)}{q(\mathbf{x}_t\vert \mathbf{x}_{t-1})}\Big)\right] \right] \\
+ &amp;\leq  \mathbb{E}_{q(\mathbf{x}_{0:T})} \left[-\log \Big(p(\mathbf{x}_T) \prod^T_{t=1} \frac{p_\theta(\mathbf{x}_{t-1} \vert \mathbf{x}_t)}{q(\mathbf{x}_t | \mathbf{x}_{t-1})}\Big) \right] \\
+ &amp;= \mathbb{E}_{q(\mathbf{x}_{0:T})}\Big[\log \frac{q(\mathbf{x}_{1:T} | \mathbf{x}_{0})}{p_\theta(\mathbf{x}_{0:T})} \Big]  = L_{\text{VLB}}\\
+ &amp;= \mathbb{E}_{q(\mathbf{x}_{0:T})} \left[-\log p(\mathbf{x}_T) - \log\prod^T_{t=1} \frac{p_\theta(\mathbf{x}_{t-1} \vert \mathbf{x}_t)}{q(\mathbf{x}_t\vert \mathbf{x}_{t-1})} \right] \\
+ &amp;= \mathbb{E}_{q(\mathbf{x}_{0:T})} \left[-\log p(\mathbf{x}_T) - \sum^T_{t=1}\log \frac{p_\theta(\mathbf{x}_{t-1} \vert \mathbf{x}_t)}{q(\mathbf{x}_t\vert \mathbf{x}_{t-1})} \right]\\
+ &amp;= L_{\text{VLB}_\text{simplify}}
+ \end{aligned}
+ $$
+</p>
+
+<p align="justify">
+We use Jensen's inequality \( \mathbb{E}[f(x)] \ge f(\mathbb{E}[x]) \) for convex function. Making use of the fact that \(-\log(x) \) is convex we have  that \( \mathbb{E}[-\log(x)] \ge -\log(\mathbb{E}[x]) \). Further improvements come from variance reduction by rewriting the equation as:
+</p>
+
+<!-- Need to check the math tex of this equation -->
+<p>
+$$
+\begin{aligned}
+L_\text{VLB}
+&amp;= \mathbb{E}_{q(\mathbf{x}_{0:T})}\Big[\log \frac{q(\mathbf{x}_{1:T} \vert \mathbf{x}_{0})}{p_\theta(\mathbf{x}_{0:T})} \Big]\\
+&amp;= \mathbb{E}_{q(\mathbf{x}_{0:T})} \left[-\log p(\mathbf{x}_T) - \sum^T_{t=1}\log \frac{p_\theta(\mathbf{x}_{t-1} \vert \mathbf{x}_t)}{q(\mathbf{x}_t\vert \mathbf{x}_{t-1})} \right]\\
+&amp;= \mathbb{E}_{q(\mathbf{x}_{0:T})} \left[-\log p(\mathbf{x}_T) - \sum^T_{t=2}\log \frac{p_\theta(\mathbf{x}_{t-1} \vert \mathbf{x}_t)}{q(\mathbf{x}_t\vert \mathbf{x}_{t-1})} - \log \frac{p_\theta(\mathbf{x}_0 \vert \mathbf{x}_1)}{q(\mathbf{x}_1\vert \mathbf{x}_0)} \right]\\
+&amp;= \mathbb{E}_{q(\mathbf{x}_{0:T})} \left[-\log p(\mathbf{x}_T) - \sum^T_{t=2}\log \frac{p_\theta(\mathbf{x}_{t-1} \vert \mathbf{x}_t)}{q(\mathbf{x}_{t-1} \vert \mathbf{x}_t, \mathbf{x}_0)}\cdot\frac{q(\mathbf{x}_{t-1} \vert \mathbf{x}_0)}{q(\mathbf{x}_t \vert \mathbf{x}_0)} - \log \frac{p_\theta(\mathbf{x}_0 \vert \mathbf{x}_1)}{q(\mathbf{x}_1\vert \mathbf{x}_0)} \right];\quad \text{Markov property + Bayes' rule (*).}\\
+&amp;= \mathbb{E}_{q(\mathbf{x}_{0:T})} \left[-\log p(\mathbf{x}_T) - \sum^T_{t=2}\log \frac{p_\theta(\mathbf{x}_{t-1} \vert \mathbf{x}_t)}{q(\mathbf{x}_{t-1} \vert \mathbf{x}_t, \mathbf{x}_0)} - \sum^T_{t=2}\log\frac{q(\mathbf{x}_{t-1} \vert \mathbf{x}_0)}{q(\mathbf{x}_t \vert \mathbf{x}_0)} - \log \frac{p_\theta(\mathbf{x}_0 \vert \mathbf{x}_1)}{q(\mathbf{x}_1\vert \mathbf{x}_0)} \right] \\
+&amp;= \mathbb{E}_{q(\mathbf{x}_{0:T})} \left[-\log p(\mathbf{x}_T) - \sum^T_{t=2}\log \frac{p_\theta(\mathbf{x}_{t-1} \vert \mathbf{x}_t)}{q(\mathbf{x}_{t-1} \vert \mathbf{x}_t, \mathbf{x}_0)} -  \log\frac{\color{blue}q(\mathbf{x}_1 \vert \mathbf{x}_0)}{q(\mathbf{x}_T \vert \mathbf{x}_0)} - \log \frac{p_\theta(\mathbf{x}_0 \vert \mathbf{x}_1)}{\color{blue}q(\mathbf{x}_1\vert \mathbf{x}_0)} \right]  \quad \text{Suming up (**).}\\
+&amp;=  \mathbb{E}_{q(\mathbf{x}_0)}\left[ \mathbb{E}_{q(\mathbf{x}_{1:T} \vert \mathbf{x}_0)} \left[ \log\frac{q(\mathbf{x}_T \vert \mathbf{x}_0)}{p(\mathbf{x}_T)} - \sum^T_{t=2}\log \frac{p_\theta(\mathbf{x}_{t-1} \vert \mathbf{x}_t)}{q(\mathbf{x}_{t-1} \vert \mathbf{x}_t, \mathbf{x}_0)} - \log p_\theta(\mathbf{x}_0 \vert \mathbf{x}_1) \right]\right]\\
+&amp;=  \mathbb{E}_{q(\mathbf{x}_0)}\left[ \text{D}_{KL}(q(\mathbf{x}_T \vert \mathbf{x}_0)||p(\mathbf{x}_T)) + \sum^T_{t=2} \text{D}_{KL} (q(\mathbf{x}_{t-1} \vert \mathbf{x}_t, \mathbf{x}_0)||p_\theta(\mathbf{x}_{t-1} \vert \mathbf{x}_t))  - \log p_\theta(\mathbf{x}_0 \vert \mathbf{x}_1)
+\right]
+\end{aligned}
+$$
+</p>
+
+<p align="justify">
+(*) Because of the Markov property of the diffusion  process \( q(\mathbf{x}_t \vert \mathbf{x}_{t-1})= q(\mathbf{x}_t \vert \mathbf{x}_{t-1}, \mathbf{x}_0) \).<br />
+(*) Using Bayes' rule
+</p>
+
+<!-- Need to check the math tex of this equation -->
+<p>
+$$
+\begin{align}
+\label{eq:forward_posterior}
+q(\mathbf{x}_{t-1} \vert \mathbf{x}_t, \mathbf{x}_0)
+= \frac{q(\mathbf{x}_t \vert \mathbf{x}_{t-1}, \mathbf{x}_0)q(\mathbf{x}_{t-1} \vert \mathbf{x}_0)}{q(\mathbf{x}_t \vert \mathbf{x}_0)}; \quad q(\mathbf{x}_t \vert \mathbf{x}_{t-1},\mathbf{x}_0)= \frac{q(\mathbf{x}_{t-1} \vert \mathbf{x}_t, \mathbf{x}_0)q(\mathbf{x}_t \vert \mathbf{x}_0)}{q(\mathbf{x}_{t-1} \vert \mathbf{x}_0)}
+\end{align}
+$$
+</p>
+
+<p>
+(**) The sum is reduced by applying the log property.
+</p>
+
+<p>
+$$
+\begin{aligned}
+\sum^T_{t=2}\log\frac{q(\mathbf{x}_{t-1} \vert \mathbf{x}_0)}{q(\mathbf{x}_t \vert \mathbf{x}_0)}
+&amp;= (\log q(\mathbf{x}_{1}\vert \mathbf{x}_0) - {\color{blue}\log q(\mathbf{x}_2 \vert \mathbf{x}_0)}) + ({\color{blue}\log q(\mathbf{x}_{2}\vert \mathbf{x}_0)} - {\color{orange}\log q(\mathbf{x}_3 \vert \mathbf{x}_0)}) + \dots + \\
+&amp;\quad({\color{orange}\log q(\mathbf{x}_{T-2}\vert \mathbf{x}_0)} - {\color{red}\log q(\mathbf{x}_{T-1} \vert \mathbf{x}_0)}) + ({\color{red}\log q(\mathbf{x}_{T-1}\vert \mathbf{x}_0)} - \log q(\mathbf{x}_T \vert \mathbf{x}_0))\\
+&amp;= \log q(\mathbf{x}_{1}\vert \mathbf{x}_0)- \log q(\mathbf{x}_T \vert \mathbf{x}_0)
+\end{aligned}
+$$
+</p>
+
+<p align="justify">
+Therefore, training requires minimizing the \(L_\text{VLB}\) objective function:
+</p>
+
+<p>
+$$
+\begin{equation}
+\label{eq:vlb}
+\mathbb{E}_{q(\mathbf{x}_0)}\left[ \text{D}_{KL}(q(\mathbf{x}_T \vert \mathbf{x}_0) || p(\mathbf{x}_T))
++ \sum^T_{t=2} \text{D}_{KL} (q(\mathbf{x}_{t-1} \vert \mathbf{x}_t, \mathbf{x}_0)||p_\theta(\mathbf{x}_{t-1} \vert \mathbf{x}_t))
+- \log p_\theta(\mathbf{x}_0 \vert \mathbf{x}_1)
+\right]
+\end{equation}
+$$
+</p>
+
+<p align="justify">
+Minimization of this \( L_\text{VLB} \) requires estimating the forward posteriors \( q(\mathbf{x}_{t-1} \vert \mathbf{x}_t, \mathbf{x}_0) \), which are tractable to compute (eq. \ref{eq:forward_posterior}).
+Let's estimate this posterior's parameters \( \mu \) and \( \sigma^2\).
+Recall \( \alpha_t = 1 - \beta_t \) and \( \bar{\alpha}_t = \prod_{i=1}^t \alpha_i \)
+</p>
+
+<!-- Need to check the math tex of this equation -->
+<p>
+$$
+\begin{aligned}
+q(\mathbf{x}_{t-1} \vert \mathbf{x}_t, \mathbf{x}_0)
+&amp;= \frac{q(\mathbf{x}_t \vert \mathbf{x}_{t-1}, \mathbf{x}_0)q(\mathbf{x}_{t-1} \vert \mathbf{x}_0)}{q(\mathbf{x}_t \vert \mathbf{x}_0)}\\
+&amp;= \frac{\mathcal{N}(\mathbf{x}_t; \sqrt{1 - \beta_t} \mathbf{x}_{t-1}, \beta_t\mathbf{I})\mathcal{N}(\mathbf{x}_{t-1}; \sqrt{\bar{\alpha}_{t-1}} \mathbf{x}_0, (1 - \bar{\alpha}_{t-1})\mathbf{I})}{\mathcal{N}(\mathbf{x}_t; \sqrt{\bar{\alpha}_t} \mathbf{x}_0, (1 - \bar{\alpha}_t)\mathbf{I})}\\
+&amp;\propto \exp\Big(-\frac{1}{2}\Big(\frac{(\mathbf{x}_t- \sqrt{\alpha_t} \mathbf{x}_{t-1})^2}{\beta_t} + \frac{(\mathbf{x}_{t-1}- \sqrt{\bar{\alpha}_{t-1}}\mathbf{x}_0)^2}{1 - \bar{\alpha}_{t-1}} - \frac{(\mathbf{x}_t-  \sqrt{\bar{\alpha}_t} \mathbf{x}_0)^2}{1 - \bar{\alpha}_t}\Big)\Big)\\
+&amp;= \exp\Big(-\frac{1}{2}\Big(\frac{\mathbf{x}_t^2- \color{red}2\sqrt{\alpha_t} \mathbf{x}_t \mathbf{x}_{t-1}\color{black}+ \color{blue}\alpha_t \mathbf{x}_{t-1}^2}{\beta_t} + \frac{\color{blue}\mathbf{x}_{t-1}^2 \color{black}- \color{red}2\sqrt{\bar{\alpha}_{t-1}}\mathbf{x}_0\mathbf{x}_{t-1} \color{black}+ \bar{\alpha}_{t-1}\mathbf{x}_0^2}{1 - \bar{\alpha}_{t-1}} - \frac{\mathbf{x}_t^2 -  2\sqrt{\bar{\alpha}_t} \mathbf{x}_0\mathbf{x}_t + \bar{\alpha}_t \mathbf{x}_0^2}{1 - \bar{\alpha}_t}\Big)\Big)\\
+&amp;= \exp\Big(-\frac{1}{2}\Big(\color{blue}\Big(\frac{\alpha_t}{\beta_t} + \frac{1}{1 - \bar{\alpha}_{t-1}} \Big)\mathbf{x}_{t-1}^2 \color{black}- \color{red}\Big(\frac{ 2\sqrt{\alpha_t}}{\beta_t}\mathbf{x}_t + \frac{2\sqrt{\bar{\alpha}_{t-1}}}{1 - \bar{\alpha}_{t-1}}\mathbf{x}_0\Big)\mathbf{x}_{t-1}\color{black}  + \frac{\mathbf{x}_t^2}{\beta_t} + \frac{\bar{\alpha}_{t-1}\mathbf{x}_0^2}{1 - \bar{\alpha}_{t-1}}-\frac{\mathbf{x}_t^2 -  2\sqrt{\bar{\alpha}_t} \mathbf{x}_0\mathbf{x}_t  + \bar{\alpha}_t \mathbf{x}_0^2}{1 - \bar{\alpha}_t}\Big)\Big)\\
+&amp;= \exp\Big(-\frac{1}{2}\Big(\color{blue}\mathbf{x}_{t-1}^2\cdot \frac{1}{\frac{1}{\Big(\frac{\alpha_t}{\beta_t} + \frac{1}{1 - \bar{\alpha}_{t-1}} \Big)}} \color{black}- \color{red}2\mathbf{x}_{t-1}\Big(\frac{ \sqrt{\alpha_t}}{\beta_t}\mathbf{x}_t + \frac{\sqrt{\bar{\alpha}_{t-1}}}{1 - \bar{\alpha}_{t-1}}\mathbf{x}_0\Big)\color{black}  + \frac{\mathbf{x}_t^2}{\beta_t} + \frac{\bar{\alpha}_{t-1}\mathbf{x}_0^2}{1 - \bar{\alpha}_{t-1}}-\frac{\mathbf{x}_t^2 -  2\sqrt{\bar{\alpha}_t} \mathbf{x}_0\mathbf{x}_t  + \bar{\alpha}_t \mathbf{x}_0^2}{1 - \bar{\alpha}_t}\Big)\Big)
+\end{aligned}
+$$
+</p>
+
+<p align="justify">
+Recall that a Normal distribution \( \mathcal{N}(\mathcal{x}; \mu, \sigma^2) \)
+can be expressed as follows:
+</p>
+
+<p>
+$$
+\begin{aligned}
+ \mathcal{N}(\mathcal{x}; \mu, \sigma^2)
+ &amp;= \frac{1}{\sqrt{2\pi}\sigma}\exp\Big(-\frac{1}{2}\frac{(\mathbf{x}-\mu)^2}{\sigma^2} \Big)\\
+ &amp;= \frac{1}{\sqrt{2\pi}\sigma}\exp\Big(-\frac{1}{2}\Big(\frac{\mathbf{x}^2 -2\mathbf{x}\mu+\mu^2}{\sigma^2} \Big)\Big)\\
+  &amp;= \frac{1}{\sqrt{2\pi}\sigma}\exp\Big(-\frac{1}{2}\Big(\frac{\mathbf{x}^2}{\sigma^2}  -2\mathbf{x}\frac{\mu}{\sigma^2} +\frac{\mu^2}{\sigma^2} \Big)\Big)
+\end{aligned}
+$$
+</p>
+
+<p align="justify">
+Following this and using the property \( \color{green}\alpha_t + \beta_t =1 \)
+we can express the variance as follows:
+</p>
+
+<p>
+$$
+\begin{aligned}
+ \color{blue}\sigma^2_t &amp;=  1/(\frac{\alpha_t}{\beta_t} + \frac{1}{1 - \bar{\alpha}_{t-1}}) = 1/(\frac{\alpha_t\cdot (1 - \bar{\alpha}_{t-1}) + \beta_t}{\beta_t (1 - \bar{\alpha}_{t-1})}) = 1/(\frac{\alpha_t - \bar{\alpha}_t + \beta_t}{\beta_t (1 - \bar{\alpha}_{t-1})}) = \color{green}\frac{1 - \bar{\alpha}_{t-1}}{1 - \bar{\alpha}_t }\beta_t
+\end{aligned}
+$$
+</p>
+
+<p>
+Then we can extract \( \mu \) by solving
+</p>
+
+<p>
+$$
+\begin{aligned}
+  \frac{\mu}{\sigma^2_t} &amp;= \color{red}\Big(\frac{ \sqrt{\alpha_t}}{\beta_t}\mathbf{x}_t + \frac{\sqrt{\bar{\alpha}_{t-1}}}{1 - \bar{\alpha}_{t-1}}\mathbf{x}_0\Big)\\
+  \mu &amp;= \color{red}\Big(\frac{ \sqrt{\alpha_t}}{\beta_t}\mathbf{x}_t + \frac{\sqrt{\bar{\alpha}_{t-1}}}{1 - \bar{\alpha}_{t-1}}\mathbf{x}_0\Big) \color{blue}\sigma^2_t\\
+  &amp;= \color{red}\Big(\frac{ \sqrt{\alpha_t}}{\beta_t}\mathbf{x}_t + \frac{\sqrt{\bar{\alpha}_{t-1}}}{1 - \bar{\alpha}_{t-1}}\mathbf{x}_0\Big) \color{green}\frac{1 - \bar{\alpha}_{t-1}}{1 - \bar{\alpha}_t }\beta_t\\
+  &amp;= \frac{\sqrt{\alpha_t}(1 - \bar{\alpha}_{t-1})}{1 - \bar{\alpha}_t }\mathbf{x}_t  + \frac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{1 - \bar{\alpha}_t }\mathbf{x}_0
+\end{aligned}
+$$
+</p>
+
+<p>
+This implies that the following equality holds:
+</p>
+
+<p>
+$$
+\begin{aligned}
+  \color{blue}\frac{\mu^2}{\sigma^2_t} &amp;=  \color{#06a16b}\frac{\mathbf{x}_t^2}{\beta_t} + \frac{\bar{\alpha}_{t-1}\mathbf{x}_0^2}{1 - \bar{\alpha}_{t-1}}-\frac{\mathbf{x}_t^2 -  2\sqrt{\bar{\alpha}_t} \mathbf{x}_0\mathbf{x}_t  + \bar{\alpha}_t \mathbf{x}_0^2}{1 - \bar{\alpha}_t}
+\end{aligned}
+$$
+</p>
+
+<p>
+First the LHST
+</p>
+
+<!-- Need to check the math tex of this equation -->
+<p>
+$$
+\begin{aligned}
+  \color{blue}\frac{\mu^2}{\sigma^2_t} &amp;=  \color{red}\Big(\frac{ \sqrt{\alpha_t}}{\beta_t}\mathbf{x}_t^2 + \frac{\sqrt{\bar{\alpha}_{t-1}}}{1 - \bar{\alpha}_{t-1}}\mathbf{x}_0\Big) \color{black}\cdot \Big( \frac{\sqrt{\alpha_t}(1 - \bar{\alpha}_{t-1})}{1 - \bar{\alpha}_t }\mathbf{x}_t  + \frac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{1 - \bar{\alpha}_t }\mathbf{x}_0^2\Big) \\
+  &amp;=\Big(\color{gray} \frac{ \alpha_t (1 - \bar{\alpha}_{t-1})}{\beta_t (1 - \bar{\alpha}_t)}\mathbf{x}_t^2 + \color{black} \frac{ \sqrt{\alpha_t}}{\beta_t}\mathbf{x}_t \cdot \frac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{1 - \bar{\alpha}_t }\mathbf{x}_0 + \frac{\sqrt{\bar{\alpha}_{t-1}}}{1 - \bar{\alpha}_{t-1}}\mathbf{x}_0 \cdot \frac{\sqrt{\alpha_t}(1 - \bar{\alpha}_{t-1})}{1 - \bar{\alpha}_t }\mathbf{x}_t + \color{purple}
+   \frac{\bar{\alpha}_{t-1}\beta_t}{(1 - \bar{\alpha}_{t-1})(1 - \bar{\alpha}_t)}\mathbf{x}_0^2\Big) \\
+   &amp;=\Big(\color{gray} \frac{ \alpha_t (1 - \bar{\alpha}_{t-1})}{\beta_t (1 - \bar{\alpha}_t)}\mathbf{x}_t^2 + \color{black}\frac{ \sqrt{\alpha_t} \sqrt{\bar{\alpha}_{t-1}}}{1 - \bar{\alpha}_t}\mathbf{x}_0 \mathbf{x}_t+
+    \frac{\sqrt{\bar{\alpha}_{t-1}} \sqrt{\alpha_t}}{1 - \bar{\alpha}_t}\mathbf{x}_0 \mathbf{x}_t + \color{purple}
+    \frac{\bar{\alpha}_{t-1}\beta_t}{(1 - \bar{\alpha}_{t-1})(1 - \bar{\alpha}_t)}\mathbf{x}_0^2\Big) \\
+  &amp;=\Big(\color{gray} \frac{ \alpha_t (1 - \bar{\alpha}_{t-1})}{\beta_t (1 - \bar{\alpha}_t)}\mathbf{x}_t^2 + \color{black}\frac{ 2\sqrt{\alpha_t} \sqrt{\bar{\alpha}_{t-1}}}{1 - \bar{\alpha}_t}\mathbf{x}_0 \mathbf{x}_t + \color{purple}
+       \frac{\bar{\alpha}_{t-1}\beta_t}{(1 - \bar{\alpha}_{t-1})(1 - \bar{\alpha}_t)}\mathbf{x}_0^2\Big) \\
+   &amp;=\Big(\color{gray} \frac{ \alpha_t - \bar{\alpha}_{t}}{\beta_t (1 - \bar{\alpha}_t)}\mathbf{x}_t^2 + \color{orange} \frac{ 2  \sqrt{\bar{\alpha}_{t}}}{1 - \bar{\alpha}_t}\mathbf{x}_0 \mathbf{x}_t+\color{purple}
+    \frac{\bar{\alpha}_{t-1}\beta_t}{(1 - \bar{\alpha}_{t-1})(1 - \bar{\alpha}_t)}\mathbf{x}_0^2\Big)
+\end{aligned}
+$$
+</p>
+
+<p>
+Now the RHST
+</p>
+
+<!-- Need to check the math tex of this equation -->
+<p>
+$$
+\begin{aligned}
+  \color{#06a16b}\frac{\mathbf{x}_t^2}{\beta_t} + \frac{\bar{\alpha}_{t-1}\mathbf{x}_0^2}{1 - \bar{\alpha}_{t-1}}-\frac{\mathbf{x}_t^2 -  2\sqrt{\bar{\alpha}_t} \mathbf{x}_0\mathbf{x}_t  + \bar{\alpha}_t \mathbf{x}_0^2}{1 - \bar{\alpha}_t}
+  &amp;= (\frac{1}{\beta_t}-\frac{1}{1 - \bar{\alpha}_t})\mathbf{x}_t^2 +\frac{  2\sqrt{\bar{\alpha}_t} }{1 - \bar{\alpha}_t}\mathbf{x}_0\mathbf{x}_t   + (\frac{\bar{\alpha}_{t-1}}{1 - \bar{\alpha}_{t-1}} -\frac{\bar{\alpha}_t}{1 - \bar{\alpha}_t})\mathbf{x}_0^2\\
+  &amp;= \frac{1 - \bar{\alpha}_t-\beta_t}{\beta_t (1 - \bar{\alpha}_t)}\mathbf{x}_t^2 +\frac{  2\sqrt{\bar{\alpha}_t} }{1 - \bar{\alpha}_t}\mathbf{x}_0\mathbf{x}_t   + \frac{\bar{\alpha}_{t-1}(1 - \bar{\alpha}_{t})- \bar{\alpha}_t(1 - \bar{\alpha}_{t-1})}{(1 - \bar{\alpha}_{t-1})(1 - \bar{\alpha}_{t})} \mathbf{x}_0^2\\
+  &amp;= \frac{\alpha_t - \bar{\alpha}_t}{\beta_t (1 - \bar{\alpha}_t)}\mathbf{x}_t^2 +\frac{  2\sqrt{\bar{\alpha}_t} }{1 - \bar{\alpha}_t}\mathbf{x}_0\mathbf{x}_t   + \frac{\bar{\alpha}_{t-1} - \bar{\alpha}_{t-1}\bar{\alpha}_{t}- \bar{\alpha}_t + \bar{\alpha}_t\bar{\alpha}_{t-1}}{(1 - \bar{\alpha}_{t-1})(1 - \bar{\alpha}_{t})} \mathbf{x}_0^2\\
+  &amp;= \frac{\alpha_t - \bar{\alpha}_t}{\beta_t (1 - \bar{\alpha}_t)}\mathbf{x}_t^2 +\frac{  2\sqrt{\bar{\alpha}_t} }{1 - \bar{\alpha}_t}\mathbf{x}_0\mathbf{x}_t   + \frac{\bar{\alpha}_{t-1} - \bar{\alpha}_t }{(1 - \bar{\alpha}_{t-1})(1 - \bar{\alpha}_{t})} \mathbf{x}_0^2\\
+  &amp;= \color{gray} \frac{\alpha_t - \bar{\alpha}_t}{\beta_t (1 - \bar{\alpha}_t)}\mathbf{x}_t^2 \color{black} + \color{orange} \frac{  2\sqrt{\bar{\alpha}_t} }{1 - \bar{\alpha}_t}\mathbf{x}_0\mathbf{x}_t   \color{black}+  \color{purple}\frac{\bar{\alpha}_{t-1}\beta_t }{(1 - \bar{\alpha}_{t-1})(1 - \bar{\alpha}_{t})} \mathbf{x}_0^2;\quad \text{*}
+\end{aligned}
+$$
+</p>
+
+<p>
+(*) \( \bar{\alpha}_{t-1} - \bar{\alpha}_t = \bar{\alpha}_{t-1} - \bar{\alpha}_{t-1} \alpha_t =  \bar{\alpha}_{t-1}(1 - \alpha_t) = \bar{\alpha}_{t-1}\beta_t \)<br />
+
+In summary, this derivation shows we can estimate the forward posteriors \( q(\mathbf{x}_{t-1} \vert \mathbf{x}_t, \mathbf{x}_0) \) in <b>closed form</b>, which are needed to evaluated the objective function (eq. \ref{eq:vlb}). Using <d-cite key="ho2020denoising"></d-cite> notation the forward posterior is represented as :
+</p>
+
+<p>
+$$
+\begin{equation}
+  q(\mathbf{x}_{t-1} \vert \mathbf{x}_t, \mathbf{x}_0) = \mathcal{N}(\mathbf{x}_{t-1} ; \tilde{\mu}_t(\mathbf{x}_t,\mathbf{x}_0), \tilde{\beta}_t\mathbf{I}),
+\end{equation}
+$$
+</p>
+
+<p>
+$$
+\begin{align}
+  \label{eq:posterior}
+  \text{where } \tilde{\mu}_t(\mathbf{x}_t,\mathbf{x}_0) &amp;:= \frac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{1 - \bar{\alpha}_t }\mathbf{x}_0 + \frac{\sqrt{\alpha_t}(1 - \bar{\alpha}_{t-1})}{1 - \bar{\alpha}_t }\mathbf{x}_t \text{ and } \tilde{\beta}_t :=\frac{1 - \bar{\alpha}_{t-1}}{1 - \bar{\alpha}_t }\beta_t
+\end{align}
+$$
+</p>
+
+<p>
+I write the VLB objective function again to analyze each component.
+</p>
+
+<p>
+$$
+\begin{aligned}
+\mathbb{E}_{q(\mathbf{x}_0)}\left[ \underbrace{\text{D}_{KL}(q(\mathbf{x}_T \vert \mathbf{x}_0)||p(\mathbf{x}_T))}_{L_T} + \sum^T_{t=2} \underbrace{\text{D}_{KL} (q(\mathbf{x}_{t-1} \vert \mathbf{x}_t, \mathbf{x}_0)||p_\theta(\mathbf{x}_{t-1} \vert \mathbf{x}_t))}_{L_{t-1}}  - \underbrace{\log p_\theta(\mathbf{x}_0 \vert \mathbf{x}_1)}_{L_0}
+\right]
+\end{aligned}
+$$
+</p>
+
+<p>
+The nice property of this derivation is that now all KL divergences are comparisons between Gaussians, so they can be calculated in a <a href="https://en.wikipedia.org/wiki/Rao%E2%80%93Blackwell_theorem">Rao-Blackwellized</a>  fashion with closed form expressions instead of high variance Monte Carlo estimates <d-cite key="ho2020denoising"></d-cite>.
+
+
+
+<ul>
+  <li>$L_T$ is constant when \( \beta_t \) of the forward process are held constant (not learnable) and therefore  <font color="red">can be ignored during training</font>.</li>
+  <li>\( L_{t-1} \) and \( L_0 \) involve the reverse process. We discuss this in the following section.</li>
+</ul>
+</p>
+
+<p>
+We have a reduced objective function, the Variational Lower Bound reduced (VLBR):
+</p>
+
+<p>
+$$
+\begin{equation}
+\label{eq:vlb_reduced}
+ L_\text{VLBR} =\mathbb{E}_{q(\mathbf{x}_0)}\left[\sum^T_{t=2} \underbrace{\text{D}_{KL} (q(\mathbf{x}_{t-1} \vert \mathbf{x}_t, \mathbf{x}_0)||p_\theta(\mathbf{x}_{t-1} \vert \mathbf{x}_t))}_{L_{t-1}}  - \underbrace{\log p_\theta(\mathbf{x}_0 \vert \mathbf{x}_1)}_{L_0}
+\right]
+\end{equation}
+$$
+</p>
+
+<h3 id="parameterization-of-l_t-1-and-connection-to-denoising-score-matching">Parameterization of \(L_{t-1}\) and connection to denoising score matching</h3>
+
+<p align="justify">
+Now, let's discuss about the parameterization of \( L_{t-1} \) term of equation
+\ref{eq:vlb_reduced}  and its connection to denoising score matching.<br /><br />
+
+To evaluate the VLBR objective function we still need to choose the Gaussian distribution parameterization of the reverse process  \( p_\theta(\mathbf{x}_{t-1} \vert \mathbf{x}_t) = \mathcal{N}(\mathbf{x}_{t-1}; \mathbf{\mu}_\theta(\mathbf{x}_t, t), \mathbf{\Sigma}_\theta(\mathbf{x}_t, t)) \).
+
+  <ul>
+    <li>First we set \( \mathbf{\Sigma}_\theta(\mathbf{x}_t, t)= \sigma_t\mathbf{I} \).
+    We could choose  \( \sigma_t = \beta_t \)  or \( \sigma_t = \tilde{\beta}_t = \frac{1 - \bar{\alpha}_{t-1}}{1 - \bar{\alpha}_t }\beta_t \).
+    Ho et. al.<d-cite key="ho2020denoising"></d-cite> showed experimentally that both choices lead to similar results. </li>
+    <li>Second, to represent \( \mathbf{\mu}_\theta(\mathbf{x}_t, t) \) we obtain a parameterization derived as following analysis<d-cite key="ho2020denoising"></d-cite> .</li>
+  </ul>
+</p>
+
+<p align="justify">
+Using equation \ref{eq:transition_t} we have that \( \mathbf{x}_0 = \frac{1}{\sqrt{\bar{\alpha}_t}}(\mathbf{x}_t - \sqrt{(1 - \bar{\alpha}_t)}\mathbf{z_t}) \). We can now reexpress \( \tilde{\mu}_t(\mathbf{x}_t,\mathbf{x}_0) \), the forward mean posterior, as:
+</p>
+
+<!-- Need to check the math tex of this equation -->
+<p>
+$$
+\begin{aligned}
+  \tilde{\mu}_t(\mathbf{x}_t,\mathbf{x}_0) &amp;= \frac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{1 - \bar{\alpha}_t } \frac{1}{\sqrt{\bar{\alpha}_t}}(\mathbf{x}_t - \sqrt{(1 - \bar{\alpha}_t)}\mathbf{z_t}) + \frac{\sqrt{\alpha_t}(1 - \bar{\alpha}_{t-1})}{1 - \bar{\alpha}_t }\mathbf{x}_t\\
+  &amp;= \Big(\frac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{1 - \bar{\alpha}_t } \frac{1}{\sqrt{\bar{\alpha}_t}}+ \frac{\sqrt{\alpha_t}(1 - \bar{\alpha}_{t-1})}{1 - \bar{\alpha}_t }\Big)\mathbf{x}_t - \frac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{1 - \bar{\alpha}_t } \frac{1}{\sqrt{\bar{\alpha}_t}} \sqrt{(1 - \bar{\alpha}_t)}\mathbf{z_t}\\
+  &amp;= \frac{\sqrt{\bar{\alpha}_{t-1}}\beta_t + \sqrt{\bar{\alpha}_t}\sqrt{\alpha_t}(1 - \bar{\alpha}_{t-1})}{(1 - \bar{\alpha}_t)\sqrt{\bar{\alpha}_t} }\mathbf{x}_t - \frac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{1 - \bar{\alpha}_t } \frac{1}{\sqrt{\bar{\alpha}_t}} \sqrt{(1 - \bar{\alpha}_t)}\mathbf{z_t}\\
+  &amp;= \frac{\sqrt{\bar{\alpha}_{t-1}}(1-\alpha_t) + \sqrt{\bar{\alpha}_t}\sqrt{\alpha_t}(1 - \bar{\alpha}_{t-1})}{(1 - \bar{\alpha}_t)\sqrt{\bar{\alpha}_t} }\mathbf{x}_t - \frac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{1 - \bar{\alpha}_t } \frac{1}{\sqrt{\bar{\alpha}_t}} \sqrt{(1 - \bar{\alpha}_t)}\mathbf{z_t}\\
+  &amp;= \frac{\sqrt{\bar{\alpha}_{t-1}}-\sqrt{\bar{\alpha}_{t-1}}\sqrt{\alpha_t}\sqrt{\alpha_t} + \sqrt{\bar{\alpha}_t}\sqrt{\alpha_t} - \sqrt{\bar{\alpha}_t}\sqrt{\alpha_t}\bar{\alpha}_{t-1}}{(1 - \bar{\alpha}_t)\color{orange}\sqrt{\bar{\alpha}_{t-1}}\sqrt{\alpha_t}}\color{black}\mathbf{x}_t - \frac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{\color{blue}\sqrt{1 - \bar{\alpha}_t}\color{black}\sqrt{1 - \bar{\alpha}_t} } \frac{1}{\sqrt{\bar{\alpha}_t}} \color{blue}\sqrt{(1 - \bar{\alpha}_t)}\color{black}\mathbf{z_t}\\
+  &amp;= \frac{\sqrt{\bar{\alpha}_{t-1}}-\color{red}\sqrt{\bar{\alpha}_{t}}\sqrt{\alpha_t} \color{black}+ \color{red}\sqrt{\bar{\alpha}_t}\sqrt{\alpha_t} \color{black}- \sqrt{\bar{\alpha}_t}\sqrt{\alpha_t}\bar{\alpha}_{t-1}}{(1 - \bar{\alpha}_t)\color{orange}\sqrt{\bar{\alpha}_{t-1}}\sqrt{\alpha_t}}\color{black}\mathbf{x}_t - \frac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{\sqrt{1 - \bar{\alpha}_t}} \frac{1}{\sqrt{\bar{\alpha}_t}} \mathbf{z_t}\\
+  &amp;= \frac{\color{green}\sqrt{\bar{\alpha}_{t-1}}\color{black}- \color{green}\sqrt{\bar{\alpha}_{t-1}} \color{black}\sqrt{\alpha_t} \sqrt{\alpha_t}\bar{\alpha}_{t-1}}{(1 - \bar{\alpha}_t)\color{orange}\sqrt{\bar{\alpha}_{t-1}}\sqrt{\alpha_t}}\color{black}\mathbf{x}_t - \frac{\color{blue}\sqrt{\bar{\alpha}_{t-1}}\color{black}\beta_t}{\sqrt{1 - \bar{\alpha}_t}} \frac{1}{\color{blue}\sqrt{\bar{\alpha}_{t-1}}\color{black} \sqrt{\alpha_t} } \mathbf{z_t}\\
+  &amp;= \frac{(1 - \sqrt{\alpha_t} \sqrt{\alpha_t}\bar{\alpha}_{t-1})\color{green}\sqrt{\bar{\alpha}_{t-1}}\color{black}}{(1 - \bar{\alpha}_t)\color{orange}\sqrt{\bar{\alpha}_{t-1}}\sqrt{\alpha_t}}\color{black}\mathbf{x}_t - \frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}} \frac{1}{\sqrt{\alpha_t} } \mathbf{z_t}\\
+  &amp;= \frac{1}{\sqrt{\alpha_t}}\color{black}\mathbf{x}_t - \frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}} \frac{1}{\sqrt{\alpha_t} } \mathbf{z_t}\\
+  &amp;= \color{blue} \frac{1}{\sqrt{\alpha_t}}\Big(\mathbf{x}_t - \frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}}  \mathbf{z_t}\Big)\\
+\end{aligned}
+$$
+</p>
+
+<p>
+We can express the \(L_{t-1}\) term as follows:
+</p>
+
+<p>
+$$
+\begin{aligned}
+ L_{t-1}&amp;= \text{D}_{KL} (q(\mathbf{x}_{t-1} \vert \mathbf{x}_t, \mathbf{x}_0)||p_\theta(\mathbf{x}_{t-1} \vert \mathbf{x}_t))\\
+ &amp;=\mathbb{E}_{q(\mathbf{x}_{t-1} \vert \mathbf{x}_t, \mathbf{x}_0)}\Big[\log \frac{q(\mathbf{x}_{t-1} \vert \mathbf{x}_t, \mathbf{x}_0)}{p_\theta(\mathbf{x}_{t-1} \vert \mathbf{x}_t)} \Big]\\
+ &amp;=\mathbb{E}_{q(\mathbf{x}_{t-1} \vert \mathbf{x}_t, \mathbf{x}_0)}\Big[\log \frac{\mathcal{N}(\mathbf{x}_{t-1} ; \tilde{\mu}_t(\mathbf{x}_t,\mathbf{x}_0), \tilde{\beta}_t\mathbf{I})}{\mathcal{N}(\mathbf{x}_{t-1}; \mathbf{\mu}_\theta(\mathbf{x}_t, t), \sigma_t^2\mathbf{I})} \Big]\\
+ &amp;=\mathbb{E}_{q(\mathbf{x}_{t-1} \vert \mathbf{x}_t, \mathbf{x}_0)}\Big[LLR (\mathbf{x}_{t-1})\Big]
+\end{aligned}
+$$
+</p>
+
+<p align="justify">
+where \(LLR (\mathbf{x}_{t-1})\) denotes the log-likelihood ratio between the two distributions.
+For simplicity, here I develop the univariate case
+</p>
+
+<p>
+$$
+\begin{aligned}
+LLR(\mathbf{x}_{t-1}) &amp;= \log \frac{1/\sqrt{2\pi}\sigma \exp \Big[ -\frac{(\mathbf{x}_{t-1}- \tilde{\mu}_t(\mathbf{x}_t,\mathbf{x}_0))^2}{2\sigma_t}  \Big]}{1/\sqrt{2\pi}\sigma \exp \Big[-\frac{(\mathbf{x}_{t-1}- \mu_{\theta}(\mathbf{x}_t,t))^2}{2\sigma_t^2}  \Big]}\\
+&amp;= - \frac{1}{2\sigma_t^2}\Big[ (\mathbf{x}_{t-1}- \tilde{\mu}_t(\mathbf{x}_t,\mathbf{x}_0))^2 -(\mathbf{x}_{t-1}- \mu_{\theta}(\mathbf{x}_t,t))^2  \Big]
+\end{aligned}
+$$
+</p>
+
+<p>
+Lets define \( Y = \mathbf{x}_{t-1}- \tilde{\mu}_t (\mathbf{x}_t,\mathbf{x}_0) \) and \( Z=\mu_{\theta}(\mathbf{x}_t,t) -\tilde{\mu}_t(\mathbf{x}_t,\mathbf{x}_0) \) and \( \tau = 1/\sigma_t^2 \)
+</p>
+
+<p>
+$$
+\begin{aligned}
+LLR(\mathbf{x}_{t-1}) &amp;= - \frac{1}{2\sigma_t^2}\Big[ Y^2 - (Y-Z)^2  \Big]\\
+&amp;= - \frac{1}{2\sigma_t^2}\Big[ Y^2 - Y^2 + 2YZ- Z^2  \Big]\\
+&amp;= - \frac{YZ}{\sigma_t^2} + \frac{Z^2}{2\sigma_t^2}
+\end{aligned}
+$$
+</p>
+
+<p>
+Changing to our original variables
+</p>
+
+<p>
+$$
+\begin{aligned}
+LLR(\mathbf{x}_{t-1}) &amp;=  - \frac{(\mathbf{x}_{t-1}- \tilde{\mu}_t(\mathbf{x}_t,\mathbf{x}_0))(\mu_{\theta}(\mathbf{x}_t,t) -\tilde{\mu}_t(\mathbf{x}_t,\mathbf{x}_0))}{\sigma_t^2} + \frac{(\mu_{\theta}(\mathbf{x}_t,t) -\tilde{\mu}_t(\mathbf{x}_t,\mathbf{x}_0))^2}{2\sigma_t^2}
+\end{aligned}
+$$
+</p>
+
+<p align="justify">
+The LHST equals to zero after applying the expectation (for more info <a href="https://osf.io/aqcjh/">see</a>). So \(L_{t-1}\) can be expressed as:
+</p>
+
+<p>
+$$
+\begin{align}
+\label{eq:l_t1}
+L_{t-1} &amp;=  \mathbb{E}_{q(\mathbf{x}_{t-1} \vert \mathbf{x}_t, \mathbf{x}_0)}\Big[\frac{1}{2\sigma_t^2}||\tilde{\mu}_t(\mathbf{x}_t,\mathbf{x}_0)-\mu_{\theta}(\mathbf{x}_t,t)||^2\Big]
+\end{align}
+$$
+</p>
+
+<blockquote>
+  <p>we see that the most straightforward parameterization of \(\mu_{\theta}\) is a model that predicts \(\tilde{\mu}_t\) the forward process posterior mean <d-cite key="ho2020denoising"></d-cite>.</p>
+</blockquote>
+
+<p align="justify">
+This already looks like <a href="https://www.gabrielraya.com/generative-models-course/notes/paper-04/">denoising score-matching </a>. We can expand equation \ref{eq:l_t1}  by reparameterizing equation \ref{eq:transition_t} as, \(\mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon}) = \sqrt{\bar{\alpha}_t} \mathbf{x}_0 + \sqrt{1 - \bar{\alpha}_t}\mathbf{\epsilon}\) with \(\mathbf{\epsilon}\sim \mathcal{N}(\mathbf{0}, \mathbf{I})\) and plug in into eq. \ref{eq:posterior}, the true forward posterior mean \(\tilde{\mu}_t(\mathbf{x}_t,\mathbf{x}_0) = \frac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{1 - \bar{\alpha}_t }\mathbf{x}_0 + \frac{\sqrt{\alpha_t}(1 - \bar{\alpha}_{t-1})}{1 - \bar{\alpha}_t }\mathbf{x}_t \)
+</p>
+
+<p>
+\begin{align}
+L_{t-1} &amp;=  \mathbb{E}_{q(\mathbf{x}_{t-1} \vert \mathbf{x}_t, \mathbf{x}_0)}\Big[\frac{1}{2\sigma_t^2}||\tilde{\mu}_t(\mathbf{x}_t,\mathbf{x}_0)-\mu_{\theta}(\mathbf{x}_t,t)||^2\Big]\\
+&amp;=  \mathbb{E}_{\mathbf{x}_0, \mathbf{\epsilon}}\Big[\frac{1}{2\sigma_t^2}\Big|\Big|\tilde{\mu}_t\Big(\mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon}),\frac{1}{\sqrt{\bar{\alpha}_t}}(\mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon})- \sqrt{1 - \bar{\alpha}_t}\mathbf{\epsilon})\Big)-\mu_{\theta}(\mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon}),t)\Big|\Big|^2\Big] \\
+&amp;=  \mathbb{E}_{\mathbf{x}_0, \mathbf{\epsilon}}\Big[\frac{1}{2\sigma_t^2}\Big|\Big|\color{blue}\frac{ 1}{\sqrt{\alpha}_t} \Big(\mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon}) \color{red}-\frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}} \mathbf{\epsilon}\Big)\color{black}-\mu_{\theta}(\mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon}),t)\Big|\Big|^2\Big]\text{ (*)}\label{eq:objective_function_reparameterized}\\
+&amp;=  \mathbb{E}_{\mathbf{x}_0, \mathbf{\epsilon}}\Big[\frac{1}{2\sigma_t^2}\Big|\Big|\color{blue}\frac{ 1}{\sqrt{\alpha}_t} \Big(\mathbf{x}_t \color{red}-\frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}} \mathbf{\epsilon}\Big)\color{black}-\color{blue}\frac{ 1}{\sqrt{\alpha}_t} \Big(\mathbf{x}_t\color{red}-\frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}} \color{green}\mathbf{\epsilon}_{\theta}(\mathbf{x}_t, t)\color{black}\Big)\Big|\Big|^2\Big]; \text{ (**)}\\
+&amp;=  \mathbb{E}_{\mathbf{x}_0, \mathbf{\epsilon}}\Big[\frac{1}{2\sigma_t^2}\Big|\Big|\color{blue}-\frac{ 1}{\sqrt{\alpha}_t}\color{red}\frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}} \color{black}(\mathbf{\epsilon}\color{red}-\color{green}\mathbf{\epsilon}_{\theta}(\mathbf{x}_t, t)\color{black})\Big|\Big|^2\Big]\\
+&amp;=  \mathbb{E}_{\mathbf{x}_0, \mathbf{\epsilon}}\Big[ \frac{\beta_t^2}{2\sigma_t^2\alpha_t(1 - \bar{\alpha}_t)}\Big|\Big| \mathbf{\epsilon} - \color{green}\mathbf{\epsilon}_{\theta}(\mathbf{x}_t, t) \color{black}\Big|\Big|^2\Big]
+\end{align}
+</p>
+
+<p>
+(*) It follows from the definition of the mean forward posterior :
+</p>
+
+<p>
+$$
+\begin{aligned}
+\tilde{\mu}_t(\mathbf{x}_t,\mathbf{x}_0) &amp;= \frac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{1 - \bar{\alpha}_t }\mathbf{x}_0 + \frac{\sqrt{\alpha_t}(1 - \bar{\alpha}_{t-1})}{1 - \bar{\alpha}_t }\mathbf{x}_t \stackrel{\text{to prove}}{=}  \color{blue}\frac{ 1}{\sqrt{\alpha}_t}  \mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon}) \color{red}-\frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t} }\frac{1}{\sqrt{\alpha}_t} \mathbf{\epsilon}\\
+&amp;= \frac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{1 - \bar{\alpha}_t }\mathbf{x}_0 + \frac{\sqrt{\alpha_t}(1 - \bar{\alpha}_{t-1})}{1 - \bar{\alpha}_t }\mathbf{x}_t\\
+  &amp;= \frac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{1 - \bar{\alpha}_t }\frac{1}{\sqrt{\bar{\alpha}_t}}(\mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon})- \sqrt{1 - \bar{\alpha}_t}\mathbf{\epsilon}) + \frac{\sqrt{\alpha_t}(1 - \bar{\alpha}_{t-1})}{1 - \bar{\alpha}_t }\mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon})  \\
+  &amp;= \color{blue}\frac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{1 - \bar{\alpha}_t }\frac{1}{\sqrt{\bar{\alpha}_t}}\mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon}) + \frac{\sqrt{\alpha_t}(1 - \bar{\alpha}_{t-1})}{1 - \bar{\alpha}_t }\mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon})\color{black} - \color{red}\frac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{1 - \bar{\alpha}_t }\frac{1}{\sqrt{\bar{\alpha}_t}} \sqrt{1 - \bar{\alpha}_t}\mathbf{\epsilon}\\
+\end{aligned}
+$$
+</p>
+
+<p>
+First let's develop the LHST (<font color="blue">blue</font>)
+</p>
+
+<p>
+$$
+\begin{aligned}
+  \quad &amp;:= \color{blue}\frac{\sqrt{\bar{\alpha}_{t-1}}\beta_t \mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon})+ \sqrt{\bar{\alpha}_t}\sqrt{\alpha_t}(1 - \bar{\alpha}_{t-1})\mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon}) }{\sqrt{\bar{\alpha}_t}(1 - \bar{\alpha}_t)}\\
+  &amp;:= \frac{\sqrt{\bar{\alpha}_{t-1}}\mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon}) -\sqrt{\bar{\alpha}_{t}}\sqrt{\alpha_t} \mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon})+ \sqrt{\bar{\alpha}_t}\sqrt{\alpha_t}\mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon})  - \sqrt{\bar{\alpha}_t}\sqrt{\alpha_t} \bar{\alpha}_{t-1} \mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon}) }{\sqrt{\bar{\alpha}_t}(1 - \bar{\alpha}_t)}\\
+  &amp;:= \frac{\sqrt{\bar{\alpha}_{t-1}}\mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon})   - \sqrt{\bar{\alpha}_t}\sqrt{\alpha_t}\bar{\alpha}_{t-1}\mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon}) }{\sqrt{\bar{\alpha}_t}(1 - \bar{\alpha}_t)}\\
+  &amp;:= \frac{ \sqrt{\bar{\alpha}_{t-1}} - \sqrt{\bar{\alpha}_t}\sqrt{\alpha_t}\bar{\alpha}_{t-1} }{\sqrt{\bar{\alpha}_t}(1 - \bar{\alpha}_t)}  \mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon})\\
+  &amp;:= \frac{ \sqrt{\bar{\alpha}_{t-1}} - \sqrt{\bar{\alpha}_{t-1}}\bar{\alpha}_{t} }{\sqrt{\bar{\alpha}_t}(1 - \bar{\alpha}_t)}  \mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon})\\
+  &amp;:= \frac{ \sqrt{\bar{\alpha}_{t-1}}}{\sqrt{\bar{\alpha}_t}}  \mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon})\\
+  &amp;:= \color{blue}\frac{ 1}{\sqrt{\alpha}_t}  \mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon})
+\end{aligned}
+$$
+</p>
+
+<p>
+Now the RHST (<font color="red">red</font>)
+</p>
+
+<p>
+$$
+\begin{aligned}
+ \color{red} -\frac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{1 - \bar{\alpha}_t }\frac{1}{\sqrt{\bar{\alpha}_t}} \sqrt{1 - \bar{\alpha}_t}\mathbf{\epsilon}
+&amp; = -\frac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{\sqrt{1 - \bar{\alpha}_t} }\frac{1}{\sqrt{\bar{\alpha}_t}} \mathbf{\epsilon}\\
+&amp; = \color{red}-\frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t} }\frac{1}{\sqrt{\alpha}_t} \mathbf{\epsilon}\\
+\end{aligned}
+$$
+</p>
+
+<p>
+Therefore we have that
+</p>
+
+<p>
+$$
+\begin{align}
+ \tilde{\mu}_t\Big(\mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon}),\frac{1}{\sqrt{\bar{\alpha}_t}}(\mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon})- \sqrt{1 - \bar{\alpha}_t}\mathbf{\epsilon})\Big) := \color{blue}\frac{ 1}{\sqrt{\alpha}_t} \Big(\mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon}) \color{red}-\frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}} \mathbf{\epsilon}\Big)\\
+\end{align}
+$$
+</p>
+
+<p align="justify">
+(**) Equation \ref{eq:objective_function_reparameterized} reveals that \( \mu_{\theta} \) must predict \( \color{blue}\frac{1}{\sqrt{\alpha}_t} \Big(\mathbf{x}_t  \color{red}-\frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}} \mathbf{\epsilon}\Big) \)
+given \( \mathbf{x}_t \)
+because we aim to minimize \(L_{t-1}\), therefore:
+</p>
+
+<p>
+$$
+\begin{aligned}
+\mathbb{E}_{q(\mathbf{x}_{t-1} \vert \mathbf{x}_t, \mathbf{x}_0)}\Big[\frac{1}{2\sigma_t^2}||\tilde{\mu}_t -\mu_{\theta}(\mathbf{x}_t,t)||^2\Big]&amp;=0 \rightarrow \tilde{\mu}_t(\mathbf{x}_t,\mathbf{x}_0)=\mu_{\theta}(\mathbf{x}_t,t)\\
+\mu_{\theta}(\mathbf{x}_t,t) &amp;=\tilde{\mu}_t(\mathbf{x}_t,\mathbf{x}_0) =  \color{blue}\frac{ 1}{\sqrt{\alpha}_t} \Big(\mathbf{x}_t  \color{red}-\frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}} \mathbf{\epsilon}\Big)
+\end{aligned}
+$$
+</p>
+
+<p align="justify">
+Since \(\mathbf{x}_t\) is available as input to the model, we may choose the parameterization
+</p>
+
+<p>
+$$
+\begin{align}
+ \mu_{\theta}(\mathbf{x}_t,t)= \tilde{\mu}_{t}\Big(\mathbf{x}_t,\frac{1}{\sqrt{\bar{\alpha}_t}}(\mathbf{x}_t- \sqrt{1 - \bar{\alpha}_t}\mathbf{\epsilon}_{\theta}(\mathbf{x}_t))\Big) := \color{blue}\frac{ 1}{\sqrt{\alpha}_t} \Big(\mathbf{x}_t\color{red}-\frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}} \color{green}\mathbf{\epsilon}_{\theta}(\mathbf{x}_t, t)\Big)\\
+\end{align}
+$$
+</p>
+
+<p align="justify">
+Since \(\mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon})  = \sqrt{\bar{\alpha}_t} \mathbf{x}_0 +  \sqrt{1 - \bar{\alpha}_t}\mathbf{\epsilon}\), we can rearraged this as \(\mathbf{\epsilon}(\mathbf{x}_0, \mathbf{x}_t) = \frac{\mathbf{x}_t - \sqrt{\bar{\alpha}_t} \mathbf{x}_0}{\sqrt{1 - \bar{\alpha}_t}}\). Therefore, the diffusion model is defined by the parametric Gaussian distribution
+</p>
+
+<p>
+$$
+\begin{align}
+ p_\theta(\mathbf{x}_{t-1} \vert \mathbf{x}_t) &amp;= \mathcal{N}(\mathbf{x}_{t-1}; \mathbf{\mu}_\theta(\mathbf{x}_t, t), \mathbf{\Sigma}_\theta(\mathbf{x}_t, t))\\
+ &amp;= \mathcal{N}(\mathbf{x}_{t-1}; \color{blue}\frac{ 1}{\sqrt{\alpha}_t} \Big(\mathbf{x}_t\color{red}-\frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}} \color{green}\mathbf{\epsilon}_{\theta}(\mathbf{x}_t, t)\Big)\color{black}, \sigma_t^2	\mathbf{I})
+ \label{eq:diffusion_trainsition}
+\end{align}
+$$
+</p>
+
+<p align="justify">
+To generate samples using the generative Markov chain we simply reparameterize the Gaussian  distribution \(p_\theta(\mathbf{x}_{t-1} \vert \mathbf{x}_t)\):
+</p>
+
+<p>
+$$
+\begin{align}
+\label{eq:sampling}
+ \mathbf{x}_{t-1} &amp;=  \frac{ 1}{\sqrt{\alpha}_t} \Big(\mathbf{x}_t\color{red}-\frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}} \color{green}\mathbf{\epsilon}_{\theta}(\mathbf{x}_t, t)\Big)\color{black} +  \sigma_t	\mathbf{\epsilon}; \quad \mathbf{\epsilon}\sim \mathcal{N}(\mathbf{0}, \mathbf{I})
+\end{align}
+$$  
+</p>
+
+<p align="justify">
+<a href="#algorithm">Algorithm 2</a>, resembles Langevin dynamics with \(\mathbf{\epsilon}_{\theta}(\mathbf{x}_t, t)\) as a learned gradient of the data density, the score.  A Langevin diffusion for a multivariate probability density function \(q(\mathbf{x}_0)\) is a natural non-explosive diffusion which is reversible with respect to \(q(\mathbf{x}_0)\)<d-cite key="roberts1998optimal"></d-cite>. It makes use of the gradient of \(q\) to move more often in directions in which \(q\) is increasing, producing samples from the probability density \(q(\mathbf{x}_0)\), with variance \(\sigma^2\).  using only the score function \(\nabla_x \log q(x)\).<br /><br />
+
+<b>Definition 1</b> [Langevin diffusion]). <i> The reversible Langevin diffusion for the \(n\)-dimensional density \(q(x)\), with variance \(\sigma^2\), is the diffusion process \(\{X_t\}\) which satisfies the stochastic differential equation</i>.
+</p>
+
+<p>
+$$
+  \begin{align}
+   d\mathbf{X}_{t} &amp;= \frac{\sigma^2}{2}\nabla \log q(\mathbf{X}_t) + \sigma d\mathbf{W}_t
+  \end{align}
+  $$
+</p>
+
+<p align="justify">
+where \(\mathbf{W}_t\) is standard $n$-dimensional Brownian motion. Thus, the natural discrete approximation can be written
+</p>
+
+<p>
+$$
+ \begin{align}
+  \mathbf{x}_{t-1} &amp;=  \mathbf{x}_{t} +\frac{\sigma^2_n}{2}\nabla \log q(\mathbf{x}_t) + \sigma_t	\mathbf{\epsilon}; \quad \mathbf{\epsilon}\sim \mathcal{N}(\mathbf{0}, \mathbf{I})
+ \end{align}
+ $$
+</p>
+
+<p align="justify">
+where notation has been used following the reverse process with initial value \(\mathbf{x_T}\sim \pi(\mathbf{x})\), here \(\pi(\mathbf{x})=\mathcal{N}(\mathbf{0}, \mathbf{I})\). Langevin dynamics recursively computes equation
+</p>
+
+<p>
+$$
+\begin{align}
+ \mathbf{x}_{t-1} &amp;=  \sqrt{\alpha}_t \Big(\mathbf{x}_t\color{red}-\frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}} \color{green}\mathbf{\epsilon}_{\theta}(\mathbf{x}_t, t)\Big)\color{black} +  \sigma_t	\mathbf{\epsilon}; \quad \mathbf{\epsilon}\sim \mathcal{N}(\mathbf{0}, \mathbf{I})
+\end{align}
+$$
+</p>
+
+<p>
+Recall \(\sigma_t = \beta_t\)  or \(\sigma_t = \tilde{\beta}_t=\frac{1 - \bar{\alpha}_{t-1}}{1 - \bar{\alpha}_t }\beta_t\)
+</p>
+
+<p>
+$$
+\begin{align}
+ \mathbf{x}_{t-1} &amp;=  \frac{1}{\sqrt{\alpha}_t} \Big(\mathbf{x}_t\color{red}-\frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}} \color{green}\mathbf{\epsilon}_{\theta}(\mathbf{x}_t, t)\Big)\color{black} +  \sigma_t	\mathbf{\epsilon}; \quad \mathbf{\epsilon}\sim \mathcal{N}(\mathbf{0}, \mathbf{I})\\
+ &amp;=  \frac{ 1}{\sqrt{\alpha}_t}\mathbf{x}_t\color{red}-\frac{\beta_t}{\sqrt{\alpha_t(1 - \bar{\alpha}_t)}} \color{green}\mathbf{\epsilon}_{\theta}(\mathbf{x}_t, t) \color{black} +  \sigma_t	\mathbf{\epsilon}; \quad \mathbf{\epsilon}\sim \mathcal{N}(\mathbf{0}, \mathbf{I})\\
+\end{align}
+$$
+</p>
+
+<div style="align: left; text-align:center;" id="algorithm">
+        <img class="img-fluid  " src="/assets/img/diffusion/algorithm.PNG" style="width: 700px;" />
+</div>
+
+<p align="justify">
+In conclusion, this shows that the VLB objective function reduces to equation \ref{eq:denosing_sm}, which resamples denoising score matching over multiple noise scales indexed by $t$.
+</p>
+
+<p>
+$$
+\begin{align}
+\label{eq:denosing_sm}
+L_{t-1} &amp;=  \mathbb{E}_{\mathbf{x}_0, \mathbf{\epsilon}}\Big[ \frac{\beta_t^2}{2\sigma_t^2\alpha_t(1 - \bar{\alpha}_t)}\Big|\Big| \mathbf{\epsilon} - \color{green}\mathbf{\epsilon}(\mathbf{x}_t, t) \color{black}\Big|\Big|^2\Big]
+\end{align}
+$$
+</p>
+
+<p align="justify">
+We still need to estimate \(L_0= \log p_{\theta}(\mathbf{x}_0\vert \mathbf{x}_1)\). Ho et. al proposed to model \(L_0\) in such a way that the range of the data $[-1,1]$ operates in the same range as the Gaussian using a separate discrete decoder derived from \(\mathcal{N}(\mathbf{x}_0; \mathbf{\mu}_\theta(\mathbf{x}_1, 1), \sigma_1^2	\mathbf{I})\)
+</p>
+
+<h3 id="connection-to-langevin-dynamics">Connection to Langevin Dynamics</h3>
+<p>Ho et. al.<d-cite key="ho2020denoising"></d-cite> established a new explicit connection between diffusion models and denoising score matching that allows choosing these parameterization of the reverse process that leads to a simplified, <b>weighted variational bound objective</b> for diffusion models. Using equations \ref{eq:forward_posterior} and \ref{eq:reverse_trajectory}</p>
+
+<h3 id="simplication">Simplication</h3>
+
+<p align="justify">
+Empirically, Ho. et al. obtained better results in terms of sample quality (and simpler to implement) to train on the following variant of the variational bound:
+</p>
+
+<p>
+$$
+\begin{align}
+\label{eq:denosing_sm_simple}
+L_{\text{simple}}(\theta) &amp;=  \mathbb{E}_{t, \mathbf{x}_0, \mathbf{\epsilon}}\Big[ \Big|\Big| \mathbf{\epsilon} - \color{green}\mathbf{\epsilon}(\mathbf{x}_t, t) \color{black}\Big|\Big|^2\Big]; \quad t \sim U[1,T]
+\end{align}
+$$
+</p>
+
+<p>
+<b> Summary </b>
+</p>
+
+<blockquote>
+  <p>To summarize, we can train the reverse process mean function approximator \(\mathbf{\mu}_{\theta}\) to predict \(\tilde{\mu}_t\), or by modifying its parameterization, we can train it to predict \(\mathbf{\epsilon}\).</p>
+</blockquote>
+
+<!--
+ but we found this to lead to worse sample quality early in our experiments.) We have shown that the -prediction parameterization both resembles Langevin dynamics and simplifies the diffusion model’s variational bound to an objective that resembles denoising score matching. Nonetheless, it is just another parameterization of pθ(xt−1|xt), so we verify its effectiveness in Section 4 in an ablation where we compare predicting  against predicting  ̃ μt. -->
+
+<p align="justify">
+<ul>
+  <li> <p align="justify"> We start with a predefined forward process that evolves over a time interval $t\in[0,T]$, systematically converting input data, $\mathbf{x}_0$, into noise through a perturbation kernel  $q(\mathbf{x}_t \vert \mathbf{x}_{t-1})$ using a noise schedule $\beta_t$.
+       </p>
+      <p>     
+      $$
+      \begin{equation}
+      q(\mathbf{x}_t \vert \mathbf{x}_{t-1}) = \mathcal{N}(\mathbf{x}_t; \sqrt{1 - \beta_t} \mathbf{x}_{t-1}, \beta_t\mathbf{I}); \quad q(\mathbf{x}_{0:T})= q(\mathbf{x}_0) \prod_{t=1}^T q(\mathbf{x}_t \vert \mathbf{x}_{t-1} )
+      \end{equation}
+      $$
+      </p>
+
+  </li>
+
+  <li> It is analytically possible to know the distribution of \(\mathbf{x}_t\) given  \(\mathbf{x}_0\) by repeated application of  \(q(\mathbf{x}_t \vert \mathbf{x}_{t-1})\)
+
+  <p>
+  $$
+  \begin{aligned}
+  q(\mathbf{x}_{t-1} \vert \mathbf{x}_t, \mathbf{x}_0) &amp;= \mathcal{N}(\mathbf{x}_{t-1} ; \tilde{\mu}_t(\mathbf{x}_t,\mathbf{x}_0), \tilde{\beta}_t\mathbf{I})\\
+    \text{where } \tilde{\mu}_t(\mathbf{x}_t,\mathbf{x}_0) &amp;:= \frac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{1 - \bar{\alpha}_t }\mathbf{x}_0 + \frac{\sqrt{\alpha_t}(1 - \bar{\alpha}_{t-1})}{1 - \bar{\alpha}_t }\mathbf{x}_t \text{ and } \tilde{\beta}_t :=\frac{1 - \bar{\alpha}_{t-1}}{1 - \bar{\alpha}_t }\beta_t
+  \end{aligned}
+  $$
+  </p>
+  </li>
+
+  <li>
+  <p align="justify">
+  Training is performed by minimizing the cross entropy \(H[q(\mathbf{x}_0),p_{\theta}(\mathbf{x}_0)]\) between the true underlaying distribution \(q(\mathbf{x}_0)\) and the model probability \(p_{\theta}(\mathbf{x}_0)\). The CE measures the average number of bits needed to identify an event drawn from the set if a coding scheme used for the set is optimized for an estimated probability distribution p, rather than the true distribution q.
+  </p>
+  </li>
+
+  <p>
+  $$
+  \begin{aligned}
+  L_\text{CE}
+  &amp;=  \mathbb{E}_{q(\mathbf{x}_0)}\left[-\log p_\theta(\mathbf{x}_0)\right] \\
+  &amp;=  \mathbb{E}_{q(\mathbf{x}_0)}\left[ -\log \Big( \mathbb{E}_{q(\mathbf{x}_{1:T} \vert \mathbf{x}_0)} \left[p(\mathbf{x}_T) \prod^T_{t=1} \frac{p_\theta(\mathbf{x}_{t-1} \vert \mathbf{x}_t)}{q(\mathbf{x}_t\vert \mathbf{x}_{t-1})}\right] \Big)\right] \\
+  &amp;\leq  \mathbb{E}_{q(\mathbf{x}_0)}\left[ \mathbb{E}_{q(\mathbf{x}_{1:T} \vert \mathbf{x}_0)} \left[-\log \Big(p(\mathbf{x}_T) \prod^T_{t=1} \frac{p_\theta(\mathbf{x}_{t-1} \vert \mathbf{x}_t)}{q(\mathbf{x}_t\vert \mathbf{x}_{t-1})}\Big)\right] \right] \\
+  &amp;\leq  \mathbb{E}_{q(\mathbf{x}_{0:T})} \left[-\log \Big(p(\mathbf{x}_T) \prod^T_{t=1} \frac{p_\theta(\mathbf{x}_{t-1} \vert \mathbf{x}_t)}{q(\mathbf{x}_t\vert \mathbf{x}_{t-1})}\Big) \right] = \color{blue}\mathbb{E}_{q(\mathbf{x}_{0:T})}\Big[\log \frac{q(\mathbf{x}_{1:T} \vert \mathbf{x}_{0})}{p_\theta(\mathbf{x}_{0:T})} \Big]  = L_\text{VLB}\\
+  &amp;= \mathbb{E}_{q(\mathbf{x}_{0:T})} \left[-\log p(\mathbf{x}_T) - \log\prod^T_{t=1} \frac{p_\theta(\mathbf{x}_{t-1} \vert \mathbf{x}_t)}{q(\mathbf{x}_t\vert \mathbf{x}_{t-1})} \right] \\
+ &amp;= \mathbb{E}_{q(\mathbf{x}_{0:T})} \left[-\log p(\mathbf{x}_T) - \sum^T_{t=1}\log \frac{p_\theta(\mathbf{x}_{t-1} \vert \mathbf{x}_t)}{q(\mathbf{x}_t\vert \mathbf{x}_{t-1})} \right]\\
+ &amp;= \mathbb{E}_{q(\mathbf{x}_0)}\left[ \underbrace{\text{D}_{KL}(q(\mathbf{x}_T \vert \mathbf{x}_0)||p(\mathbf{x}_T))}_{L_T} + \sum^T_{t=2} \underbrace{\text{D}_{KL} (q(\mathbf{x}_{t-1} \vert \mathbf{x}_t, \mathbf{x}_0)||p_\theta(\mathbf{x}_{t-1} \vert \mathbf{x}_t))}_{L_{t-1}}  - \underbrace{\log p_\theta(\mathbf{x}_0 \vert \mathbf{x}_1)}_{L_0}
+ \right];\quad \text{Markov property + Bayes' rule (*).}\\
+ &amp;=\mathbb{E}_{q(\mathbf{x}_0)}\left[\sum^T_{t=2} \underbrace{\text{D}_{KL} (q(\mathbf{x}_{t-1} \vert \mathbf{x}_t, \mathbf{x}_0)||p_\theta(\mathbf{x}_{t-1} \vert \mathbf{x}_t))}_{L_{t-1}}  - \underbrace{\log p_\theta(\mathbf{x}_0 \vert \mathbf{x}_1)}_{L_0}
+ \right]\\
+   &amp;= \mathbb{E}_{q(\mathbf{x}_0)}\left[\sum^T_{t=2}\underbrace{\text{D}_{KL} (q(\mathbf{x}_{t-1} \vert \mathbf{x}_t, \mathbf{x}_0)||p_\theta(\mathbf{x}_{t-1} \vert \mathbf{x}_t))}_{L_{t-1}}\right] - \mathbb{E}_{q(\mathbf{x}_0)}\left[\underbrace{\log p_\theta(\mathbf{x}_0 \vert \mathbf{x}_1)}_{L_0}
+   \right]\\
+  &amp;=\mathbb{E}_{q(\mathbf{x}_0)}\left[\sum^T_{t=2}\underbrace{\mathbb{E}_{q(\mathbf{x}_{t-1} \vert \mathbf{x}_t, \mathbf{x}_0)}\Big[\log \frac{q(\mathbf{x}_{t-1} \vert \mathbf{x}_t, \mathbf{x}_0)}{p_\theta(\mathbf{x}_{t-1} \vert \mathbf{x}_t)}}_{L_{t-1}} \Big]\right]\\
+  &amp;=\mathbb{E}_{q(\mathbf{x}_0)}\left[\sum^T_{t=2}\mathbb{E}_{q(\mathbf{x}_{t-1} \vert \mathbf{x}_t, \mathbf{x}_0)}\Big[\log \frac{\mathcal{N}(\mathbf{x}_{t-1} ; \tilde{\mu}_t(\mathbf{x}_t,\mathbf{x}_0), \tilde{\beta}_t\mathbf{I})}{\mathcal{N}(\mathbf{x}_{t-1}; \mathbf{\mu}_\theta(\mathbf{x}_t, t), \sigma_t^2\mathbf{I})} \Big]\right]\\
+  &amp;=\mathbb{E}_{q(\mathbf{x}_0)}\left[\sum^T_{t=2}\mathbb{E}_{q(\mathbf{x}_{t-1} \vert \mathbf{x}_t, \mathbf{x}_0)}\Big[LLR (\mathbf{x}_{t-1})\Big]\right]\\
+  &amp;= \mathbb{E}_{q(\mathbf{x}_0)}\left[\sum^T_{t=2} \mathbb{E}_{q(\mathbf{x}_{t-1} \vert \mathbf{x}_t, \mathbf{x}_0)}\Big[\frac{1}{2\sigma_t^2}||\tilde{\mu}_t(\mathbf{x}_t,\mathbf{x}_0)-\mu_{\theta}(\mathbf{x}_t,t)||^2\Big]\right]\\
+ &amp;= \mathbb{E}_{q(\mathbf{x}_0)}\left[\sum^T_{t=2} \mathbb{E}_{\mathbf{x}_0, \mathbf{\epsilon}}\Big[\frac{1}{2\sigma_t^2}\Big|\Big|\tilde{\mu}_t\Big(\mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon}),\frac{1}{\sqrt{\bar{\alpha}_t}}(\mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon})- \sqrt{1 - \bar{\alpha}_t}\mathbf{\epsilon})\Big)-\mu_{\theta}(\mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon}),t)\Big|\Big|^2\Big]\right] \\
+ &amp;= \mathbb{E}_{q(\mathbf{x}_0)}\left[\sum^T_{t=2} \mathbb{E}_{\mathbf{x}_0, \mathbf{\epsilon}}\Big[\frac{1}{2\sigma_t^2}\Big|\Big|\color{blue}\frac{ 1}{\sqrt{\alpha}_t} \Big(\mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon}) \color{red}-\frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}} \mathbf{\epsilon}\Big)\color{black}-\mu_{\theta}(\mathbf{x}_t(\mathbf{x}_0, \mathbf{\epsilon}),t)\Big|\Big|^2\Big]\right]\\
+ &amp;= \mathbb{E}_{q(\mathbf{x}_0)}\left[\sum^T_{t=2} \mathbb{E}_{\mathbf{x}_0, \mathbf{\epsilon}}\Big[\frac{1}{2\sigma_t^2}\Big|\Big|\color{blue}\frac{ 1}{\sqrt{\alpha}_t} \Big(\mathbf{x}_t \color{red}-\frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}} \mathbf{\epsilon}\Big)\color{black}-\color{blue}\frac{ 1}{\sqrt{\alpha}_t} \Big(\mathbf{x}_t\color{red}-\frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}} \color{green}\mathbf{\epsilon}_{\theta}(\mathbf{x}_t, t)\color{black}\Big)\Big|\Big|^2\Big]\right]; \text{ Parameterization}\\
+ &amp;= \mathbb{E}_{q(\mathbf{x}_0)}\left[\sum^T_{t=2} \mathbb{E}_{\mathbf{x}_0, \mathbf{\epsilon}}\Big[\frac{1}{2\sigma_t^2}\Big|\Big|\color{blue}-\frac{ 1}{\sqrt{\alpha}_t}\color{red}\frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}} \color{black}(\mathbf{\epsilon}\color{red}-\color{green}\mathbf{\epsilon}_{\theta}(\mathbf{x}_t, t)\color{black})\Big|\Big|^2\Big]\right]\\
+ &amp;= \mathbb{E}_{q(\mathbf{x}_0)}\left[\sum^T_{t=2} \mathbb{E}_{\mathbf{x}_0, \mathbf{\epsilon}}\Big[ \frac{\beta_t^2}{2\sigma_t^2\alpha_t(1 - \bar{\alpha}_t)}\Big|\Big| \mathbf{\epsilon} - \color{green}\mathbf{\epsilon}_{\theta}(\mathbf{x}_t, t) \color{black}\Big|\Big|^2\Big]\right]\\
+ &amp;= \mathbb{E}_{q(\mathbf{x}_0)}\left[\mathbb{E}_{t, \mathbf{x}_0, \mathbf{\epsilon}}\Big[ \Big|\Big| \mathbf{\epsilon} - \color{green}\mathbf{\epsilon}(\mathbf{x}_t, t) \color{black}\Big|\Big|^2\Big]\right]=L_{\text{simple}}(\theta); \quad t \sim U[1,T]
+  \end{aligned}
+  $$
+  </p>
+
+
+  <li><p align="justify"> (*) The nice property of this derivation is that now all KL divergences are comparisons between Gaussians, so they can be calculated in a <a href="https://en.wikipedia.org/wiki/Rao%E2%80%93Blackwell_theorem">Rao-Blackwellized</a>  fashion with closed form expressions instead of high variance Monte Carlo estimates <d-cite key="ho2020denoising"></d-cite>:
+  </p></li>
+
+  <li> <p align="justify">
+  When \(\beta_t\) is small the reverse process have the same functional form of the forwar process. Therefore, the diffusion model is a parameterized a Gaussian distribution \(p_\theta(\mathbf{x}_{t-1} \vert \mathbf{x}_t) = \mathcal{N}(\mathbf{x}_{t-1}; \mathbf{\mu}_\theta(\mathbf{x}_t, t), \mathbf{\Sigma}_\theta(\mathbf{x}_t, t))\).
+  </p>
+
+
+<p>
+  $$
+  \begin{aligned}
+    \text{where } \tilde{\mu}_t(\mathbf{x}_t,\mathbf{x}_0) &amp;:= \frac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{1 - \bar{\alpha}_t }\mathbf{x}_0 + \frac{\sqrt{\alpha_t}(1 - \bar{\alpha}_{t-1})}{1 - \bar{\alpha}_t }\mathbf{x}_t \text{ and }\\
+     \mathbf{\Sigma}_\theta(\mathbf{x}_t, t)&amp;= \sigma_t\mathbf{I} \text{ and } \sigma_t:=\tilde{\beta}_t=\frac{1 - \bar{\alpha}_{t-1}}{1 - \bar{\alpha}_t }\beta_t
+  \end{aligned}
+  $$
+</p>
+  </li>
+
+  <li> <p align="justify">
+  By substitution \(\mathbf{x}_0 = \frac{1}{\sqrt{\bar{\alpha}_t}}(\mathbf{x}_t - \sqrt{(1 - \bar{\alpha}_t)}\mathbf{z_t}) \), we can reexpress \(\tilde{\mu}_t(\mathbf{x}_t,\mathbf{x}_0)\), the forward mean posterior, as
+  </p>
+
+  <p>
+  $$
+  \begin{aligned}
+  \tilde{\mu}_t(\mathbf{x}_t,\mathbf{x}_0) &amp;= \color{blue} \frac{1}{\sqrt{\alpha_t}}\Big(\mathbf{x}_t - \frac{\beta_t}{\sqrt{1 - \bar{\alpha}_t}}  \mathbf{z_t}\Big)\\
+  \end{aligned}
+  $$
+  </p>
+  </li>
+
+</ul>
+</p>
+
+<p align="justify">
+<b>Interpretation</b> The variational lower bound objective tell us that what we have to minimize is <span style="color:blue;">the log-likelihood ration of the forward trajectory wrt the reverse estimated trajectory average over forward trajectories</span>. If \(LLR = 1 \rightarrow L_\text{VLB}=0\). This objective function aims to obtain a model that in average describe the same forward trajectories but in reverse.  
+</p>
+
+<h2 id="continuous-diffusion-models">Continuous diffusion Models</h2>
+
+<h2 id="applications">Applications</h2>
+
+<p align="justify">
+Generative models can be used for several applications. One recent remarkable application is <a href="https://openai.com/dall-e-2/">DALL-E 2</a>, a new AI system that can create realistic images and art from a description in natural language.  <a href="https://openai.com/dall-e-2/">DALL-E 2</a> uses diffusion models to produce high-quality image samples. For more details about <a href="https://openai.com/dall-e-2/">DALL-E 2</a> see the scientific paper  <a href="https://arxiv.org/abs/2204.06125Hierarchical"> Text-Conditional Image Generation with CLIP Latents</a> <d-cite key="ramesh2022hierarchical"></d-cite>.
+</p>
+
+<div style="align: left; text-align:center;">
+        <img class="img-fluid  " src="/assets/img/diffusion/applications.PNG" style="width: 700px;" />
+        <img class="img-fluid  " src="/assets/img/diffusion/dalle_tree.PNG" style="width: 700px;" />
+        <img class="img-fluid  " src="/assets/img/diffusion/fenix.jpeg" style="width: 700px;" />
+        <figcaption class="figure-caption text-center">Figure 4. Sample variations of <b>original art</b> (first column) made by <a href="https://mariavoncken.com/">Maria Voncken</a> generated by <a href="https://openai.com/dall-e-2/">DALL-E 2</a>, an AI system that uses diffusion models to produce high-quality image data.</figcaption>
+</div>
+<p><br /></p>
+<p align="justify">
+You can also ask <a href="https://openai.com/dall-e-2/">DALL-E 2</a> to generate an image given a text. Let's try to recreate the original art from above with <a href="https://openai.com/dall-e-2/">DALL-E 2</a>.
+<a href="#dalle"> Figure 4</a> shows several queries that attempt  to recreate the drawing of the older man from above. However, as you can see, <a href="https://openai.com/dall-e-2/">DALL-E 2</a> requires an accurate description to match what you have in mind, the more specific the query. The more information <a href="https://openai.com/dall-e-2/">DALL-E 2</a> has to create what you might expect! Yet, you can as well get surprised with new ideas!
+</p>
+
+<div style="align: left; text-align:center;" id="dalle">
+        <img class="img-fluid  " src="/assets/img/diffusion/old_man_1.PNG" style="width: 700px;" />
+        <figcaption><b>Query</b>: <i>"<font color="blue">Drawing</font> of an older man with a cap and winter clothes"</i>.</figcaption>     
+        <img class="img-fluid  " src="/assets/img/diffusion/old_man_2.PNG" style="width: 700px;" />
+        <figcaption><b>Query</b>: <i>"<font color="blue">Portrait</font> of an older man with a cap and winter clothes <font color="blue">in black and white</font> "</i>.</figcaption>       
+        <img class="img-fluid  " src="/assets/img/diffusion/old_man_3.PNG" style="width: 700px;" />
+        <figcaption><b>Query</b>: <i>"<font color="blue">A portrait drawing</font> of an older man with a cap and winter clothes <font color="blue">in black and white</font> "</i>.</figcaption>
+        <img class="img-fluid  " src="/assets/img/diffusion/old_man_4.PNG" style="width: 700px;" />
+        <figcaption><b>Query</b>: <i>"<font color="blue">A renaissance portrait drawing</font> of an older man with a cap and winter clothes <font color="blue">in black and white</font> "</i>.</figcaption>
+        <img class="img-fluid  " src="/assets/img/diffusion/old_man_5.PNG" style="width: 700px;" />
+        <figcaption><b>Query</b>: <i>"<font color="blue">A photorealistic portrait drawing</font> of an older man with a cap and winter clothes <font color="blue">in black and white</font> "</i>.</figcaption><br />    
+        <figcaption class="figure-caption text-center">Figure 5. Images generated by <a href="https://openai.com/dall-e-2/">DALL-E 2</a>  for a given query.</figcaption>
+</div>
+
+<!--
+## Code Blocks
+
+Syntax highlighting is provided within `<d-code>` tags.
+An example of inline code snippets: `<d-code language="html">let x = 10;</d-code>`.
+For larger blocks of code, add a `block` attribute:
+
+<d-code block language="python">
+def loss_fn(model, batch):
+  model_fn = mutils.get_model_fn(model, train=train)
+  labels = torch.randint(0, vpsde.N, (batch.shape[0],), device=batch.device)
+  sqrt_alphas_cumprod = vpsde.sqrt_alphas_cumprod.to(batch.device)
+  sqrt_1m_alphas_cumprod = vpsde.sqrt_1m_alphas_cumprod.to(batch.device)
+  noise = torch.randn_like(batch)
+  perturbed_data = sqrt_alphas_cumprod[labels, None, None, None] * batch + \
+                   sqrt_1m_alphas_cumprod[labels, None, None, None] * noise
+  score = model_fn(perturbed_data, labels)
+  losses = torch.square(score - noise)
+  losses = reduce_op(losses.reshape(losses.shape[0], -1), dim=-1)
+  loss = torch.mean(losses)
+  return loss
+</d-code>
+
+**Note:** `<d-code>` blocks do not look well in the dark mode.
+You can always use the default code-highlight using the `highlight` liquid tag:
+
+
+<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">var</span> <span class="nx">x</span> <span class="o">=</span> <span class="mi">25</span><span class="p">;</span>
+<span class="kd">function</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">x</span> <span class="o">*</span> <span class="nx">x</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+
+***
+
+
+
+## Other Typography?
+
+Emphasis, aka italics, with *asterisks* (`*asterisks*`) or _underscores_ (`_underscores_`).
+
+Strong emphasis, aka bold, with **asterisks** or __underscores__.
+
+Combined emphasis with **asterisks and _underscores_**.
+
+Strikethrough uses two tildes. ~~Scratch this.~~
+
+1. First ordered list item
+2. Another item
+⋅⋅* Unordered sub-list.
+1. Actual numbers don't matter, just that it's a number
+⋅⋅1. Ordered sub-list
+4. And another item.
+
+⋅⋅⋅You can have properly indented paragraphs within list items. Notice the blank line above, and the leading spaces (at least one, but we'll use three here to also align the raw Markdown).
+
+⋅⋅⋅To have a line break without a paragraph, you will need to use two trailing spaces.⋅⋅
+⋅⋅⋅Note that this line is separate, but within the same paragraph.⋅⋅
+⋅⋅⋅(This is contrary to the typical GFM line break behaviour, where trailing spaces are not required.)
+
+* Unordered list can use asterisks
+- Or minuses
++ Or pluses
+
+[I'm an inline-style link](https://www.google.com)
+
+[I'm an inline-style link with title](https://www.google.com "Google's Homepage")
+
+[I'm a reference-style link][Arbitrary case-insensitive reference text]
+
+[I'm a relative reference to a repository file](../blob/master/LICENSE)
+
+[You can use numbers for reference-style link definitions][1]
+
+Or leave it empty and use the [link text itself].
+
+URLs and URLs in angle brackets will automatically get turned into links.
+http://www.example.com or <http://www.example.com> and sometimes
+example.com (but not on Github, for example).
+
+Some text to show that the reference links can follow later.
+
+[arbitrary case-insensitive reference text]: https://www.mozilla.org
+[1]: http://slashdot.org
+[link text itself]: http://www.reddit.com
+
+Here's our logo (hover to see the title text):
+
+Inline-style:
+![alt text](https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png "Logo Title Text 1")
+
+Reference-style:
+![alt text][logo]
+
+[logo]: https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png "Logo Title Text 2"
+
+Inline `code` has `back-ticks around` it.
+
+```javascript
+var s = "JavaScript syntax highlighting";
+alert(s);
+```
+
+```python
+s = "Python syntax highlighting"
+print s
+```
+
+```
+No language indicated, so no syntax highlighting.
+But let's throw in a <b>tag</b>.
+```
+
+Colons can be used to align columns.
+
+| Tables        | Are           | Cool  |
+| ------------- |:-------------:| -----:|
+| col 3 is      | right-aligned | $1600 |
+| col 2 is      | centered      |   $12 |
+| zebra stripes | are neat      |    $1 |
+
+There must be at least 3 dashes separating each header cell.
+The outer pipes (|) are optional, and you don't need to make the
+raw Markdown line up prettily. You can also use inline Markdown.
+
+Markdown | Less | Pretty
+--- | --- | ---
+*Still* | `renders` | **nicely**
+1 | 2 | 3
+
+> Blockquotes are very handy in email to emulate reply text.
+> This line is part of the same quote.
+
+Quote break.
+
+> This is a very long line that will still be quoted properly when it wraps. Oh boy let's keep writing to make sure this is long enough to actually wrap for everyone. Oh, you can *put* **Markdown** into a blockquote.
+
+
+Here's a line for us to start with.
+
+This line is separated from the one above by two newlines, so it will be a *separate paragraph*.
+
+This line is also a separate paragraph, but...
+This line is only separated by a single newline, so it's a separate line in the *same paragraph*. -->
+
+      </d-article>
+
+      <d-appendix>
+        <d-footnote-list></d-footnote-list>
+        <d-citation-list></d-citation-list>
+      </d-appendix>
+
+    </div>
+
+    <!-- Footer -->
+<footer class="fixed-bottom">
+  <div class="container mt-0">
+    &copy; Copyright 2024 Gabriel  Raya.
+    
+    
+    
+    Last updated: December 08, 2024.
+    
+  </div>
+</footer>
+
+
+
+    <d-bibliography src="/assets/bibliography/2018-12-22-distill.bib"></d-bibliography>
+
+    
+<!-- Bootsrap & MDB scripts -->
+  <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js" integrity="sha512-M5KW3ztuIICmVIhjSqXe01oV2bpe248gOxqmlcYrEzAvws7Pw3z6BK0iGbrwvdrUQUhi3eXgtxp5I8PDo9YfjQ==" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.19.1/js/mdb.min.js" integrity="sha512-Mug9KHKmroQFMLm93zGrjhibM2z2Obg9l6qFG2qKjXEXkMp/VDkI4uju9m4QKPjWSwQ6O2qzZEnJDEeCw0Blcw==" crossorigin="anonymous"></script> -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.4.4/umd/popper.min.js" integrity="sha512-eUQ9hGdLjBjY3F41CScH3UX+4JDSI9zXeroz7hJ+RteoCaY+GP/LDoM8AO+Pt+DRFw3nXqsjh9Zsts8hnYv8/A==" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha512-M5KW3ztuIICmVIhjSqXe01oV2bpe248gOxqmlcYrEzAvws7Pw3z6BK0iGbrwvdrUQUhi3eXgtxp5I8PDo9YfjQ==" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.19.1/js/mdb.min.js" integrity="sha512-Mug9KHKmroQFMLm93zGrjhibM2z2Obg9l6qFG2qKjXEXkMp/VDkI4uju9m4QKPjWSwQ6O2qzZEnJDEeCw0Blcw==" crossorigin="anonymous"></script>
+
+    <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-BC981LW1SD"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-BC981LW1SD');
+</script>
+
+  </body>
+</html>

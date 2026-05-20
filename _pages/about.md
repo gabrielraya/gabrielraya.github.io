@@ -23,16 +23,16 @@ social: true  # includes social icons at the bottom of the page
     My research studies the regimes in diffusion models where uncertainty is
     resolved and structure becomes recoverable. These regimes are not uniform
     along the denoising trajectory. They shape diversity, memorization, guidance,
-    and where training effort is useful. I develop this view through work on
-    symmetry breaking in diffusion dynamics, information-guided noise allocation,
-    and time-dependent guidance, aiming to make diffusion training and control
-    less heuristic.
+    and where training effort is useful. I develop this view through symmetry
+    breaking in diffusion dynamics, information-guided noise allocation, and
+    time-dependent guidance, aiming to replace heuristic choices in training and
+    control with measurable structure along the denoising path.
   </p>
 </div>
 
 <p align="justify">
 I am a final-year Ph.D. researcher in Machine Learning at Tilburg University and JADS (TU/e), and a visiting researcher at the <a href="https://www.ru.nl/donders/">Donders Institute for Brain, Cognition and Behaviour</a> under the guidance of <a href="https://www.artcogsys.com/team/luca">Dr. Luca Ambrogioni</a> and <a href="https://ericpostma.nl/">Prof. Dr. Eric Postma</a>.
-My work combines probabilistic generative modeling, statistical physics, and information theory. I previously worked as a Research Scientist Intern on Sony AI's Foundational Models team in Tokyo, where I brought this research direction into applied work on generative-model training.
+My work combines probabilistic generative modeling, statistical physics, and information theory. I previously worked as a Research Scientist Intern on Sony AI's Foundational Models team in Tokyo, where I worked on information-guided training for generative models.
 </p>
 
 <div class="research-focus-grid">
@@ -62,7 +62,7 @@ My work combines probabilistic generative modeling, statistical physics, and inf
       <div>
         <span>NeurIPS</span>
         <h3>Symmetry breaking in diffusion dynamics</h3>
-        <p>Diffusion generation passes through distinct dynamical regimes: early trajectories collapse toward a central fixed point, while later dynamics break symmetry and move toward data-manifold attractors.</p>
+        <p>Diffusion generation passes through distinct dynamical regimes. Early trajectories collapse toward a central fixed point, while later dynamics break symmetry and move toward data-manifold attractors.</p>
       </div>
     </a>
     <a class="program-card program-card-fit-image" href="https://arxiv.org/abs/2602.18647">
@@ -78,7 +78,7 @@ My work combines probabilistic generative modeling, statistical physics, and inf
       <div>
         <span>arXiv</span>
         <h3>From memorization to generalization</h3>
-        <p>Generative behavior can be analyzed through associative memory: models move from storing examples to organizing them into structured, generalizing dynamics.</p>
+        <p>Generative behavior can be analyzed through associative memory. Models move from storing examples to organizing them into structured, generalizing dynamics.</p>
       </div>
     </a>
     <a class="program-card program-card-fit-image" href="https://arxiv.org/pdf/2410.14398">

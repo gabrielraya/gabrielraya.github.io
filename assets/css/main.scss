@@ -3,13 +3,12 @@
 ---
 @charset "utf-8";
 
-// Dimensions
+// Dimensions (Jekyll interpolates site.max_width)
 $max-content-width: {{site.max_width}};
 
-@import
-  "variables",
-  "themes",
-  "layout",
-  "base",
-  "distill"
-;
+@use "config" with ($max-content-width: $max-content-width);
+@use "variables";
+@use "themes";
+@use "layout";
+@use "base";
+@use "distill";

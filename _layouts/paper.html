@@ -18,9 +18,73 @@
     {%- endif %}
 
     <style>
-      h1, h2, h3 {
+      /* Top section: title keeps site font (Inter); figure unchanged */
+      .highlight-clean h1 {
+        color: #363535 !important;
+        font-family: inherit !important;
+      }
+      .method { font-variant: small-caps; }
+      /* In-article headings only */
+      d-article h1, d-article h2, d-article h3 {
         color: #363535 !important;
         font-family: Arial, sans-serif !important;
+      }
+      .paper-authors-compact .paper-author-name {
+        font-size: 0.8rem;
+        line-height: 1.2;
+        margin-bottom: 0.15rem;
+      }
+      .paper-authors-compact .paper-author-name a {
+        color: #0079FF;
+        text-decoration: none;
+      }
+      .paper-authors-compact .paper-author-affil {
+        font-size: 0.65rem;
+        line-height: 1.2;
+        color: #555;
+        margin-bottom: 0.5rem;
+      }
+      .paper-authors-inline {
+        font-size: 1rem;
+        line-height: 1.6;
+        color: #333;
+      }
+      .paper-authors-inline a {
+        color: #0079FF;
+        text-decoration: none;
+      }
+      .paper-authors-inline sup {
+        font-size: 0.7em;
+      }
+      .paper-teaser-stack {
+        max-width: 480px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .paper-teaser-stack.paper-teaser-grid {
+        max-width: 920px;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.5rem;
+      }
+      .paper-teaser-stack.paper-teaser-grid .paper-teaser-caption {
+        grid-column: 1 / -1;
+      }
+      .paper-teaser-stack img + img {
+        margin-top: 0.5rem;
+      }
+      .paper-teaser-grid img + img {
+        margin-top: 0;
+      }
+      .paper-teaser-stack .figure-caption {
+        font-size: 0.85rem;
+      }
+      .paper-teaser-title {
+        font-size: 1.05rem;
+        color: #363535;
+      }
+      .paper-teaser-title p {
+        margin-bottom: 0;
       }
     </style>
   </head>
@@ -37,30 +101,72 @@
       <div class="highlight-clean text-center" style="padding-bottom: 0;">
           <div class="container">
             <div class="row justify-content-center">
-                <h1>{{ page.title }}</h1>
+                <h1>{% if page.title_line1 and page.title_line2 %}{{ page.title_line1 }}<br>{{ page.title_line2 }}{% elsif page.method_name and page.title_after %}<span class="method">{{ page.method_name }}</span>: {{ page.title_after }}{% else %}{{ page.title }}{% endif %}</h1>
             </div>
+            {% if page.affiliations and page.authors[0].affil %}
             <div class="row justify-content-center">
+              <div class="col-12 text-center paper-authors-inline">
+                {% for author in page.authors %}
+                {% if author.url %}<a href="{{ author.url }}">{% endif %}{{ author.name }}{% if author.url %}</a>{% endif %}<sup>{{ author.affil }}</sup>{% unless forloop.last %}, {% endunless %}{% if forloop.index == 5 and forloop.last == false %}<br>{% endif %}
+                {% endfor %}
+                <br>
+                {% for affil in page.affiliations %}
+                <sup>{{ forloop.index }}</sup>{{ affil }}{% unless forloop.last %} {% endunless %}
+                {% endfor %}
+              </div>
+            </div>
+            {% else %}
+            <div class="row justify-content-center paper-authors-compact">
               {% for author in page.authors %}
-              <div class="col-md-3">
-                <h5><a href="{{ author.authorURL }}"><span style="color: #0079FF; font-weight: bold;">{{ author.name }}</a></h5>
-                <h6>{{ author.affiliations.name }}</h6>
+              <div class="col-4 col-md-2">
+                <div class="paper-author-name">
+                  {% if author.url %}<a href="{{ author.url }}">{% endif %}<span style="color: #0079FF; font-weight: bold;">{{ author.name }}</span>{% if author.url %}</a>{% endif %}
+                </div>
+                <div class="paper-author-affil">{{ author.affiliations.name }}</div>
               </div>
               {% endfor %}
             </div>
+            {% endif %}
+            {% if page.pdf or page.arxiv or page.github or page.colab %}
             <div class="row justify-content-center">
               <div class="col-md-12">
-                <a class="btn btn-primary" role="button" href="https://arxiv.org/abs/2305.19693">Paper (arXiv, 11.8 MB)</a>
-                <a class="btn btn-light" role="button" href="https://github.com/gabrielraya/symmetry_breaking_diffusion_models">GitHub</a>
+                {% if page.pdf and page.pdf[0].location %}
+                {% assign pdf_url = page.pdf[0].location %}
+                <a class="btn btn-primary" role="button" href="{% if pdf_url contains '://' %}{{ pdf_url }}{% else %}{{ pdf_url | relative_url }}{% endif %}" target="_blank" rel="noopener">Paper (PDF)</a>
+                {% endif %}
+                {% if page.arxiv %}
+                <a class="btn btn-primary" role="button" href="{{ page.arxiv }}" target="_blank" rel="noopener">Paper (arXiv)</a>
+                {% endif %}
+                {% if page.colab %}
+                <a class="btn btn-light" role="button" href="{{ page.colab }}" target="_blank" rel="noopener">Colab Demo</a>
+                {% endif %}
+                {% if page.github %}
+                <a class="btn btn-light" role="button" href="{{ page.github }}" target="_blank" rel="noopener">Code</a>
+                {% endif %}
               </div>
             </div>
+            {% endif %}
+            {% if page.image and page.image.size > 0 %}
+            {% if page.teaser_title %}
+            <div class="row justify-content-center mb-2">
+              <div class="col-12 text-center paper-teaser-title">{{ page.teaser_title | markdownify }}</div>
+            </div>
+            {% endif %}
             <div class="row justify-content-center">
               <div class="col-lg-10">
-                <div id="figure1">
-                  <img class="img-fluid" src="{{ site.baseurl }}/assets/img/ssdm/main_image_hq.png" alt="Figure 1">
-                  <figcaption class="figure-caption"><b>Figure 1:</b> Symmetry breaking in a one-dimensional problem (a) with two data points (-1,1) and on (b) CelebA64. Figures on top show the potential at different time points.</figcaption>
+                <div id="figure1" class="paper-teaser-stack {% if page.image.size >= 3 %}paper-teaser-grid{% endif %}">
+                  {% for img in page.image %}
+                  {% if img.location %}
+                  <img class="img-fluid d-block w-100" src="{{ img.location | relative_url }}" alt="Teaser">
+                  {% endif %}
+                  {% endfor %}
+                  {% if page.teaser_caption %}
+                  <figcaption class="figure-caption mt-2 paper-teaser-caption">{{ page.teaser_caption }}</figcaption>
+                  {% endif %}
                 </div>
               </div>
             </div>
+            {% endif %}
           </div>
         </div>
 

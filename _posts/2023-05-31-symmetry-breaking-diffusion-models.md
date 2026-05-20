@@ -1,6 +1,8 @@
 ---
 layout: paper
 title: "Spontaneous symmetry breaking in generative diffusion models"
+title_line1: "Spontaneous symmetry breaking in"
+title_line2: "generative diffusion models"
 date: 2023-05-31
 tags: diffusion symmetry-breaking generative-models
 authors:
@@ -15,16 +17,31 @@ authors:
       name: Radboud University
 
 
-pdf:
-  - location: "assets/img/ssdm/paper.pdf"
+arxiv: "https://arxiv.org/abs/2305.19693"
+github: "https://github.com/gabrielraya/symmetry_breaking_diffusion_models"
 
 image:
   - location: "assets/img/ssdm/main_image_hq.png"
-
+teaser_caption: "Figure 1: Symmetry breaking in a one-dimensional problem (a) with two data points (-1,1) and on (b) CelebA64. Figures on top show the potential at different time points."
 
 # Below is an example of injecting additional post-specific styles.
 # If you use this post as a template, delete this _styles block.
 _styles: > 
+  /* This paper only: larger authors and abstract figure */
+  .paper-authors-compact .paper-author-name {
+    font-size: 1.05rem;
+    margin-bottom: 0.25rem;
+  }
+  .paper-authors-compact .paper-author-affil {
+    font-size: 0.85rem;
+    margin-bottom: 0.75rem;
+  }
+  .paper-teaser-stack {
+    max-width: 100% !important;
+  }
+  .paper-teaser-stack .figure-caption {
+    font-size: 0.95rem;
+  }
   .fake-img {
     background: #bbb;
     border: 1px solid rgba(0, 0, 0, 0.1);

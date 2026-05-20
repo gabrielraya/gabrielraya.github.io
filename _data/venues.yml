@@ -1,0 +1,11 @@
+# Publication venue URLs for clickable badges (abbr from papers.bib)
+NeurIPS:
+  url: https://neurips.cc/
+ICLR:
+  url: https://iclr.cc/
+MIA:
+  url: https://www.sciencedirect.com/journal/medical-image-analysis
+SPIE:
+  url: https://spie.org/
+arXiv:
+  url: https://arxiv.org/

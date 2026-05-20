@@ -7,16 +7,16 @@ first_name: Gabriel
 middle_name:
 last_name: Raya
 email: g.raya@tilburguniversity.edu
-description: Gabriel Raya's academic website.
+description: Gabriel Raya — researcher studying generative models as noise-to-structure systems, with a focus on diffusion dynamics, information-guided training, and controllable generation.
 # footer_text: >
 #   Powered by <a href="http://jekyllrb.com/" target="_blank">Jekyll</a> with <a href="https://github.com/alshedivat/al-folio">al-folio</a> theme.
 
-keywords: Gabriel Raya, machine learning, AI, artificial intelligence
+keywords: Gabriel Raya, diffusion models, generative models, score-based generative modeling, probabilistic machine learning, statistical physics, information theory, efficient sampling, controllable generation
 
 lang: en # the language of your site (for example: en, fr, cn, ru, etc.)
 icon: 🤖  # the emoji used as the favicon (alternatively, provide image name in /assets/img/)
 
-url:  # the base hostname & protocol for your site
+url: https://gabrielraya.github.io  # the base hostname & protocol for your site (change if using custom domain)
 baseurl:  # the subpath of your site, e.g. /blog/
 last_updated: true # set to true if you want to display last updated in the footer
 impressum_path:  # set to path to include impressum link in the footer, use the same path as permalink in a page, helps to conform with EU GDPR
@@ -39,7 +39,7 @@ navbar_fixed: true
 footer_fixed: true
 
 # Dimensions
-max_width: 800px
+max_width: 960px
 
 # TODO: add layout settings (single page vs. multi-page)
 
@@ -47,8 +47,8 @@ max_width: 800px
 # Open Graph
 # -----------------------------------------------------------------------------
 # Display links to the page with a preview object on social media.
-serve_og_meta: false # Include Open Graph meta tags in the HTML head
-og_image: # The site-wide (default for all links) Open Graph preview image
+serve_og_meta: true # Include Open Graph meta tags in the HTML head
+og_image: https://gabrielraya.github.io/assets/img/prof_pic.jpg # Site-wide OG image (use 1200x630 for best results; replace with og-preview.png when you have one)
 
 # -----------------------------------------------------------------------------
 # Social integration
@@ -68,6 +68,10 @@ work_url: # work page URL
 keybase_username: # your keybase user name
 wikidata_id: # your wikidata id
 
+# Repository stats (for /repositories/ page; themes: default, radical, merko, gruvbox, tokyonight, etc.)
+repo_theme_light: default
+repo_theme_dark: radical
+
 contact_note: >
   If you have any questions or are interested in collaborating, please feel free to contact me!
 google_analytics: G-BC981LW1SD # out your google-analytics code
@@ -77,8 +81,8 @@ panelbear_analytics: XXXXXXXXX # panelbear analytics site ID
 # Blog
 # -----------------------------------------------------------------------------
 
-blog_name: Generative Modelling  # your blog must have a name for it to show up in the nav bar
-blog_description: <i>“What I cannot create, I do not understand”</i>. Richard Feynman
+blog_name: Generative Modelling as Symmetry Breaking  # your blog must have a name for it to show up in the nav bar
+blog_description: <i>“The secret of nature is symmetry, but much of the texture of the world is due to mechanisms of symmetry breaking”</i>. David J. Gross
 permalink: /blog/:year/:title/
 
 # Pagination

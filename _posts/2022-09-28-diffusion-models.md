@@ -1,7 +1,7 @@
 ---
 layout: distill
 title: Diffusion models explained
-description: An overview of diffusion models (work in progress).
+description: A guided overview of diffusion models, from forward noising to reverse denoising, training objectives, and applications.
 date: 2022-08-14 0:00:00-0400
 tags: diffusion
 
@@ -369,7 +369,6 @@ We train by minimizing the <a href="https://en.wikipedia.org/wiki/Cross_entropy"
 We use Jensen's inequality \( \mathbb{E}[f(x)] \ge f(\mathbb{E}[x]) \) for convex function. Making use of the fact that \(-\log(x) \) is convex we have  that \( \mathbb{E}[-\log(x)] \ge -\log(\mathbb{E}[x]) \). Further improvements come from variance reduction by rewriting the equation as:
 </p>
 
-<!-- Need to check the math tex of this equation -->
 <p>
 $$
 \begin{aligned}
@@ -393,7 +392,6 @@ $$
 (*) Using Bayes' rule
 </p>
 
-<!-- Need to check the math tex of this equation -->
 <p>
 $$
 \begin{align}
@@ -446,7 +444,6 @@ Recall \( \alpha_t = 1 - \beta_t \) and \( \bar{\alpha}_t = \prod_{i=1}^t \alpha
 </p>
 
 
-<!-- Need to check the math tex of this equation -->
 <p>
 $$
 \begin{aligned}
@@ -531,7 +528,6 @@ First the LHST
 </p>
 
 
-<!-- Need to check the math tex of this equation -->
 <p>
 $$
 \begin{aligned}
@@ -555,7 +551,6 @@ Now the RHST
 </p>
 
 
-<!-- Need to check the math tex of this equation -->
 <p>
 $$
 \begin{aligned}
@@ -668,7 +663,6 @@ Using equation \ref{eq:transition_t} we have that \( \mathbf{x}_0 = \frac{1}{\sq
 </p>
 
 
-<!-- Need to check the math tex of this equation -->
 <p>
 $$
 \begin{aligned}
@@ -1023,11 +1017,6 @@ $$
 
 > To summarize, we can train the reverse process mean function approximator $$\mathbf{\mu}_{\theta}$$ to predict $$\tilde{\mu}_t$$, or by modifying its parameterization, we can train it to predict $$\mathbf{\epsilon}$$.
 
-
-
-<!--
- but we found this to lead to worse sample quality early in our experiments.) We have shown that the -prediction parameterization both resembles Langevin dynamics and simplifies the diffusion model’s variational bound to an objective that resembles denoising score matching. Nonetheless, it is just another parameterization of pθ(xt−1|xt), so we verify its effectiveness in Section 4 in an ablation where we compare predicting  against predicting  ̃ μt. -->
-
 <p align="justify">
 <ul>
   <li> <p align="justify"> We start with a predefined forward process that evolves over a time interval $t\in[0,T]$, systematically converting input data, $\mathbf{x}_0$, into noise through a perturbation kernel  $q(\mathbf{x}_t \vert \mathbf{x}_{t-1})$ using a noise schedule $\beta_t$.
@@ -1131,14 +1120,21 @@ $$
 </p>
 
 
-## Continuous diffusion Models
+## Continuous diffusion models
 
+<p align="justify">
+The discrete formulation above uses a finite chain of noise levels \(t=1,\dots,T\). Continuous-time diffusion models take the same idea and let time vary continuously. Instead of describing each transition with a finite Markov kernel \(q(\mathbf{x}_t \vert \mathbf{x}_{t-1})\), the forward process is described by a stochastic differential equation (SDE). The reverse process is then another SDE that uses the score, \(\nabla_{\mathbf{x}}\log q_t(\mathbf{x})\), to move samples from high noise back toward the data distribution.
+</p>
+
+<p align="justify">
+This continuous view is useful because it makes the connection between DDPMs, score matching, Langevin dynamics, and probability-flow ODE samplers explicit. In the discrete setting, the model learns to remove a small amount of noise at each step. In the continuous setting, it learns a time-dependent vector field that points toward higher probability regions of the data distribution. Both views express the same central idea: generation is learned structure recovery along a noise-to-data path.
+</p>
 
 
 ## Applications
 
 <p align="justify">
-Generative models can be used for several applications. One recent remarkable application is <a href="https://openai.com/dall-e-2/">DALL-E 2</a>, a new AI system that can create realistic images and art from a description in natural language.  <a href="https://openai.com/dall-e-2/">DALL-E 2</a> uses diffusion models to produce high-quality image samples. For more details about <a href="https://openai.com/dall-e-2/">DALL-E 2</a> see the scientific paper  <a href="https://arxiv.org/abs/2204.06125Hierarchical"> Text-Conditional Image Generation with CLIP Latents</a> <d-cite key="ramesh2022hierarchical"></d-cite>.
+Generative models can be used for several applications. One recent remarkable application is <a href="https://openai.com/dall-e-2/">DALL-E 2</a>, a new AI system that can create realistic images and art from a description in natural language.  <a href="https://openai.com/dall-e-2/">DALL-E 2</a> uses diffusion models to produce high-quality image samples. For more details about <a href="https://openai.com/dall-e-2/">DALL-E 2</a> see the scientific paper  <a href="https://arxiv.org/abs/2204.06125"> Text-Conditional Image Generation with CLIP Latents</a> <d-cite key="ramesh2022hierarchical"></d-cite>.
 </p>
 
 
@@ -1167,147 +1163,12 @@ You can also ask <a href="https://openai.com/dall-e-2/">DALL-E 2</a> to generate
         <figcaption class="figure-caption text-center">Figure 5. Images generated by <a href="https://openai.com/dall-e-2/">DALL-E 2</a>  for a given query.</figcaption>
 </div>
 
-<!--
-## Code Blocks
+## Summary
 
-Syntax highlighting is provided within `<d-code>` tags.
-An example of inline code snippets: `<d-code language="html">let x = 10;</d-code>`.
-For larger blocks of code, add a `block` attribute:
+<p align="justify">
+Diffusion models define a simple forward process that gradually destroys structure by adding noise, and then learn a reverse process that reconstructs structure from noise. In the DDPM view, the forward process is fixed and the model learns Gaussian reverse transitions. In the score-based view, the model learns the score field that points samples toward regions of higher data density. The simplified training objective can be understood as learning to predict the noise component added at each time step.
+</p>
 
-<d-code block language="python">
-def loss_fn(model, batch):
-  model_fn = mutils.get_model_fn(model, train=train)
-  labels = torch.randint(0, vpsde.N, (batch.shape[0],), device=batch.device)
-  sqrt_alphas_cumprod = vpsde.sqrt_alphas_cumprod.to(batch.device)
-  sqrt_1m_alphas_cumprod = vpsde.sqrt_1m_alphas_cumprod.to(batch.device)
-  noise = torch.randn_like(batch)
-  perturbed_data = sqrt_alphas_cumprod[labels, None, None, None] * batch + \
-                   sqrt_1m_alphas_cumprod[labels, None, None, None] * noise
-  score = model_fn(perturbed_data, labels)
-  losses = torch.square(score - noise)
-  losses = reduce_op(losses.reshape(losses.shape[0], -1), dim=-1)
-  loss = torch.mean(losses)
-  return loss
-</d-code>
-
-**Note:** `<d-code>` blocks do not look well in the dark mode.
-You can always use the default code-highlight using the `highlight` liquid tag:
-
-{% highlight javascript %}
-var x = 25;
-function(x) {
-  return x * x;
-}
-{% endhighlight %}
-
-***
-
-
-
-## Other Typography?
-
-Emphasis, aka italics, with *asterisks* (`*asterisks*`) or _underscores_ (`_underscores_`).
-
-Strong emphasis, aka bold, with **asterisks** or __underscores__.
-
-Combined emphasis with **asterisks and _underscores_**.
-
-Strikethrough uses two tildes. ~~Scratch this.~~
-
-1. First ordered list item
-2. Another item
-⋅⋅* Unordered sub-list.
-1. Actual numbers don't matter, just that it's a number
-⋅⋅1. Ordered sub-list
-4. And another item.
-
-⋅⋅⋅You can have properly indented paragraphs within list items. Notice the blank line above, and the leading spaces (at least one, but we'll use three here to also align the raw Markdown).
-
-⋅⋅⋅To have a line break without a paragraph, you will need to use two trailing spaces.⋅⋅
-⋅⋅⋅Note that this line is separate, but within the same paragraph.⋅⋅
-⋅⋅⋅(This is contrary to the typical GFM line break behaviour, where trailing spaces are not required.)
-
-* Unordered list can use asterisks
-- Or minuses
-+ Or pluses
-
-[I'm an inline-style link](https://www.google.com)
-
-[I'm an inline-style link with title](https://www.google.com "Google's Homepage")
-
-[I'm a reference-style link][Arbitrary case-insensitive reference text]
-
-[I'm a relative reference to a repository file](../blob/master/LICENSE)
-
-[You can use numbers for reference-style link definitions][1]
-
-Or leave it empty and use the [link text itself].
-
-URLs and URLs in angle brackets will automatically get turned into links.
-http://www.example.com or <http://www.example.com> and sometimes
-example.com (but not on Github, for example).
-
-Some text to show that the reference links can follow later.
-
-[arbitrary case-insensitive reference text]: https://www.mozilla.org
-[1]: http://slashdot.org
-[link text itself]: http://www.reddit.com
-
-Here's our logo (hover to see the title text):
-
-Inline-style:
-![alt text](https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png "Logo Title Text 1")
-
-Reference-style:
-![alt text][logo]
-
-[logo]: https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png "Logo Title Text 2"
-
-Inline `code` has `back-ticks around` it.
-
-```javascript
-var s = "JavaScript syntax highlighting";
-alert(s);
-```
-
-```python
-s = "Python syntax highlighting"
-print s
-```
-
-```
-No language indicated, so no syntax highlighting.
-But let's throw in a <b>tag</b>.
-```
-
-Colons can be used to align columns.
-
-| Tables        | Are           | Cool  |
-| ------------- |:-------------:| -----:|
-| col 3 is      | right-aligned | $1600 |
-| col 2 is      | centered      |   $12 |
-| zebra stripes | are neat      |    $1 |
-
-There must be at least 3 dashes separating each header cell.
-The outer pipes (|) are optional, and you don't need to make the
-raw Markdown line up prettily. You can also use inline Markdown.
-
-Markdown | Less | Pretty
---- | --- | ---
-*Still* | `renders` | **nicely**
-1 | 2 | 3
-
-> Blockquotes are very handy in email to emulate reply text.
-> This line is part of the same quote.
-
-Quote break.
-
-> This is a very long line that will still be quoted properly when it wraps. Oh boy let's keep writing to make sure this is long enough to actually wrap for everyone. Oh, you can *put* **Markdown** into a blockquote.
-
-
-Here's a line for us to start with.
-
-This line is separated from the one above by two newlines, so it will be a *separate paragraph*.
-
-This line is also a separate paragraph, but...
-This line is only separated by a single newline, so it's a separate line in the *same paragraph*. -->
+<p align="justify">
+This is why diffusion models are such a useful framework for generative modeling: they turn a hard global modeling problem into many local denoising problems along a controlled noise path. Later work on symmetry breaking, noise schedules, guidance, and efficient sampling studies where along this path structure becomes recoverable and how training effort should be allocated.
+</p>

@@ -20,12 +20,12 @@
 
 <!-- Open Graph -->
 {% if site.serve_og_meta %}
-<meta property="og:site_name" content="{{ site.description }}" />
-<meta property="og:type" content="object" />
-<meta property="og:title" content="{{ site.name }}" />
+<meta property="og:site_name" content="{{ site.first_name }} {{ site.last_name }}" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="{% if site.title == blank %}{{ site.first_name }} {{ site.last_name }}{% else %}{{ site.title }}{% endif %}{% if page.title and page.url != '/' %} | {{ page.title }}{% endif %}" />
 <meta property="og:url" content="{{ page.url | prepend: site.baseurl | prepend: site.url }}" />
-<meta property="og:description" content="{{ page.title }}" />
-<meta property="og:image" content="{%- if page.og_image -%}{{ page.og_image }}{%- else -%}{{ site.og_image }}{%- endif -%}" />
+<meta property="og:description" content="{% if page.description %}{{ page.description | strip_html | strip }}{% else %}{{ site.description }}{% endif %}" />
+{% assign og_img = page.og_image | default: site.og_image %}{% if og_img contains '://' %}<meta property="og:image" content="{{ og_img }}" />{% elsif og_img != blank %}<meta property="og:image" content="{{ og_img | prepend: site.url | prepend: site.baseurl }}" />{% endif %}
 {% endif %}
 
 <!-- Bootstrap & MDB -->
@@ -35,7 +35,9 @@
 <!-- Fonts & Icons -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/{{ site.fontawesome.version }}/css/all.min.css"  integrity="{{ site.fontawesome.integrity }}" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/{{ site.academicons.version }}/css/academicons.min.css" integrity="{{ site.academicons.integrity }}" crossorigin="anonymous">
-<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Roboto+Slab:100,300,400,500,700|Material+Icons">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
 
 <!-- Code Syntax Highlighting -->
 <link rel="stylesheet" href="{{ '/assets/css/jekyll-pygments-themes-github.css' | relative_url | bust_file_cache }}" />

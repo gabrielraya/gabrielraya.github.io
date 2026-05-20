@@ -1,14 +1,15 @@
-{% assign repo_url =  include.repository | split: '/' %}
-
-{% if site.data.repositories.github_users contains repo_url.first %}
-  {% assign show_owner = false %}
-{% else %}
-  {% assign show_owner = true %}
-{% endif %}
+{% assign repo_url = include.repository | split: '/' %}
+{% assign repo_owner = repo_url.first %}
+{% assign repo_name = repo_url.last %}
 
 <div class="repo p-2 text-center">
-  <a href="https://github.com/{{ include.repository }}">
-    <img class="repo-img-light w-100" alt="{{ include.repository }}" src="https://github-readme-stats.vercel.app/api/pin/?username={{ repo_url.first }}&repo={{ repo_url.last }}&theme={{ site.repo_theme_light }}&show_owner={{ show_owner }}">
-    <img class="repo-img-dark w-100" alt="{{ include.repository }}" src="https://github-readme-stats.vercel.app/api/pin/?username={{ repo_url.first }}&repo={{ repo_url.last }}&theme={{ site.repo_theme_dark }}&show_owner={{ show_owner }}">
+  <a href="https://github.com/{{ include.repository }}" target="_blank" rel="noopener" class="d-inline-block p-3 border rounded text-decoration-none text-left" style="min-width: 280px;">
+    <p class="mb-1 font-weight-bold">{{ repo_owner }}/<span class="text-primary">{{ repo_name }}</span></p>
+    <div class="d-flex flex-wrap mt-2">
+      <img src="https://img.shields.io/github/stars/{{ include.repository }}?style=flat-square&amp;logo=github" alt="Stars" loading="lazy" class="mr-1 mb-1">
+      <img src="https://img.shields.io/github/forks/{{ include.repository }}?style=flat-square&amp;logo=github" alt="Forks" loading="lazy" class="mr-1 mb-1">
+      <img src="https://img.shields.io/github/languages/top/{{ include.repository }}?style=flat-square" alt="Top language" loading="lazy" class="mb-1">
+    </div>
+    <p class="small text-muted mb-0 mt-2">View repo →</p>
   </a>
 </div>

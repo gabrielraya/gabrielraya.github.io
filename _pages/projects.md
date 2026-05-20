@@ -2,8 +2,8 @@
 layout: page
 title: projects
 permalink: /projects/
-description: A growing collection of some cool projects I have worked on in the past.
-nav: true
+description: Research projects and code on diffusion models and related topics.
+nav: false
 ---
 
 <div class="projects grid">

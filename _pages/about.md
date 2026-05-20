@@ -8,7 +8,7 @@ profile:
   align: right
   image: prof_pic.jpg
   address: >
-    <p>The Netherlands</p>
+    <p>📍 The Netherlands</p>
 
 news: true  # includes a list of news items
 selected_papers: true # includes a list of papers marked as "selected={true}"
@@ -25,14 +25,14 @@ social: true  # includes social icons at the bottom of the page
     along the denoising trajectory. They shape diversity, memorization, guidance,
     and where training effort is useful. I develop this view through work on
     symmetry breaking in diffusion dynamics, information-guided noise allocation,
-    and time-dependent guidance, aiming to make diffusion models less dependent
-    on heuristic choices in training and control.
+    and time-dependent guidance, aiming to make diffusion training and control
+    less heuristic.
   </p>
 </div>
 
 <p align="justify">
 I am a final-year Ph.D. researcher in Machine Learning at Tilburg University and JADS (TU/e), and a visiting researcher at the <a href="https://www.ru.nl/donders/">Donders Institute for Brain, Cognition and Behaviour</a> under the guidance of <a href="https://www.artcogsys.com/team/luca">Dr. Luca Ambrogioni</a> and <a href="https://ericpostma.nl/">Prof. Dr. Eric Postma</a>.
-My research combines probabilistic generative modeling, statistical physics, and information theory to study the dynamics of diffusion models. I previously worked as a Research Scientist Intern on Sony AI's Foundational Models team in Tokyo, where I brought this research direction into applied work on generative-model training.
+My work combines probabilistic generative modeling, statistical physics, and information theory. I previously worked as a Research Scientist Intern on Sony AI's Foundational Models team in Tokyo, where I brought this research direction into applied work on generative-model training.
 </p>
 
 <div class="research-focus-grid">
